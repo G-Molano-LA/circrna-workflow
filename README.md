@@ -1,13 +1,14 @@
 
-title: Manual user
+title: Manual user;
+
 author: G. Molano, LA.
 
 
 ### Table of Contents
-1. [Installation](#installation)
+* [Installation](#installation)
   1. [Setting your working directory](setting-your-working-directory)
   2. [Dependencies](#dependencies)
-2. [Workflow](#workflow)
+* [Workflow](#workflow)
   1. [Quality Control](#quality-control)
   2. [Alignment and identification](#alignment-and-identification)
 
