@@ -10,6 +10,7 @@ First of all, create a directory for containing all your data and specific files
 ```{bash}
 mkdir circrna_workflow/raw_data
 mkdir circrna_workflow/ciri
+mkdir circrna_workflow/src
 ```
 Of note, when creating your workflow directory, you must ensure that it contains two subdirectories named `raw_data` and `ciri`. Otherwise, errors can appear all of a sudden.
 
@@ -39,10 +40,10 @@ mv CIRI_v2.0.6/CIRI2.pl path/to/circrna_workflow/ciri
 rm CIRI2_v2.0.6
 ```
 
-# Anaconda
+## Anaconda
 To facilitate the installation and managing of the rest of programmes , we will use the [Anaconda](https://www.anaconda.com/) distribution and the package manager [conda](https://conda.io/projects/conda/en/latest/index.html).
 
-Anaconda is an optimized Python and R distribution, having pre-built and pre-configured collection of packages that can be installed and used on a system. Anaconda uses a package manager named `conda`, which can not only built and manage software from Python language, but also from any type of programming language.
+Anaconda is an optimized Python and R distribution, having pre-built and pre-configured collection of packages that can be installed and used on a system. Anaconda uses a package manager named `conda`, which can not only built and manage software from Python language, but also from any type of programming language. Additionally, we also will use another package manager called `mamba` to make easier the installation of `snakemake` tool.
 
 package manager
 : is a tool that automates the process of installing, updating, and removing packages.
@@ -91,6 +92,14 @@ conda config --add channels conda-forge
 ```
 **Note: the order of adding these channels is important**
 
+## Installing Snakemake
+To create a reproducible and scalable data analysis we have used the Snakemake workflow management system, which is a Python-based tool. To simplify the installation of this programme, we will use the `mamba` package manager.
+
+```{bash}
+conda install mamba
+mamba install -c conda-forge -c bioconda snakemake
+```
+
 ## Creating a conda environment
 For our circRNA pipeline we are going to create a new environment called `circrna_env`. Follow the instructions:
 
@@ -110,4 +119,9 @@ If do not want to create an specific environment, you can install manually all t
 3. Check that the environment has been correctly created.
 ```{bash}
 conda env list
+```
+4. Activate our environment
+```{bash}
+conda activate circrna_env
+# conda deactivate
 ```
