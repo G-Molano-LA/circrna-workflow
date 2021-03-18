@@ -4,10 +4,10 @@ author: G. Molano, LA.
 
 
 ### Table of Contents
-* [Installation](#installation)
+1. [Installation](#installation)
   1. [Setting your working directory](setting-your-working-directory)
   2. [Dependencies](#dependencies)
-* [Workflow](#workflow)
+2. [Workflow](#workflow)
   1. [Quality Control](#quality-control)
   2. [Alignment and identification](#alignment-and-identification)
 
@@ -30,7 +30,7 @@ mv  *.fastq.gz /path/to/circrna_workflow/raw_data
 
 ## Dependencies
 
-###CIRI2
+### CIRI2
 Once your workflow directory has been created, we are going to download one of the identification tools for circRNA that we will use, `CIRI2`. Follow the instructions:
 
 1.  Download CIRI perl-based program from their [repository](https://sourceforge.net/projects/ciri/files/):
