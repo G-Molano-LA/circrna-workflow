@@ -12,9 +12,9 @@ cd circrna_workflow/
 # 2. Installing CIRI2
 wget https://sourceforge.net/projects/ciri/files/CIRI2/CIRI_v2.0.6.zip
 unzip CIRI_v2.0.6.zip
-rm CIRI_v2.0.6.zip
+rm -r CIRI_v2.0.6.zip
 mv CIRI_v2.0.6/CIRI2.pl ciri/
-rm CIRI2_v2.0.6
+rm -r CIRI2_v2.0.6/
 
 # 3. Installing Anaconda
 wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
