@@ -5,7 +5,7 @@
 ################################################################################
 
 # 1.Setting your working directory
-mkdir circrna_workflow/raw_data circrna_workflow/ciri circrna_workflow/src
+mkdir -p circrna_workflow/raw_data circrna_workflow/ciri circrna_workflow/src
 cd circrna_workflow/
 
 
