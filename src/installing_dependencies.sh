@@ -35,6 +35,6 @@ mamba install -c conda-forge -c bioconda snakemake
 # 5. Creating a conda environment
 conda env list
 wget https://github.com/G-Molano-LA/circrna-workflow/raw/main/configuration.yml
-conda create --name circrna_env configuration.yml
+conda create --name circrna_env -f configuration.yml
 conda env list
 conda activate circrna_env
