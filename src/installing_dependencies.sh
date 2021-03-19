@@ -19,6 +19,7 @@ rm CIRI2_v2.0.6
 # 3. Installing Anaconda
 wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
 bash Anaconda3-2020.11-Linux-x86_64.sh
+rm Anaconda3-2020.11-Linux-x86_64.sh
 export PATH=$PATH:/your/path/to/anaconda3/bin:/your/path/to/anaconda3/condabin
 
 ## 3.1. Conda channels
