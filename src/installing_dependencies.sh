@@ -20,7 +20,7 @@ rm CIRI2_v2.0.6
 wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
 bash Anaconda3-2020.11-Linux-x86_64.sh
 rm Anaconda3-2020.11-Linux-x86_64.sh
-export PATH=$PATH:/your/path/to/anaconda3/bin:/your/path/to/anaconda3/condabin
+bash --login
 
 ## 3.1. Conda channels
 conda config --add channels defaults
