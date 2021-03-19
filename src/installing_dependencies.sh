@@ -15,6 +15,7 @@ unzip CIRI_v2.0.6.zip
 rm -r CIRI_v2.0.6.zip
 mv CIRI_v2.0.6/CIRI2.pl ciri/
 rm -r CIRI2_v2.0.6/
+rm -r __MACOSX/
 
 # 3. Installing Anaconda
 wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
