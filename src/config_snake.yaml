@@ -1,0 +1,3 @@
+samples:
+    A: raw_data/samples/SRR12794685_1.fastq.gz
+    B: raw_data/samples/SRR12794685_2.fastq.gz
