@@ -3,7 +3,7 @@
 
 ###############################################################################
 data= [] # creating an empty list
-with open("files.txt") as fp:
+with open("data/seqs.txt") as fp:
     for line in fp:
         data.append(line.rstrip('_[1,2].fastq.gz\n'))
 data=list(dict.fromkeys(data)) # removing duplicates
@@ -11,8 +11,8 @@ SAMPLES=data
 ###############################################################################
 rule results:
     input:
-        "ciri/identification_results",
-        "circexplorer2/circularRNA_known.txt"
+        "libs/ciri2/identification_results",
+        "libs/circexplorer2/circularRNA_known.txt"
 
 
 """
@@ -25,7 +25,7 @@ checks, which rules produce the inputs for those rules, etc.
 
 rule dw_ref_genome:
     output:
-        "raw_data/hg19_ref_genome.fna.gz"
+        "data/raw_data/hg19_ref_genome.fna.gz"
     message:
         " Downloanding reference genome (GRch38)..."
     shell:
@@ -34,7 +34,7 @@ rule dw_ref_genome:
 
 rule bwa_index:
     input:
-        "raw_data/hg19_ref_genome.fna.gz"
+        "data/raw_data/hg19_ref_genome.fna.gz"
     output:
         expand("raw_data/{{genome}}.fna.{ext}", ext=["amb", "ann", "bwt", "pac", "sa"])
     params:
@@ -51,12 +51,12 @@ rule bwa_index:
 
 rule bwa_mem:
     input:
-        reads=expand("trimmed_data/{sample}_{replicate}.fq.gz",
+        reads=expand("data/trimmed_data/{sample}_{replicate}.fq.gz",
              sample=SAMPLES, replicate=["1_val_1", "2_val_2"]),
-        index=expand("raw_data/{genome}.fna.{ext}", genome=["hg19_ref_genome"],
+        index=expand("data/raw_data/{genome}.fna.{ext}", genome=["hg19_ref_genome"],
             ext=["amb", "ann", "bwt", "pac", "sa"])
     output:
-        temp(expand("mapped_reads/{sample}_{replicate}.sam",
+        temp(expand("data/mapped_reads/{sample}_{replicate}.sam",
             sample=SAMPLES, replicate=[1,2])
             )
     params:
@@ -74,7 +74,7 @@ rule bwa_mem:
 
 rule dw_ciri2:
     output:
-        "ciri2/CIRI2.pl"
+        "libs/ciri2/CIRI2.pl"
     # message:
     #     " Downloanding alignment tool CIRI2..."
     shell:
@@ -82,13 +82,13 @@ rule dw_ciri2:
 
 rule ciri2_id:
     input:
-        ciri="ciri2/CIRI2.pl",
-        sam=expand("mapped_reads/{sample}_{replicate}.sam",
+        ciri="libs/ciri2/CIRI2.pl",
+        sam=expand("data/mapped_reads/{sample}_{replicate}.sam",
             sample=SAMPLES, replicate=[1,2]),
-        index=expand("raw_data/{genome}.fna.{ext}", genome=["hg19_ref_genome"],
+        index=expand("data/raw_data/{genome}.fna.{ext}", genome=["hg19_ref_genome"],
             ext=["amb", "ann", "bwt", "pac", "sa"])
     output:
-        "ciri/identification_results"
+        "libs/ciri2/identification_results"
     # message:
     #     "CIRI2:starting circRNA identification"
     log:
@@ -100,10 +100,10 @@ rule ciri2_id:
 
 rule circexplorer2_id:
     input:
-        sam=expand("mapped_reads/{sample}_{replicate}.sam",
+        sam=expand("data/mapped_reads/{sample}_{replicate}.sam",
             sample=SAMPLES, replicate=[1,2])
     output:
-        "circexplorer2/back_spliced_junction.bed"
+        "libs/circexplorer2/back_spliced_junction.bed"
     log:
         "logs/circexplorer2/parse.log"
     params:
@@ -117,12 +117,12 @@ rule circexplorer2_id:
 
 rule circexplorer_annotation:
     input:
-        bsj="circexplorer2/back_spliced_junction.bed",
-        index=expand("raw_data/{genome}.fna.{ext}", genome=["hg19_ref_genome"],
+        bsj="libs/circexplorer2/back_spliced_junction.bed",
+        index=expand("data/raw_data/{genome}.fna.{ext}", genome=["hg19_ref_genome"],
             ext=["amb", "ann", "bwt", "pac", "sa"]),
-        gene="raw_data/GRCh38_latest_genomic.gff.gz"
+        gene="data/raw_data/GRCh38_latest_genomic.gff.gz"
     output:
-        "circexplorer2/circularRNA_known.txt"
+        "libs/circexplorer2/circularRNA_known.txt"
     log:
         "logs/circexplorer2/annotate.log"
     # message:

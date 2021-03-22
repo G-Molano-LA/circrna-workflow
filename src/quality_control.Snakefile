@@ -6,7 +6,7 @@ min_version("6.0")
 
 ###############################################################################
 data= [] # creating an empty list
-with open("files.txt") as fp:
+with open("data/seqs.txt") as fp:
     for line in fp:
         data.append(line.rstrip('_[1,2].fastq.gz\n'))
 data=list(dict.fromkeys(data)) # removing duplicates
@@ -14,8 +14,8 @@ SAMPLES=data
 ###############################################################################
 rule results:
     input:
-        "raw_data/samples/multi_report.html",
-        "trimmed_data/multi_report_trimmed.html"
+        "data/raw_data/samples/multi_report.html",
+        "data/trimmed_data/multi_report_trimmed.html"
 
 
 """
@@ -28,12 +28,12 @@ checks, which rules produce the inputs for those rules, etc.
 ## 1. QUALITY CONTROL #########################################################
 rule quality_control:
     input:
-        reads=expand("raw_data/samples/{sample}_{replicate}.fastq.gz",
+        reads=expand("data/raw_data/samples/{sample}_{replicate}.fastq.gz",
             sample=SAMPLES, replicate=[1,2])
     output:
-        html=expand("raw_data/samples/{sample}_{replicate}_fastqc.html",
+        html=expand("data/raw_data/samples/{sample}_{replicate}_fastqc.html",
             sample=SAMPLES, replicate=[1,2]),
-        zip=expand("raw_data/samples/{sample}_{replicate}_fastqc.zip",
+        zip=expand("data/raw_data/samples/{sample}_{replicate}_fastqc.zip",
             sample=SAMPLES, replicate=[1,2])
     log:
         "logs/fastqc/fastqc_1.log"
@@ -46,14 +46,14 @@ rule quality_control:
 
 rule multiqc_report:
     input:
-        expand("raw_data/samples/{sample}_{replicate}_fastqc.zip",
+        expand("data/raw_data/samples/{sample}_{replicate}_fastqc.zip",
                 sample=SAMPLES, replicate=[1,2])
     output:
-        html="raw_data/samples/multi_report.html",
-        pdf="raw_data/samples/multi_report.pdf"
+        html="data/raw_data/samples/multi_report.html",
+        pdf="data/raw_data/samples/multi_report.pdf"
     params:
         pdf="--pdf",
-        replace_old="--force"
+        replace_old="--force" # revisar que no remplaze al anterior
     log:
         "logs/multiqc/multiqc_1.log"
     shell:
@@ -61,24 +61,24 @@ rule multiqc_report:
 
 rule trimming:
     input:
-        reads=expand("raw_data/samples/{sample}_{replicate}.fastq.gz",
+        reads=expand("data/raw_data/samples/{sample}_{replicate}.fastq.gz",
             sample=SAMPLES, replicate=[1,2])
     output:
-        reads=expand("trimmed_data/{sample}_{replicate}.fq.gz",
+        reads=expand("data/trimmed_data/{sample}_{replicate}.fq.gz",
              sample=SAMPLES, replicate=["1_val_1", "2_val_2"]),
-        txt=expand("trimmed_data/{sample}_{replicate}.fastq.gz_trimming_report.txt",
+        txt=expand("data/trimmed_data/{sample}_{replicate}.fastq.gz_trimming_report.txt",
              sample=SAMPLES, replicate=[1,2])
     shell:
         "trim_galore --paired -o trimed_data {input}"
 
 rule quality_control_2:
     input:
-        reads=expand("trimmed_data/{sample}_{replicate}.fq.gz",
+        reads=expand("data/trimmed_data/{sample}_{replicate}.fq.gz",
              sample=SAMPLES, replicate=["1_val_1", "2_val_2"])
     output:
-        html=expand("trimmed_data/{sample}_{replicate}_fastqc.html",
+        html=expand("data/trimmed_data/{sample}_{replicate}_fastqc.html",
              sample=SAMPLES, replicate=["1_val_1", "2_val_2"]),
-        zip=expand("trimmed_data/{sample}_{replicate}_fastqc.zip",
+        zip=expand("data/trimmed_data/{sample}_{replicate}_fastqc.zip",
              sample=SAMPLES, replicate=["1_val_1", "2_val_2"])
     log:
         "logs/fastqc/fastqc_2.log"
@@ -90,14 +90,14 @@ rule quality_control_2:
 
 rule multiqc_report_2:
     input:
-        zip=expand("trimmed_data/{sample}_{replicate}_fastqc.zip",
+        zip=expand("data/trimmed_data/{sample}_{replicate}_fastqc.zip",
              sample=SAMPLES, replicate=["1_val_1", "2_val_2"])
     output:
-        html="trimmed_data/multi_report_trimmed.html",
-        pdf="trimmed_data/multi_report_trimmed.pdf"
+        html="data/trimmed_data/multi_report_trimmed.html",
+        pdf="data/trimmed_data/multi_report_trimmed.pdf"
     params:
         pdf="--pdf",
-        replace_old="--force"
+        replace_old="--force" # revisar que no remplaze al anterior
     log:
         "logs/multiqc/multiqc_2.log"
     shell:
