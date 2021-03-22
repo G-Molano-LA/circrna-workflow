@@ -1,0 +1,19 @@
+
+###############################################################################
+## Configuration file for creating circrna_env
+## Author: G. Molano, LA
+###############################################################################
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - cufflinks>=2.1.1      # bio
+  - bedtools>=0.7.6       # bio
+  - ucsc-genepredtogtf    # bio
+  - ucsc-gtftogenepred    # bio
+  - pysam>=0.8.4          # bio
+  - pybedtools            # bio
+  - pandas                # conda-forge
+  - docopt>=0.6.2         # conda-forge
+  - scipy                 # conda-forge
+  - circexplorer2         # bio

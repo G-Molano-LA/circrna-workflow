@@ -5,17 +5,8 @@
 ################################################################################
 
 # 1.Setting your working directory
-mkdir -p circrna_workflow/raw_data circrna_workflow/ciri circrna_workflow/src
+mkdir -p circrna_workflow/raw_data circrna_workflow/src
 cd circrna_workflow/
-
-
-# 2. Installing CIRI2
-wget https://sourceforge.net/projects/ciri/files/CIRI2/CIRI_v2.0.6.zip
-unzip CIRI_v2.0.6.zip
-rm -r CIRI_v2.0.6.zip
-mv CIRI_v2.0.6/CIRI2.pl ciri/
-rm -r CIRI2_v2.0.6/
-rm -r __MACOSX/
 
 # 3. Installing Anaconda
 wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
@@ -33,8 +24,8 @@ conda install mamba
 mamba install -c conda-forge -c bioconda snakemake
 
 # 5. Creating a conda environment
-conda env list
-wget https://github.com/G-Molano-LA/circrna-workflow/raw/main/configuration.yml
-conda env create -f configuration.yml
-conda env list
-conda activate circrna_env
+# conda env list
+# wget https://github.com/G-Molano-LA/circrna-workflow/raw/main/configuration.yml # desfasado
+# conda env create -f configuration.yml
+# conda env list
+# conda activate circrna_env
