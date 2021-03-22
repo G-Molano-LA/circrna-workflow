@@ -1,6 +1,5 @@
 
-title: Manual user;
-
+title: Manual user
 author: G. Molano, LA.
 
 
@@ -12,6 +11,8 @@ author: G. Molano, LA.
   1. [Quality Control](#quality-control)
   2. [Alignment and identification](#alignment-and-identification)
 
+***
+
 # Installation
 This is the recommended way to install the required dependencies for a proper performance of the workflow. A conda environment  will be create to install and manage all the required programmes.
 
@@ -19,10 +20,10 @@ This is the recommended way to install the required dependencies for a proper pe
 First of all, create a directory for containing all your data and specific files:
 ```{bash}
 mkdir circrna_workflow/raw_data
-mkdir circrna_workflow/ciri
 mkdir circrna_workflow/src
+wget link-to-snakefiles
 ```
-Of note, when creating your workflow directory, you must ensure that it contains two subdirectories named `raw_data` and `ciri`. Otherwise, errors can appear all of a sudden.
+Of note, when creating your workflow directory, you must ensure that it contains a subdirectory named `raw_data`. Otherwise, errors can appear all of a sudden.
 
 Secondly, move your raw reads to circrna_workflow/raw_data directory
 ```{bash}
@@ -30,27 +31,6 @@ mv  *.fastq.gz /path/to/circrna_workflow/raw_data
 ```
 
 ## Dependencies
-
-### CIRI2
-Once your workflow directory has been created, we are going to download one of the identification tools for circRNA that we will use, `CIRI2`. Follow the instructions:
-
-1.  Download CIRI perl-based program from their [repository](https://sourceforge.net/projects/ciri/files/):
-```{bash}
-wget https://sourceforge.net/projects/ciri/files/CIRI2/CIRI_v2.0.6.zip
-```
-2. Unzip and remove the downloaded directory:
-```
-unzip CIRI_v2.0.6.zip
-rm CIRI_v2.0.6.zip
-```
-3. Move CIRI script to your workflow directory
-```{bash}
-mv CIRI_v2.0.6/CIRI2.pl path/to/circrna_workflow/ciri
-```
-4. If desire, you can remove `CIRI_v2.0.6` directory
-```{bash}
-rm CIRI2_v2.0.6
-```
 
 ### Anaconda
 To facilitate the installation and managing of the rest of programmes , we will use the [Anaconda](https://www.anaconda.com/) distribution and the package manager [conda](https://conda.io/projects/conda/en/latest/index.html).
@@ -112,7 +92,7 @@ conda install mamba
 mamba install -c conda-forge -c bioconda snakemake
 ```
 
-### Creating a conda environment
+### Creating a conda environment = PENDIENTE DE REVISAR
 For our circRNA pipeline we are going to create a new environment called `circrna_env`. Follow the instructions:
 
 1. Get the list of the current environments:
@@ -139,10 +119,13 @@ conda activate circrna_env
 ```
 # Workflow
 ## Quality Control
+![image](docs/images/dag_quality.svg)
+
 ```{bash}
 snakemake --cores all --snakefile src/quality_control.Snakefile
 ```
 ## Alignment and Identification
+![image](docs/images/dag_aln.svg)
 ```{bash}
-snakemake --cores all --snakefile src/alignment_and_identifcation.Snakefile
+snakemake --cores all --use-conda --snakefile src/alignment_and_identifcation.Snakefile
 ```
