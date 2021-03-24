@@ -1,9 +1,0 @@
-
-###############################################################################
-## Required softwares for running the second module
-## Author: G. Molano, LA
-###############################################################################
-channels:
-  - bioconda
-dependencies:
-  - bwa>=0.7.17

@@ -19,18 +19,26 @@ This is the recommended way to install the required dependencies for a proper pe
 ## Setting your working directory
 First of all, create a directory for containing all your data and specific files:
 ```{bash}
-mkdir circrna_workflow/raw_data
-mkdir circrna_workflow/src
+mkdir -p circrna_workflow/data/raw_data/samples circrna_workflow/src \
+ circrna_workflow/data/mapped_data
+cd circrna_workflow/
 wget link-to-snakefiles
 ```
-Of note, when creating your workflow directory, you must ensure that it contains a subdirectory named `raw_data`. Otherwise, errors can appear all of a sudden.
+Of note, when creating your workflow directory, you must ensure that it contains the subdirectories  `src/`, `data/raw_data/samples/` and `data/mapped_data/`. Otherwise, errors can appear all of a sudden.
 
-Secondly, move your raw reads to circrna_workflow/raw_data directory
+Secondly, move your raw reads to `circrna_workflow/data/raw_data/samples` directory and create a file with your filenames.
 ```{bash}
-mv  *.fastq.gz /path/to/circrna_workflow/raw_data
+mv  *.fastq.gz /path/to/circrna_workflow/data/raw_data/samples
+cd circrna_workflow/data/raw_data/
+ls samples/ > seqs.txt
 ```
 
 ## Dependencies
+### Python3
+```{bash}
+sudo apt-get update
+sudo apt-get install python3.8 python3-pip
+```
 
 ### Anaconda
 To facilitate the installation and managing of the rest of programmes , we will use the [Anaconda](https://www.anaconda.com/) distribution and the package manager [conda](https://conda.io/projects/conda/en/latest/index.html).
@@ -46,6 +54,7 @@ To install Anaconda distribution on Linux follow the steps. For toher operating 
 3. Run:
 ```{bash}
 bash Anaconda-latest-Linux-x86_64.sh
+conda update
 ```
 4. Follow the prompts on the installer screens. In front of any doubt, accept the defaults settings. They can be changed later.
 5. To make the changes take effect, close and re-open your terminal window.
@@ -65,7 +74,7 @@ This file will be run upon login for all current and future users, affecting glo
 sudo nano ~/.profile
 
 # Add at the top of the profile file:
-export PATH=$PATH:/your/path/to/anaconda3/bin:/your/path/to/anaconda3/condabin
+export PATH=$PATH:/your/path/to/anaconda3/bin
 ```
 3. Reload the profile file:
 ```{bash}
@@ -88,35 +97,40 @@ conda config --add channels conda-forge
 To create a reproducible and scalable data analysis we have used the Snakemake workflow management system, which is a Python-based tool. To simplify the installation of this programme, we will use the `mamba` package manager.
 
 ```{bash}
+conda update
 conda install mamba
 mamba install -c conda-forge -c bioconda snakemake
 ```
 
-### Creating a conda environment = PENDIENTE DE REVISAR
-For our circRNA pipeline we are going to create a new environment called `circrna_env`. Follow the instructions:
+## CircView
 
-1. Get the list of the current environments:
+1. Go [here](https://www.java.com/es/download/linux_manual.jsp) and downloand the installation file. Afterwards, follow the instructions to install java virtual machine
 ```{bash}
-conda env list
+sudo mkdir /usr/java                           # create a directory
+cd /usr/java                                   # move to dir
+mv ~/Downloands/jre-8u281-linux-x64.tar.gz .  
+sudo tar zxvf jre-8u281-linux-x64.tar.gz       # decompress
+rm *.tar.gz
 ```
-2. To create our environment and install almost all dependencies, run the following command:
+2. Downloand and decompress `CircView.tar.gz` from [github repository](https://github.com/GeneFeng/CircView)
 ```{bash}
-wget https://github.com/G-Molano-LA/circrna-workflow/raw/main/configuration.yml
-conda create --name circrna_env configuration.yml
+wget https://github.com/GeneFeng/CircView/raw/master/CircView.tar.gz
+tar zxvf CircView.tar.gz
+rm *.tar.gz
 ```
-`configuration.yml` contains all the dependencies required, which will be installed in the circrna_env python environment.
+3. Downloand data
+```{bash}
+mkdir test_data
+mv test_data
+wget https://github.com/GeneFeng/CircView/raw/master/testdata/human.tar.gz
+tar zxvf human.tar.gz
+rm *.tar.gz
+```
+4. Execute `CircView.jar`. Go and double click.
+```{bash}
+chmod a+x CircView.jar
+```
 
-If do not want to create an specific environment, you can install manually all the dependencies specified in the `configuration.yml` file running `conda install dependency_name`.
-
-3. Check that the environment has been correctly created.
-```{bash}
-conda env list
-```
-4. Activate our environment
-```{bash}
-conda activate circrna_env
-# conda deactivate
-```
 # Workflow
 ## Quality Control
 ![image](docs/images/dag_quality.svg)
@@ -129,3 +143,6 @@ snakemake --cores all --snakefile src/quality_control.Snakefile
 ```{bash}
 snakemake --cores all --use-conda --snakefile src/alignment_and_identifcation.Snakefile
 ```
+## Quantification
+## Differential expression analysis
+## Visualization
