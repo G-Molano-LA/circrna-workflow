@@ -1,4 +1,4 @@
-"Run","disease_state","ms_type","sex","patient"
+"Run","group","ms_type","sex","patient"
 "SRR12794726","Healthy controls","Healthy controls","female","HC16"
 "SRR12794723","Healthy controls","Healthy controls","female","HC13"
 "SRR12794716","Healthy controls","Healthy controls","male","HC06"

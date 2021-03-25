@@ -19,8 +19,7 @@ linear_counts <- read.csv("~/alejandra/circrna-workflow/docs/linear_counts.csv",
 circrna_counts <- read.csv("~/alejandra/circrna-workflow/docs/circrna_counts.csv", sep=";")
 
 # Filtering the columns by selected samples
-keep <- metadata$patient
-keep <- as.vector(keep)
+keep <- as.vector(metadata$patient)
 print("The selected samples are:"); print(keep)
 
 
@@ -28,25 +27,25 @@ print("The selected samples are:"); print(keep)
 ## Linears
 linear_info <- linear_counts[c(1:7)] # data frame containing annotation information 
                                     #+ for each gene
-linear_counts <- linear_counts[keep]
-linear_counts <- as.matrix(linear_counts)      # numeric matrix of read counts
+linear_counts <- as.matrix(linear_counts[keep])   # numeric matrix of read counts
 
 
 linear_DGE <- DGEList(counts   = linear_counts, 
                       samples  = metadata, 
-                      group    = metadata$disease_state, 
-                      genes    = linear_info, remove.zeros = T)
-linear_idx <- filterByExpr(linear_DGE)
-linear_DGE <- linear_DGE[linear_idx, keep.lib.sizes=FALSE]
-linear_DGE <- calcNormFactors(linear_DGE)
-design <- model.matrix (~metadata$disease_state + metadata$sex)
+                      genes    = linear_info)
+linear_keep <- filterByExpr(linear_DGE)
+linear_DGE <- linear_DGE[linear_keep, keep.lib.sizes=FALSE]
+linear_DGE <- calcNormFactors(linear_DGE) # Normalizing by effective library 
+                                          #+ sizes (gene expression level)
+                                          #+ The scale factor uses a trimmed mean
+                                          #+ of M-values (TMM) between each pair of samples
+design <- model.matrix (~group+sex, data=linear_DGE$samples)
 
 ## Circulars
 circrna_info <- circrna_counts[c(1:7)]
-circrna_counts <- circrna_counts[keep] 
+circrna_counts <- as.matrix(circrna_counts[keep])
 circrna_DGE <- DGEList(counts = circrna_counts,
                        samples = metadata,
-                       group = metadata$disease_state,
                        genes= circrna_info,
                        lib.size = linear_DGE$samples[, "lib.size"],
                        norm.factors = linear_DGE$samples[, "norm.factors"])
@@ -54,10 +53,16 @@ circrna_DGE <- DGEList(counts = circrna_counts,
 circrna_DGE <- estimateDisp(circrna_DGE, design, robust = TRUE)
 circrna_fit <- glmFit(circrna_DGE, design)
 circrna_lrt <- glmLRT(circrna_fit)
+topTags(circrna_lrt)
+summary(decideTests(circrna_lrt))
+plotMD(circrna_lrt)
+abline(h=c(-1, 1), col="blue")
 
 circrna_df <- circrna_lrt$table
-circrna_order <- order(circrna_lrt$table$PValue)
+pval_order <- order(circrna_lrt$table$PValue)
 circrna_df$DE <- as.vector(decideTestsDGE(circrna_lrt))
-circrna_df <- circrna_df[circrna_order, ]
+circrna_df <- circrna_df[pval_order, ]
 circrna_df$FDR <- p.adjust(circrna_df$PValue, method="fdr")
+circ_order <- circrna_lrt$genes[pval_order, ]
+circrna_df <-cbind(circ_order, circrna_df)
 write.csv(circrna_df, file = "~/alejandra/circrna-workflow/docs/circrna_DE.csv", quote=FALSE)

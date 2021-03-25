@@ -10,6 +10,7 @@ library(dplyr)
 metadata<-read.csv("~/alejandra/circrna-workflow/docs/metadata_all.txt",
                    stringsAsFactors=TRUE) # Download from SRA repository
 metadata_filtered <- subset(metadata,  select=c(Run, disease_state, ms_type, sex))
+metadata_filtered <- metadata_filtered %>% rename(group = disease_state) # must be a colunm name group for edgeR analysis
 metadata_filtered <- metadata_filtered[order(metadata_filtered$Run),]
 
 ## 2. Adding patient id
@@ -46,7 +47,7 @@ metadata_filtered$patient <- patient_id
 
 # 2. Sampling metadata
 set.seed(100)
-metadata_sample <- metadata_filtered %>% group_by(disease_state, sex) %>% slice_sample(n=2)
+metadata_sample <- metadata_filtered %>% group_by(group, sex) %>% slice_sample(n=2)
 metadata_sample
 
 # 3. Download metadata_sample
