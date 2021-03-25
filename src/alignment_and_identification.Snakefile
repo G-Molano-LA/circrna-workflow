@@ -9,7 +9,7 @@ __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 data= [] # creating an empty list
 with open("data/seqs.txt") as fp:
     for line in fp:
-        data.append(line.rstrip('_[1,2]_val_[1,2].fq.gz\n'))
+        data.append(line.rstrip('_[1,2].fq.gz\n'))
 data=list(dict.fromkeys(data)) # removing duplicates
 SAMPLES=data
 ###############################################################################
@@ -64,6 +64,16 @@ rule bwa_index:
         "envs/bwa.yaml"
     shell:
         "bwa index -a {params.algorithm} -p {params.prefix} {input} 1> {output} 2> {log}"
+
+# rule mv_index:
+#     input:
+#         expand("{genome}.fa.{ext}", genome=["chr1"],
+#             ext=["amb", "ann", "bwt", "pac", "sa"])
+#     output:
+#         expand("data/raw_data/{genome}.fa.{ext}", genome=["chr1"],
+#             ext=["amb", "ann", "bwt", "pac", "sa"])
+#     shell:
+#         "mv {input} {output}"
 
 rule bwa_mem:
     input:
