@@ -29,6 +29,8 @@ else
 
 fi
 
-cd ..; cd ..
+cd .. # to data/ directory
 # Redirecting output + Deleting duplicates generated from forward and reverse samples
 printf "%s\n" "${filenames[@]}"> seqs.txt
+
+cd .. # to circrna_workflow/ directory
