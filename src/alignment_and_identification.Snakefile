@@ -5,12 +5,11 @@ min_version("6.0")
 
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 
-# 1. DATA######################################################################
+# 1. READING DATA###############################################################
 data= [] # creating an empty list
-with open("data/seqs.txt") as fp:
-    for line in fp:
-        data.append(line.rstrip('_[1,2].fq.gz\n'))
-data=list(dict.fromkeys(data)) # removing duplicates
+with open("data/seqs.txt") as names:
+    for line in names:
+        data.append(line.rstrip('\n'))
 SAMPLES=data
 ###############################################################################
 

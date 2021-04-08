@@ -7,7 +7,7 @@ library("edgeR")
 library("statmod")
 
 # 1. Data
-metadata<-read.csv("~/alejandra/circrna-workflow/docs/metadata_samples.csv",
+metadata<-read.csv("~/circrna-workflow/docs/metadata_samples.csv",
                    stringsAsFactors=TRUE)
           # data frame containing information for each sample
 
@@ -15,8 +15,8 @@ metadata<-read.csv("~/alejandra/circrna-workflow/docs/metadata_samples.csv",
 #         -O docs/circrna_counts.csv
 #        wget -c https://ftp.ncbi.nlm.nih.gov/geo/series/GSE159nnn/GSE159225/suppl/GSE159225%5FlinearRNA%5FReadcount%5FAllsamples%2Ecsv%2Egz 
 #         -O docs/linear_counts.csv
-linear_counts <- read.csv("~/alejandra/circrna-workflow/docs/linear_counts.csv", sep=";")
-circrna_counts <- read.csv("~/alejandra/circrna-workflow/docs/circrna_counts.csv", sep=";")
+linear_counts <- read.csv("~/circrna-workflow/docs/linear_counts.csv", sep=";")
+circrna_counts <- read.csv("~/circrna-workflow/docs/circrna_counts.csv", sep=";")
 
 # Filtering the columns by selected samples
 keep <- as.vector(metadata$patient)

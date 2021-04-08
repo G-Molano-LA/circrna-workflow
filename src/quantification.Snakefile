@@ -37,6 +37,17 @@ rule ciri2_quant:
         " {params.config} -o {params.output_dir} -p {params.prefix} "
         " --circ {params.pred_results} --tool {params.tool}"
 
+rule DE_prep:
+    input:
+        list=""
+    output:
+    params:
+        lib="",
+        ann="",
+        bsj="circrna_bsj.csv",
+        ratio="circRNA_ratio.csv"
+    shell:
+
 rule circexp_quant:
     input:
         read1=expand("data/trimmed_data/{sample}_1_val_1.fq.gz",sample=SAMPLES),
@@ -56,3 +67,4 @@ rule circexp_quant:
         "CIRIquant -t {threads} -1 {input.read1} -2 {input.read2} --config "
         " {params.config} -o {params.output_dir} -p {input.prefix} "
         " --circ {params.pred_results} --tool {params.tool}"
+rule ciri

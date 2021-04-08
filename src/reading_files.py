@@ -6,8 +6,7 @@
 
 
 data= [] # creating an empty list
-with open("data/seqs.txt") as fp:
-    for line in fp:
-        data.append(line.rstrip('_[1,2]_val_[1,2].fq.gz\n'))
-data=list(dict.fromkeys(data)) # removing duplicates
-print(data)
+with open("data/seqs.txt") as names:
+    for line in names:
+        data.append(line.rstrip('\n'))
+SAMPLES=data

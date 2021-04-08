@@ -1,11 +1,30 @@
-25-03-2020
+
+# 07-04-2020
+1. Down-sampling FASTQ files automatically: `down_sampling.sh` file
+2. Removing an specific termination from filenames: `filenames.sh` file.
+  a. Complementary modification of `reading files` section in `alignment_and_identification.Snakefile`.
+  b. Generation of `seqs.txt` from `filenames.sh` execution
+
+3. DE analysis
+  a. Start with results from `alignment_and_identification` snakefile.
+    a. Prepare input for `circ_DE.R`script.
+  b. consider the option of using CIRIquant.
+    a. Run CIRIquant
+    b. Understand results and prepare them for `circ_DE.R`script. Possible useful script:`prep_DE.py`
+
+4. Data visualization:
+  a. Still trying to work with CircView tool
+
+5. Network and enrichment 
+
+
+
+# 25-03-2020
 
 1. CIRI_simulator.pl = failed to used cause it requires high amounts of RAM
 2. Down-sampling FASTQ files (subsample): seqtk tool = https://github.com/lh3/seqtk
 3. Differential expression analysis: solved.
   3.1. circrna features appears in DE list
-  3.2. CIRIquant performs DE analysis for replicates with CIRI_DE_replicate command,
-      which uses `replicate.py` script. That python script redirects to an R script `CIRI_DE.R`.
-  3.3. CIRIquant DE analysis is only though for experiment design with one factor. Maybe
-      I could introduce the option of defining your design.
+  3.2. CIRIquant performs DE analysis for replicates with CIRI_DE_replicate command, which uses `replicate.py` script. That python script redirects to an R script `CIRI_DE.R`.
+  3.3. CIRIquant DE analysis is only though for experiment design with one factor. Maybe I could introduce the option of defining your design.
   3.4. Integrate DE in the workflow
