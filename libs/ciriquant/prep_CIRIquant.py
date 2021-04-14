@@ -89,12 +89,13 @@ def main():
             content = line.rstrip().split()
             if len(content) == 0:
                 continue
-            sample, sample_file, group = content[0], content[1], content[2]
+            sample, sample_file, group, sex = content[0], content[1], content[2], content[3]
             sample_header, sample_data, sample_info = load_gtf(sample_file)
             all_sample[sample] = sample_header
             all_sample[sample]['Group'] = group
-            if len(content) > 3:
-                all_sample[sample]['Subject'] = content[3]
+            all_sample[sample]['Sex'] = sex
+            if len(content) > 4:
+                all_sample[sample]['Subject'] = content[4]
                 is_paired = 1
             all_circ.update(sample_info)
             all_data[sample] = sample_data
@@ -111,14 +112,14 @@ def main():
             info_out.write(','.join(['"{}"'.format(x) for x in tmp_line]) + '\n')
 
         if is_paired == 0:
-            lib_out.write('Sample,Total,Mapped,Circular,Group\n')
+            lib_out.write('Sample,Total,Mapped,Circular,Group,Sex\n')
         else:
-            lib_out.write('Sample,Total,Mapped,Circular,Group,Subject\n')
+            lib_out.write('Sample,Total,Mapped,Circular,Group,Sex,Subject\n')
 
         for sample in sample_names:
             tmp_sample = all_sample[sample]
             tmp_line = [sample, tmp_sample['Total_Reads'], tmp_sample['Mapped_Reads'],
-                        tmp_sample['Circular_Reads'], tmp_sample['Group'], ]
+                        tmp_sample['Circular_Reads'], tmp_sample['Group'], tmp_sample['Sex'], ]
             if is_paired != 0:
                 if 'Subject' in tmp_sample:
                     tmp_line.append(tmp_sample['Subject'])
