@@ -134,6 +134,8 @@ chmod a+x CircView.jar
 ```
 
 # Workflow
+General idea:
+![image](docs/images/flow_chart.png)
 ## Quality Control
 ![image](docs/images/dag_quality.svg)
 
