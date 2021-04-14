@@ -31,7 +31,7 @@ linear_counts <- as.matrix(linear_counts[keep])   # numeric matrix of read count
 circrna_info <- circrna_counts[c(1:7)]
 circrna_counts <- as.matrix(circrna_counts[keep])
 
-write.csv(linear_info, file = "linear_info.csv", quote=FALSE)
-write.csv(linear_counts, file = "linear_counts_sub.csv", quote=FALSE)
-write.csv(circrna_info, file = "circular_info.csv", quote=FALSE)
-write.csv(circrna_counts, file = "circular_counts_sub.csv", quote=FALSE)
+write.csv(linear_info, file = "~/circrna-workflow/libs/DE_analysis/linear_info.csv", quote=FALSE, row.names = FALSE)
+write.csv(linear_counts, file = "~/circrna-workflow/libs/DE_analysis/linear_counts_sub.csv", quote=FALSE, row.names = FALSE)
+write.csv(circrna_info, file = "~/circrna-workflow/libs/DE_analysis/circular_info.csv", quote=FALSE, row.names = FALSE)
+write.csv(circrna_counts, file = "~/circrna-workflow/libs/DE_analysis/circular_counts_sub.csv", quote=FALSE, row.names = FALSE)

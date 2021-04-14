@@ -1,0 +1,10 @@
+
+###############################################################################
+## Required softwares for running the second module
+## Author: G. Molano, LA
+###############################################################################
+name: ciri2
+channels:
+  - conda-forge
+dependencies:
+  - perl=>5.32.0

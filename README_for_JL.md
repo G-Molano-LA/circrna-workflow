@@ -12,27 +12,19 @@ author: G. Molano, LA.
   2. [Alignment and identification](#alignment-and-identification)
 
 ***
+The aim of this file is guide you in the installation and execution of the workflow.
 
 # Installation
 This is the recommended way to install the required dependencies for a proper performance of the workflow. A conda environment  will be create to install and manage all the required programmes.
 
 ## Setting your working directory
-First of all, create a directory for containing all your data and specific files:
-```{bash}
-mkdir -p circrna_workflow/data/raw_data/samples \
-         circrna_workflow/src \
-         circrna_workflow/data/mapped_data 
+First of all, download and unzip the `circrna_workflow` folder from [OneDrive](https://idibell-my.sharepoint.com/:f:/g/personal/lgonzalezm_idibell_cat/EpOC5lhue0hImsDyT5SxBegBLxDD2Hi-kdpc2pM75YogVg?e=Ny79Vn).
 
-cd circrna_workflow/
-wget link-to-snakefiles
-```
-Of note, when creating your workflow directory, you must ensure that it contains the subdirectories  `src/`, `data/raw_data/samples/` and `data/mapped_data/`. Otherwise, errors can appear all of a sudden.
-
-Secondly, move your raw reads to `circrna_workflow/data/raw_data/samples` directory and create a file with your filenames.
+For the correct performance of the script, we have to generate a text file containing the filenames of our samples. To facilitate the process, we are going to run a bash script, indicating the termination of our samples.
 ```{bash}
-mv  *.fastq.gz /path/to/circrna_workflow/data/raw_data/samples
-cd circrna_workflow/data/raw_data/
-ls samples/ > seqs.txt
+cd path/to/circrna_workflow/
+chmod +x src/filenames.sh
+./src/filenames.sh _sub_[1,2]_val_[1,2].fq.gz
 ```
 
 ## Dependencies
@@ -104,47 +96,12 @@ conda install mamba
 mamba install -c conda-forge -c bioconda snakemake
 ```
 
-## CircView
-
-1. Go [here](https://www.java.com/es/download/linux_manual.jsp) and downloand the installation file. Afterwards, follow the instructions to install java virtual machine
-```{bash}
-sudo mkdir /usr/java                           # create a directory
-cd /usr/java                                   # move to dir
-mv ~/Downloands/jre-8u281-linux-x64.tar.gz .  
-sudo tar zxvf jre-8u281-linux-x64.tar.gz       # decompress
-rm *.tar.gz
-```
-2. Downloand and decompress `CircView.tar.gz` from [github repository](https://github.com/GeneFeng/CircView)
-```{bash}
-wget https://github.com/GeneFeng/CircView/raw/master/CircView.tar.gz
-tar zxvf CircView.tar.gz
-rm *.tar.gz
-```
-3. Downloand data
-```{bash}
-mkdir test_data
-mv test_data
-wget https://github.com/GeneFeng/CircView/raw/master/testdata/human.tar.gz
-tar zxvf human.tar.gz
-rm *.tar.gz
-```
-4. Execute `CircView.jar`. Go and double click.
-```{bash}
-chmod a+x CircView.jar
-```
-
 # Workflow
-## Quality Control
-![image](docs/images/dag_quality.svg)
-
-```{bash}
-snakemake --cores all --snakefile src/quality_control.Snakefile
-```
 ## Alignment and Identification
 ![image](docs/images/dag_aln.svg)
 ```{bash}
-snakemake --cores all --use-conda --snakefile src/alignment_and_identifcation.Snakefile
+cd /path/to/circrna_workflow
+snakemake --cores all \
+          --use-conda \
+          --snakefile src/alignment_and_identification.Snakefile
 ```
-## Quantification
-## Differential expression analysis
-## Visualization
