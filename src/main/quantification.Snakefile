@@ -53,54 +53,38 @@ rule write_config_yaml:
     script:
         "src/utils/creating_yaml_file.py"
 
-rule ciri2_quant:
+rule ciriquant:
     input:
         read1=lambda wildcards: "data/trimmed_data/"+wildcards.sample+"_1_val_1.fq.gz",
         read2=lambda wildcards: "data/trimmed_data/"+wildcards.sample+"_2_val_2.fq.gz",
         config="libs/ciriquant/config_file.yaml"
     output:
-        "libs/ciriquant/ciri_quantification_{sample}.gtf"
+        circular="libs/ciriquant/ciri2/{sample}.gtf", # REVISAR si este output se genera en este directorio
+        bam=temp("libs/ciriquant/align/{sample}.bam"),
+        sorted_bam=temp("libs/ciriquant/align/{sample}.sorted.bam"),
+        sam_index=temp("libs/ciriquant/align/{sample}.sorted.bam.bai"),
+        linear_transcripts_name="libs/ciriquant/gene/{sample}_cov.gtf",
+        linear="libs/ciriquant/gene/{sample}_out.gtf",
+        gene_abundance="libs/ciriquant/gene/{sample}_genes.list"
     threads: 4
     params:
         tool="CIRI2",
         output_dir="libs/ciriquant/",
-        pred_results = lambda wildcards : "libs/ciri2/"+wildcards.sample+"_results",
-        prefix = "ciri_quantification_{sample}"
+        pred_results = lambda wildcards : "libs/ciri2/"+wildcards.sample+"_results"
     conda:
         "envs/ciriquant.yaml"
     shell:
         "CIRIquant -t {threads} -1 {input.read1} -2 {input.read2} --config "
-        " {input.config} -o {params.output_dir} -p {params.prefix} "
-        " --circ {params.pred_results} --tool {params.tool}"
-
-rule circexp_quant:
-    input:
-        read1=lambda wildcards: "data/trimmed_data/"+wildcards.sample+"_1_val_1.fq.gz",
-        read2=lambda wildcards: "data/trimmed_data/"+wildcards.sample+"_2_val_2.fq.gz",
-        config="libs/ciriquant/config_file.yaml"
-    output:
-        "libs/ciriquant/circexp_quantification_{sample}.gtf"
-    threads: 4
-    params:
-        tool="CIRCexplorer2",
-        output_dir="libs/ciriquant/",
-        pred_results=lambda wildcards : "libs/circexplorer2/"+wildcards.sample+"_circularRNA_known.txt",
-        prefix="circexp_quantification"
-    conda:
-        "envs/ciriquant.yaml"
-    shell:
-        "CIRIquant -t {threads} -1 {input.read1} -2 {input.read2} --config "
-        " {input.config} -o {params.output_dir} -p {params.prefix} "
+        " {input.config} -o {params.output_dir}"
         " --circ {params.pred_results} --tool {params.tool}"
 
 rule end:
     input:
-        ciri=expand("libs/ciriquant/ciri_quantification_{sample}.gtf", sample=SAMPLES),
-        cirexp=expand("libs/ciriquant/circexp_quantification_{sample}.gtf", sample=SAMPLES)
+        ciri=expand("libs/ciriquant/ciri2/{sample}.gtf", sample=SAMPLES)
     output:
         "generated.txt"
     shell:
-        "printf {input.ciri} {input.cirexp} > {output}"
+        "printf {input.ciri} > {output}"
 
 # rule DE_prep:
 #     input:
