@@ -4,7 +4,8 @@
 ## R script for sampleling
 ## Author: G. Molano, LA
 ################################################################################
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
+
 
 # 1. Metadata
 metadata<-read.csv("~/circrna-workflow/docs/metadata_all.txt",
@@ -42,13 +43,12 @@ for(i in 1:20){
 }
 
 patient_id <- c(rrms, spms, hc)
-print(patient_id)
 metadata_filtered$patient <- patient_id
 
 # 2. Sampling metadata
 set.seed(100)
 metadata_sample <- metadata_filtered %>% group_by(group, sex) %>% slice_sample(n=2)
+metadata_sample <- metadata_sample[order(metadata_sample$Run), ]
 metadata_sample
-
 # 3. Download metadata_sample
-write.csv(metadata_sample, file="~/circrna-workflow/docs/metadata_samples.csv", row.names=F)
+write.csv(metadata_sample, file="~/circrna-workflow/libs/DE_analysis/metadata_samples.csv", row.names=F)
