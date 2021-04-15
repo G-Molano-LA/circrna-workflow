@@ -19,15 +19,15 @@ dir_path = dir_path.stdout.rstrip('\n')
 # Creating dictionary for yaml file
 dic_yaml = {'name'      : 'GRCh38',
             'tools'     :
-                {'bwa'      : dir_path + '/' + conda_path + '/bin/bwa',
-                 'hisat2'   : dir_path + '/' + conda_path + '/bin/hitsa2',
-                 'stringtie': dir_path + '/' + conda_path + '/bin/stringtie',
-                 'samtools' : dir_path + '/' + conda_path + '/bin/samtools'},
+                {'bwa'      : f'{dir_path}/{conda_path}{/bin/bwa}',
+                 'hisat2'   : f'{dir_path}/{conda_path}{/bin/hisat2}',
+                 'stringtie': f'{dir_path}/{conda_path}{/bin/stringtie}',
+                 'samtools' : f'{dir_path}/{conda_path}{/bin/samtools}'},
             'reference' :
-                {'fasta'         : dir_path + '/data/raw_data/GRCh38.fa',
-                 'gft'           : dir_path + '/data/raw_data/GRCh38_ann.gtf',
-                 'bwa_index'     : dir_path + '/data/raw_data/bwa/GRCh38',
-                 'hitsat2_index' : dir_path + 'data/raw_data/hisat2/GRCh38'}
+                {'fasta'         : f'{dir_path}/data/raw_data/GRCh38.fa',
+                 'gft'           : f'{dir_path}/data/raw_data/GRCh38_ann.gtf',
+                 'bwa_index'     : f'{dir_path}/data/raw_data/bwa/GRCh38',
+                 'hitsat2_index' : f'{dir_path}/data/raw_data/hisat2/GRCh38'}
                  }
 
 # Writing YAML file
