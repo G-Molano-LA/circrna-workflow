@@ -6,6 +6,7 @@
 suppressPackageStartupMessages(library("edgeR"))
 suppressPackageStartupMessages(library("statmod"))
 suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("dplyr"))
 
 # specify our desired options in a list
 # by default OptionParser will add an help option equivalent to
@@ -15,15 +16,17 @@ suppressPackageStartupMessages(library("optparse"))
 option_list <- list(
   make_option(c("-d", "--design"), action="store", type="character", default=NULL,
                 help="experimental design", metavar="design"),
-  make_option(c("-m", "--metadata"), type="character", default=NULL,
-              help="metadata file", metavar="FILE1" ),
-  make_option(c("-c", "--circ_counts"), default=NULL, help="circular counts file",
+  make_option(c("--lib"), type="character", default=NULL,
+              help="File containing library information about samples:
+              sample names, total reads, mapped reads, circular reads, Group and Sex", metavar="FILE1" ),
+  make_option(c("-c", "--circ_counts"), default=NULL, help="Numeric matrix of circular counts",
               metavar="FILE2" ),
-  make_option(c("-l", "--linear_counts"), default=NULL, help="linear counts file",
+  make_option(c("-l", "--linear_counts"), default=NULL, help="Numeric matrix of linear counts",
               metavar="FILE3" ),
-  make_option(c("-g", "--gene"), default=NULL, help="gene information file",
-              metavar="FILE4"),
-  make_option(c("-C", "--circ_info"), default=NULL, help="circular information file",
+  #make_option(c("-g", "--gene"), default=NULL, help="gene information file", metavar="FILE4"),
+   # mirar si aquesta opció es possible incorporarla en funció de la info que hagi en gene_matrix_counts.csv
+  make_option(c("-C", "--circ_info"), default=NULL, help="Circular information file,
+    containning circRNA annotation information.",
               metavar="FILE5"),
   make_option(c("-o", "--out"), default="circrna_edge_DE.csv", help="output file",
               metavar="output")
@@ -32,19 +35,19 @@ option_list <- list(
 parser=OptionParser(option_list=option_list)
 opt=parse_args(parser)
 
-if(is.null(opt$design)|| is.null(opt$metadata) || is.null(opt$circ_counts) ||
-  is.null(opt$linear_counts) || is.null(opt$gene) || is.null(opt$circ_info)){
+if(is.null(opt$design)|| is.null(opt$lib) || is.null(opt$circ_counts) ||
+  is.null(opt$linear_counts) || is.null(opt$circ_info)){
   print_help(parser)
-  stop("Options --design/--metadata/--circ_counts/--linear_counts/--gene/--circ_info
+  stop("Options --design/--lib/--circ_counts/--linear_counts/--circ_info
    must be supplied\n", call.=FALSE)
 
 }else{
   cat("The supplied arguments are the followings:\n")
   cat(paste(" Experimental design      = ", opt$design, "\n",
-            "Metadata file             = ", opt$metadata, "\n",
+            "Library file             = ", opt$lib, "\n",
             "Circular count file       = ", opt$circ_counts, "\n",
             "Linear count file         = ", opt$linear_counts, "\n",
-            "Gene information file     = ", opt$gene, "\n",
+            #"Gene information file     = ", opt$gene, "\n",
             "Circular information file = ", opt$circ_info, "\n",
             "Output file               = ", opt$out, "\n"
           )
@@ -53,29 +56,29 @@ if(is.null(opt$design)|| is.null(opt$metadata) || is.null(opt$circ_counts) ||
 
 # 1. Load data
 print("Loading data...")
-metadata<-read.csv(opt$metadata,stringsAsFactors=TRUE) # data frame containing information
-                                                      #+ for each sample
-# Make sure that in your metadata information there is a column names' condition'
 
-gene_info <- read.csv(opt$gene) # data frame containing annotation
-                                            #+ information for each gene
-circ_info <- read.csv(opt$circ_info) # data frame containing annotation
-                                            #+ information for each circular RNA
-circrna_counts <-as.matrix(read.csv(opt$circ_counts))  # numeric matrix of circular counts
-linear_counts <- as.matrix(read.csv(opt$linear_counts)) # numeric matrix of linear counts
-# shell: wget -c https://ftp.ncbi.nlm.nih.gov/geo/series/GSE159nnn/GSE159225/suppl/GSE159225%5FcircRNA%5FReadcount%5FAllsamples%2Ecsv%2Egz
-#         -O docs/circrna_counts.csv
-#        wget -c https://ftp.ncbi.nlm.nih.gov/geo/series/GSE159nnn/GSE159225/suppl/GSE159225%5FlinearRNA%5FReadcount%5FAllsamples%2Ecsv%2Egz
-#         -O docs/linear_counts.csv
+lib_mtx <-read.csv(opt$lib, row.names = 1)
+#gene_info <- read.csv(opt$gene) # Annotation information for each gene. Segurament la obtindre de la matriu de linear counts
+circ_info <- read.csv(opt$circ_info)
+circrna_counts <-as.matrix(read.csv(opt$circ_counts))
+linear_counts <- as.matrix(read.csv(opt$linear_counts))
+linear_counts <- linear_counts[ , rownames(lib_mtx)]
+
+lib_mtx<- lib_mtx %>% rename(Group = group)
+lib_mtx<- lib_mtx %>% rename(Sex = sex)
+metadata <- cbind(lib_mtx['group'], lib_mtx['sex'])
+metadata$group <- as.factor(metadata$group)
+metadata$sex <- as.factor(metadata$sex)
 
 print("Done.")
+
 # 2. The DGEList data class
-## Linears
+# 2.1. Linears
 print("Normalizing circular counts by effective library sizes... The scale factor uses a trimmed mean of M-values (TMM) between each pair of samples.")
 
 linear_DGE <- DGEList(counts   = linear_counts,
-                      samples  = metadata,
-                      genes    = gene_info)
+                      samples = metadata)
+                      #genes    = gene_info)
 linear_keep <- filterByExpr(linear_DGE)
 linear_DGE <- linear_DGE[linear_keep, keep.lib.sizes=FALSE]
 linear_DGE <- calcNormFactors(linear_DGE) # Normalizing by effective library
@@ -84,7 +87,7 @@ linear_DGE <- calcNormFactors(linear_DGE) # Normalizing by effective library
 
 opt$design <- as.formula(opt$design)
 design <- model.matrix (object=opt$design, data=linear_DGE$samples)
-print("Done design")
+
 ## Circulars
 circrna_DGE <- DGEList(counts = circrna_counts,
                        samples = metadata,
@@ -111,4 +114,4 @@ circrna_df$FDR <- p.adjust(circrna_df$PValue, method="fdr")
 circ_order <- circrna_lrt$genes[pval_order, ]
 circrna_df <-cbind(circ_order, circrna_df)
 write.csv(circrna_df, file =opt$out, quote=FALSE)
-print(paste("DE analysis done. Output file created: ", opt$out))
+print(paste("Differential Expression analysis done. Output file created: ", opt$out))
