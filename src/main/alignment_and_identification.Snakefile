@@ -16,10 +16,10 @@ SAMPLES=data
 
 rule results:
     input:
-        "libs/ciri2/ciri2_merged_results",
-        "libs/circexplorer2/circexplorer2_merged_results.txt"
-
-
+        results = expand("libs/identification/{sample}_coincident_circRNAs.txt",
+            sample=SAMPLES),
+        diagrams = expand("libs/identification/{sample}_venn_diagram.png",
+            samples = SAMPLES)
 
 """
 You need to have at least one rule (target rule) that does not produce any output,
@@ -97,7 +97,7 @@ rule bwa_mem:
 
 rule dw_ciri2:
     output:
-        "libs/ciri2/CIRI2.pl"
+        "libs/identification/ciri2/CIRI2.pl"
     message:
         " Downloanding alignment tool CIRI2..."
     shell:
@@ -105,11 +105,11 @@ rule dw_ciri2:
 
 rule ciri2_id:
     input:
-        ciri="libs/ciri2/CIRI2.pl",
+        ciri="libs/identification/ciri2/CIRI2.pl",
         sam="data/mapped_data/{sample}.sam",
         ref="data/raw_data/GRCh38.fa" # no acepta archivo comprimido
     output:
-        "libs/ciri2/{sample}_results"
+        "libs/identification/ciri2/{sample}_results"
     message:
         "CIRI2:starting circRNA identification in {sample} file"
     log:
@@ -119,25 +119,12 @@ rule ciri2_id:
     shell:
         "perl {input.ciri} -I {input.sam} -O {output} -F {input.ref} 2> {log}"
 
-rule ciri2_merge:
-    input:
-        expand("libs/ciri2/{sample}_results", sample=SAMPLES)
-    output:
-        "libs/ciri2/ciri2_merged_results"
-    message:
-        "Merging results from ciri2 identification ({input}) in one file: {output}"
-    params:
-        algorithm="ciri2",
-        script = "src/utils/circ_merge.py"
-    shell:
-        "python3 {params.script} -f {input} -a {params.algorithm} > {output}"
-
 
 rule circexplorer2_id:
     input:
         sam="data/mapped_data/{sample}.sam"
     output:
-        "libs/circexplorer2/{sample}_back_spliced_junction.bed"
+        "libs/identification/circexplorer2/{sample}_back_spliced_junction.bed"
     log:
         "logs/circexplorer2/{sample}_parse.log"
     params:
@@ -151,11 +138,11 @@ rule circexplorer2_id:
 
 rule circexplorer2_annotation:
     input:
-        bsj="libs/circexplorer2/{sample}_back_spliced_junction.bed",
+        bsj="libs/identification/circexplorer2/{sample}_back_spliced_junction.bed",
         ref="data/raw_data/GRCh38.fa",
         gene="data/raw_data/GRCh38_ann.gff"
     output:
-        "libs/circexplorer2/{sample}_circularRNA_known.txt"
+        "libs/identification/circexplorer2/{sample}_circularRNA_known.txt"
     log:
         "logs/circexplorer2/{sample}_annotate.log"
     message:
@@ -167,15 +154,25 @@ rule circexplorer2_annotation:
         "CIRCexplorer2 annotate -r {input.gene} -g {input.ref} -b {input.bsj} "
         "-o {output} 2> {log}"
 
-rule circexplorer2_merge:
+rule select_coincidences:
     input:
-        expand("libs/circexplorer2/{sample}_circularRNA_known.txt", sample=SAMPLES)
+        ciri2="libs/identification/ciri2/{sample}_results",
+        circexplorer2= "libs/identification/circexplorer2/{sample}_circularRNA_known.txt"
     output:
-        "libs/circexplorer2/circexplorer2_merged_results.txt"
-    message:
-        "Merging results from circexplorer2 identification ({input}) in one file: {output}"
-    params:
-        algorithm="circexplorer2",
-        script="src/utils/circ_merge.py"
+        "libs/identification/{sample}_coincident_circRNAs.txt",
+        "libs/identification/{sample}_venn_diagram.png"
     shell:
-        "python3 {params.script} -f {input} -a {params.algorithm} > {output}"
+        "Rscript src/utils/select_coincidents.R \
+         --ciri2 {input.ciri2} \
+         --circexplorer2 {input.circexplorer2}"
+
+rule end:
+    input:
+        results = expand("libs/identification/{sample}_coincident_circRNAs.txt",
+            sample=SAMPLES),
+        diagrams = expand("libs/identification/{sample}_venn_diagram.png",
+            samples = SAMPLES)
+    output:
+        "generated.txt"
+    shell:
+        "printf {input.results} > {output}"
