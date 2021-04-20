@@ -18,7 +18,7 @@ rule results:
     input:
         results = expand("libs/identification/{sample}_coincident_circRNAs.txt",
             sample=SAMPLES),
-        diagrams = expand("libs/identification/{sample}_venn_diagram.png",
+        diagrams = expand("libs/plots/{sample}_venn_diagram.png",
             samples = SAMPLES)
 
 """
@@ -160,7 +160,7 @@ rule select_coincidences:
         circexplorer2= "libs/identification/circexplorer2/{sample}_circularRNA_known.txt"
     output:
         "libs/identification/{sample}_coincident_circRNAs.txt",
-        "libs/identification/{sample}_venn_diagram.png"
+        "libs/plots/{sample}_venn_diagram.png"
     shell:
         "Rscript src/utils/select_coincidents.R \
          --ciri2 {input.ciri2} \
@@ -170,7 +170,7 @@ rule end:
     input:
         results = expand("libs/identification/{sample}_coincident_circRNAs.txt",
             sample=SAMPLES),
-        diagrams = expand("libs/identification/{sample}_venn_diagram.png",
+        diagrams = expand("libs/plots/{sample}_venn_diagram.png",
             samples = SAMPLES)
     output:
         "generated.txt"
