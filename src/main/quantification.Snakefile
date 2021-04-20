@@ -85,14 +85,3 @@ rule end:
         "generated.txt"
     shell:
         "printf {input.ciri} > {output}"
-
-# rule DE_prep:
-#     input:
-#         list=""
-#     output:
-#     params:
-#         lib="",
-#         ann="",
-#         bsj="circrna_bsj.csv",
-#         ratio="circRNA_ratio.csv"
-#     shell:

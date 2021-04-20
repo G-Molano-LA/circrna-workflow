@@ -44,7 +44,7 @@ rule edgeR:
     input:
         script="src/main/tools/circ_DE.R",
         lib_info="lib/DE_analysis/library_info.csv",
-        circ_info="libs/DE_analysis/circular_info.csv"
+        circ_info="libs/DE_analysis/circular_info.csv",
         circ_counts="libs/DE_analysis/circular_count_matrix.csv",
         linear_counts="libs/DE_analysis/gene_count_matrix.csv",
         linear_info="libs/DE_analysis/linear_info.csv" # comprovar si aquest es genera
