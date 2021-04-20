@@ -1,15 +1,19 @@
 #!/bin/R
 
+###############################################################################
+## R script for visualization data
+## Author: G. Molano, LA
+###############################################################################
+
 # Dependencies
 suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("ggrepel"))
 suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("optparse"))
-suppressPackageStartupMessages(library("VennDiagram"))
+suppressPackageStartupMessages(library("reshape2"))
 
 # 1. Input
 option_list <- list(
-  make_option(c("-d", "--data"), default=NULL, help="data file", metavar="DATA"),
   make_option(c("-p", "--pvalue"), type="numeric", default=0.05,
               help="pvalue", metavar="pval" ),
   make_option(c("-f", "--foldchange"),type="numeric", default=1.5, help="foldchange",
@@ -19,31 +23,26 @@ option_list <- list(
 parser=OptionParser(option_list=option_list)
 opt=parse_args(parser)
 
-if(is.null(opt$data)){
-  print_help(parser)
-  stop("Options --data must be supplied.\n", call.=FALSE)
-}
 
 # 2. Data treatment
-data <- read.csv(opt$data, row.names=1)
+DE_data <- read.csv("libs/DE_analysis/circrna_DE.csv", row.names=1)
 pval = -log2(opt$pvalue)
 FC = log2(opt$foldchange)
 
-data["minusLog2Pvalue"] <- -log2(data$PValue)
-data["group"] <- "Not_Significant"
-data[which(data['minusLog2Pvalue'] > pval & data["logFC"] > FC ),"group"] <- "Up"
-data[which(data['minusLog2Pvalue'] > pval & data["logFC"] < -FC ),"group"] <- "Down"
-data$group <- as.factor(data$group)
+DE_data["minusLog2Pvalue"] <- -log2(DE_data$PValue)
+DE_data["group"] <- "Not_Significant"
+DE_data[which(DE_data['minusLog2Pvalue'] > pval & DE_data["logFC"] > FC ),"group"] <- "Up"
+DE_data[which(DE_data['minusLog2Pvalue'] > pval & DE_data["logFC"] < -FC ),"group"] <- "Down"
+DE_data$group <- as.factor(DE_data$group)
 
-top10<- data$logFC[1:10]
-data <- data %>%
-  mutate(plotname=ifelse(logFC %in% top10, name, "" ))
+# 2.1. Top10 circRNAs (by pvalue), which names will be ploted
+top20<- DE_data$id[1:20]
+DE_data <- DE_data %>%
+  mutate(plotname=ifelse(id %in% top20, name, "" ))
 
-
-# 3. Volcano Plot
-
+# 3. VOLCANO PLOT
 volcano_plot = function(data){
-  df <- data
+  df <- DE_data
   plot <- ggplot(df, aes(x = logFC, y = minusLog2Pvalue, color = group)) +
     geom_point(size=0.5)+
     scale_colour_manual(values=c("red", "grey", "blue"))+
@@ -54,36 +53,47 @@ volcano_plot = function(data){
     ylab("-log10(p-value)")
 
     switch(opt$output,
-      pdf = ggsave("volcano_plot.pdf",plot),
-      svg = ggsave("volcano_plot.svg",plot)
+      pdf = ggsave("libs/plots/volcano_plot.pdf",plot),
+      svg = ggsave("libs/plots/volcano_plot.svg",plot)
     )
 
 }
 
-volcano_plot(data=data)
+volcano_plot(data=DE_data)
 
-# 4. Venn Diagram
-# venn.diagram(
-#   x=list(ciri_list, circexplorer-list), # data from ciri and circexplorer merged results
-#   category.names=c("CIRI2", "CircExplorer2"),
-#   filename="venn_diagram.png",
-#   output=TRUE,
-#   fill=c("lightblue", "palegreen")
-# )
+# 4. HEATMAP
+# 4.1. Load NORMALIZED circular count matrix
+norm_counts <- read.csv("libs/network/TMM_counts.txt", sep = "", row.names=1)
 
-# 5. HeatMap
-# Load data
-# data <- read.csv("~/circrna-workflow/docs/circrna_counts.csv", sep=";")
-#     # all counts: not available yet --> output from merge ciri and cirexplorer results
-#     #           or from merged results from ciriquant
-#
-# top10 <- data$id[1:10] # data from DE analysis
-# data2 <- filter(data, id %in% top10)
-# colnames <- data2$id
-# data2 <- select(data2, !c(id, X.chrom, start, end, score, strand, name))
-#
-# data2 <- as.matrix(data2)
-# data2 <- t(data2)
-# colnames(data2) <- colnames
-#
-# heatmap(data2, Colv = NA, Rowv = NA, scale = "column") # scaling by genes
+# 4.2. Plot top10 DE (by pvalue) circular RNAs
+norm_counts1 <- filter(norm_counts, rownames(norm_counts) %in% top20)
+norm_counts1 <- as.matrix(norm_counts1)
+norm_counts1 <- melt(norm_counts1)
+colnames(norm_counts1) <- c("Circular_RNAs", "Samples", "value")
+
+ggplot(norm_counts1, aes(x=Samples, y=Circular_RNAs, fill=value)) +
+  geom_tile(colour = "white") +
+  labs(fill = "TMM counts") +
+  scale_fill_gradient(low="white", high = "steelblue") +
+  geom_text(aes(label = round(value, 3)))
+
+# 5. BOXPLOT
+# 5.1
+ggplot(norm_counts1, aes(x = factor(Samples), y = value, fill = factor(Samples))) +
+  geom_boxplot() +
+  geom_jitter(color="grey", size=0.4, alpha=0.9) +
+  labs(fill = "Samples") +
+  xlab("Samples") +
+  ylab("Normalized TMM counts")
+
+# 6. VIOLIN PLOT
+ggplot(norm_counts1, aes(x=factor(Samples), y = value, fill = factor(Samples))) +
+  geom_violin() +
+  labs(fill = "Samples") +
+  xlab("Samples") +
+  ylab("Normalized TMM counts")
+
+
+ggplot(norm_counts1, aes(x=value)) +
+  geom_histogram() +
+  xlab("Number of reads")

@@ -57,7 +57,7 @@ write.table(coincidences, file="libs/identification/coincident_circRNAs.txt",
 venn.diagram(
   x = list(ciri_results$circRNA_ID, circexp_results$circRNA_ID),
   category.names = c("CIRI2", "CircExplorer2"),
-  filename = 'venn_diagram.png',
+  filename = 'libs/plots/venn_diagram.png',
   output = TRUE,
 
   # Output features
