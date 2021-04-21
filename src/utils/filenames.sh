@@ -25,7 +25,7 @@ else
     done
   # Deleting duplicates generated from forward and reverse samples
   filenames=($(printf "%s\n" "${arr[@]}" | sort -u))
-  echo "The generated samaple names are stored in 'seqs.txt' file. Sample names: ${filenames[@]}"
+  echo "The generated samaple names are stored in 'data/seqs.txt' file. Sample names: ${filenames[@]}"
 
 fi
 

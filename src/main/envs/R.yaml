@@ -1,0 +1,13 @@
+###############################################################################
+## Configuration file for creating circrna_env
+## Author: G. Molano, LA
+###############################################################################
+name : r-environment
+dependencies:
+  - r-essentials
+  - r-base
+  - r-ggrepel
+  - r-venndiagram
+  - r-optparse
+  - r-factoextra
+  - r-svglite

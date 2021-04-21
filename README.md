@@ -21,7 +21,7 @@ First of all, create a directory for containing all your data and specific files
 ```{bash}
 mkdir -p circrna_workflow/data/raw_data/samples \
          circrna_workflow/src \
-         circrna_workflow/data/mapped_data 
+         circrna_workflow/data/mapped_data
 
 cd circrna_workflow/
 wget link-to-snakefiles
@@ -56,7 +56,6 @@ To install Anaconda distribution on Linux follow the steps. For toher operating 
 3. Run:
 ```{bash}
 bash Anaconda-latest-Linux-x86_64.sh
-conda update
 ```
 4. Follow the prompts on the installer screens. In front of any doubt, accept the defaults settings. They can be changed later.
 5. To make the changes take effect, close and re-open your terminal window.
@@ -71,13 +70,8 @@ sudo nano /etc/profile
 ```{bash}
 export PATH=$PATH:/your/path/to/anaconda3/bin:/your/path/to/anaconda3/condabin
 ```
-This file will be run upon login for all current and future users, affecting global settings. To modify the PATH variable for a specific user:
-```{bash}
-sudo nano ~/.profile
+This file will be run upon login for all current and future users, affecting global settings.
 
-# Add at the top of the profile file:
-export PATH=$PATH:/your/path/to/anaconda3/bin
-```
 3. Reload the profile file:
 ```{bash}
 source /etc/profile
@@ -86,6 +80,17 @@ source /etc/profile
 ```
 $PATH
 ```
+
+---
+To modify the PATH variable for a specific user:
+```{bash}
+sudo nano ~/.profile
+
+# Add at the top of the profile file:
+export PATH=$PATH:/your/path/to/anaconda3/bin
+```
+---
+
 #### Conda channels
 There are several available repositories (called `channels`) to install packages. To add this channels:
 ```{bash}
@@ -140,12 +145,12 @@ General idea:
 ![image](docs/images/dag_quality.svg)
 
 ```{bash}
-snakemake --cores all --snakefile src/quality_control.Snakefile
+snakemake --cores number --snakefile src/main/quality_control.Snakefile
 ```
 ## Alignment and Identification
 ![image](docs/images/dag_aln.svg)
 ```{bash}
-snakemake --cores all --use-conda --snakefile src/alignment_and_identifcation.Snakefile
+snakemake --cores number --use-conda --snakefile src/main/alignment_and_identifcation.Snakefile
 ```
 ## Quantification
 ## Differential expression analysis

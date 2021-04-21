@@ -24,7 +24,7 @@ For the correct performance of the script, we have to generate a text file conta
 ```{bash}
 cd path/to/circrna_workflow/
 chmod +x src/filenames.sh
-./src/filenames.sh _sub_[1,2]_val_[1,2].fq.gz
+./src/utils/filenames.sh _sub_[1,2]_val_[1,2].fq.gz
 ```
 
 ## Dependencies

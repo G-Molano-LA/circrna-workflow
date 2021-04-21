@@ -25,8 +25,8 @@ if (is.null(opt$ciri2) || is.null(opt$circexplorer2)){
 }
 
 # 1. Load data
-ciri_results <- read.csv("CIRI2/test_data/results", sep='\t')
-circexp_results <- read.csv("CIRCexplorer2/circ_fusion.txt", sep='\t', header=FALSE)
+ciri_results <- read.csv(opt$ciri2, sep='\t')
+circexp_results <- read.csv(opt$circexplorer2, sep='\t', header=FALSE)
 
 # 2. Add circRNA_ID variable in circexplorer2 dataframe
 colnames(circexp_results) <- c("chrom", "start", "end", "name", "score", "strand",
