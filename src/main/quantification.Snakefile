@@ -30,6 +30,7 @@ rule hisat2_index:
     threads: 16
     conda:
        "envs/ciriquant.yaml"
+    priority: 10
     shell:
       "hisat2-build -p {threads} {input} {params.prefix}"
 
@@ -40,6 +41,7 @@ rule reference_fai_index:
         "data/raw_data/hisat2/GRCh38.fa.fai"
     conda:
         "envs/ciriquant.yaml"
+    priority: 10
     shell:
         "samtools faidx {input} -o {output}"
 
@@ -50,6 +52,7 @@ rule write_config_yaml:
         "data/raw_data/hisat2/GRCh38.fa.fai"
     output:
         config="libs/ciriquant/config_file.yaml"
+    priority: 9
     script:
         "src/utils/creating_yaml_file.py"
 
@@ -66,13 +69,14 @@ rule ciriquant:
         linear_transcripts_name="libs/ciriquant/gene/{sample}_cov.gtf",
         linear="libs/ciriquant/gene/{sample}_out.gtf",
         gene_abundance="libs/ciriquant/gene/{sample}_genes.list"
-    threads: 4
+    threads: 5
     params:
         tool="CIRI2",
         output_dir="libs/ciriquant/",
         pred_results = lambda wildcards : "libs/ciri2/"+wildcards.sample+"_results"
     conda:
         "envs/ciriquant.yaml"
+    priority: 8
     shell:
         "CIRIquant -t {threads} -1 {input.read1} -2 {input.read2} --config "
         " {input.config} -o {params.output_dir}"

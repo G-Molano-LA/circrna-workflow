@@ -44,6 +44,7 @@ rule quality_control:
     # message:
     #     "Starting quality analysis control with FASTQC programm on the "
     #     "following files {input.reads}. Number of threads used are {threads}."
+    priority: 10
     shell:
         "fastqc -t {threads} {input.reads} 2>{log}"
 
@@ -59,6 +60,7 @@ rule multiqc_report:
         replace_old="--force" # revisar que no remplaze al anterior
     log:
         "logs/multiqc/multiqc_1.log"
+    priority: 9
     shell:
         "multiqc {params.pdf} {params.replace_old} {input} 2>{log}"
 
@@ -71,6 +73,7 @@ rule trimming:
              sample=SAMPLES, replicate=["1_val_1", "2_val_2"]),
         txt=expand("data/trimmed_data/{sample}_{replicate}.fastq.gz_trimming_report.txt",
              sample=SAMPLES, replicate=[1,2])
+    priority: 8
     shell:
         "trim_galore --paired -o trimed_data {input}"
 
@@ -88,6 +91,7 @@ rule quality_control_2:
     # message:
     #     "Starting quality analysis control with FASTQC programm on the "
     #     "following files {input.reads}. The number of threads used are {threads}."
+    priority: 7
     shell:
         "fastqc -t {threads} {input.reads} 2>{log}"
 
@@ -103,5 +107,6 @@ rule multiqc_report_2:
         replace_old="--force" # revisar que no remplaze al anterior
     log:
         "logs/multiqc/multiqc_2.log"
+    priority: 6
     shell:
         "multiqc {params.pdf} {params.replace_old} {input} 2>{log}"

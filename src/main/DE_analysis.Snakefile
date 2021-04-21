@@ -14,6 +14,7 @@ rule previous_files:
     output:
         circular_file = "libs/ciriquant/sample.lst"
         linear_file = "libs/ciriquant/sample_gene.lst"
+    priority: 10
     script:
         "src/main/utils/creating_sample_lst.R"
 
@@ -25,6 +26,7 @@ rule prep_CIRIquant:
         circ_info = "libs/DE_analysis/circular_info.csv",
         circ_counts = "libs/DE_analysis/circular_count_matrix.csv",
         ratio = "libs/DE_analysis/junction_ratio.csv"
+    priority: 9
     shell:
         "prep_CIRIquant -i {input.circular_file} \
                         --lib {output.lib_info} \
@@ -33,10 +35,11 @@ rule prep_CIRIquant:
                         --ratio {output.ratio}"
 rule prep_stringtie_output:
     input:
-        script="src/main/tools"
+        script="src/main/tools" # ?¿?¿?
         linear_file = "libs/ciriquant/sample_gene.lst"
     output:
         "libs/DE_analysis/gene_count_matrix.csv"
+    priority: 9
     shell:
         " {input.script} -i {input.linear_file}"
 
