@@ -6,6 +6,7 @@
 ###############################################################################
 library("VennDiagram")
 suppressPackageStartupMessages(library("optparse"))
+library("stringr")
 
 option_list <- list(
   make_option(c("--ciri2"), default=NULL, help="File containing results from CIRI2
@@ -50,14 +51,22 @@ for (ID in circexp_IDs) {
 }
 
 # 4. New circRNA matrix
-write.table(coincidences, file="libs/identification/coincident_circRNAs.txt",
+filename= unlist(str_split(opt$ciri2, "libs/identification/ciri2/"))
+filename <- filename[2]
+filename = unlist(str_split(filename,"_results"))
+filename = filename[1]
+
+path_matrix = paste0("libs/identification/", filename, "_coincident_circRNAs.txt")
+path_venn = paste0("libs/plots/venn_diagrams/", filename, ".png")
+
+write.table(coincidences, file = path_matrix,
   sep = "\t", row.names = FALSE)
 
 # 5. Grafical representation: Venn Diagramm
 venn.diagram(
   x = list(ciri_results$circRNA_ID, circexp_results$circRNA_ID),
   category.names = c("CIRI2", "CircExplorer2"),
-  filename = 'libs/plots/venn_diagram.png',
+  filename = path_venn,
   output = TRUE,
 
   # Output features
@@ -83,4 +92,4 @@ venn.diagram(
 )
 
 cat("Completed!!")
-cat("Output files: coincident_circRNAs.txt && venn_diagram.png")
+paste0("Output files: ", path_matrix, " && ", path_venn)
