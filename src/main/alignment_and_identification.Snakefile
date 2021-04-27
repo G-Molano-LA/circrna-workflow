@@ -18,7 +18,7 @@ rule results:
     input:
         results = expand("libs/identification/{sample}_coincident_circRNAs.txt",
             sample=SAMPLES),
-        diagrams = expand("libs/plots/{sample}_venn_diagram.png", sample = SAMPLES)
+        diagrams = expand("libs/plots/venn_diagrams/{sample}.png", sample = SAMPLES)
 
 """
 You need to have at least one rule (target rule) that does not produce any output,
@@ -27,74 +27,60 @@ first rule, and then checks which rules produce the input of the rule. Then it
 checks, which rules produce the inputs for those rules, etc.
 """
 # 2. ALIGNMENT AND IDENFITICATION #############################################
-
-# rule dw_ref_genome:
+#
+# rule bwa_ref_genome:
 #     output:
-#         "data/raw_data/GRCh38.fa"
-#     # message:
-#     #     " Downloanding reference genome (GRCh38)..."
+#         "data/raw_data/GRCh38.fna"
 #     priority: 10
 #     shell:
-#         "wget -c http://ftp.ensembl.org/pub/release-103/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz "
-#         "-O data/raw_data/GRCh38.fa.gz && gunzip data/raw_data/GRCh38.fa.gz"
+#         "wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_full_analysis_set.fna.gz \
+#           -O data/raw_data/GRCh38.fna.gz \
+#           && gunzip data/raw_data/GRCh38.fna.gz \
+#           && rm data/raw_data/GRCh38.fna.gz"
+#
+# rule bwa_dw_index:
+#     output:
+#         expand("{genome}.fna.{ext}", genome=["GRCh38"], ext=["amb", "ann", "bwt", "pac", "sa"])
+#     priority: 10
+#     shell:
+#         "wget -c  https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_analysis_set.fna.bwa_index.tar.gz \
+#             -O data/raw_data/bwa/GCA_000001405.15_GRCh38_full_analysis_set.fna.bwa_index.tar.gz \
+#           && tar -zxvf data/raw_data/bwa/GCA_000001405.15_GRCh38_full_analysis_set.fna.bwa_index.tar.gz -C data/raw_data/bwa \
+#           && pushd data/raw_data/bwa/ \
+#           && rm GCA_000001405.15_GRCh38_full_analysis_set.fna.bwa_index.tar.gz \
+#           && rename 's/GCA_000001405.15_GRCh38_full_analysis_set/GRCh38/' * \
+#           && popd"
 #
 # rule dw_ref_annotation:
 #     output:
-#         "data/raw_data/GRCh38_ann.gff"
-#     # message:
-#     #     "Downloanding annotation reference ..."
+#         "data/raw_data/GRCh38_ann.gtf"
 #     priority: 10
 #     shell:
-#         "wget -c https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/GRCh38_latest_genomic.gff.gz "
-#         "-O data/raw_data/GRCh38_ann.gff.gz && gunzip {output}"
+#         "wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gtf.gz \
+#         -O data/raw_data/GRCh38_ann.gtf.gz && gunzip data/raw_data/GRCh38_ann.gtf.gz"
 #
-# rule dw_formated_ref_annotation:
-#     output:
-#         "data/raw_data/GRCh38_ann_refFlat.txt"
-#     priority: 10
-#     shell:
-#         "wget -c http://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/refFlat.txt.gz \
-#         -O data/raw_data/GRCh38_ann_refFlat.txt.gz && gunzip {output}"
-#
-# rule bwa_index:
+# rule gtf_to_refFlat:
 #     input:
-#         "data/raw_data/GRCh38.fa"
+#         "data/raw_data/GRCh38_ann.gtf"
 #     output:
-#         expand("{genome}.{ext}", genome=["GRCh38"], ext=["amb", "ann", "bwt", "pac", "sa"])
+#         "data/raw_data/GRCh38_refFlat.txt"
 #     params:
-#         prefix="GRCh38",
-#         algorithm="bwtsw"
-#     # message:
-#     #     "Creating a reference genome index from {params.prefix} file"
-#     log:
-#          "logs/bwa_index/GRCh38.log"
-#     conda:
-#         "envs/bwa.yaml"
-#     priority: 9
+#         script = "src/utils/gtf_to_refFlat.sh"
+#     conda: "envs/circexplorer2.yaml"
 #     shell:
-#         "bwa index -a {params.algorithm} -p {params.prefix} {input} 1> {output} 2> {log}"
-
-rule mv_index:
-    input:
-        expand("{genome}.{ext}", genome=["GRCh38"], ext=["amb", "ann", "bwt", "pac", "sa"])
-    output:
-        expand("data/raw_data/bwa/{genome}.{ext}", genome=["GRCh38"],
-            ext=["amb", "ann", "bwt", "pac", "sa"])
-    priority: 8
-    shell:
-        "mv {input} data/raw_data/bwa/"
+#         "bash {params.script}"
 
 rule bwa_mem:
     input:
         read1=lambda wildcards: "data/trimmed_data/"+wildcards.sample+"_1_val_1.fq.gz",
         read2=lambda wildcards: "data/trimmed_data/"+wildcards.sample+"_2_val_2.fq.gz",
-        index=expand("data/raw_data/bwa/{genome}.{ext}", genome=["GRCh38"],
+        index=expand("data/raw_data/bwa/{genome}.fna.{ext}", genome=["GRCh38"],
             ext=["amb", "ann", "bwt", "pac", "sa"])
     output:
         sam=temp("data/mapped_data/{sample}.sam")
     params:
         score="19", # Do not output alignment with score lower than INT.
-        prefix="data/raw_data/bwa/GRCh38"
+        prefix="data/raw_data/bwa/GRCh38.fna"
     # message:
     #     "Executing bwa_mem aligner with {threads} threads on the following files "
     #     "{input}. All alignment with score lower than {params.score} won't be output."
@@ -120,7 +106,8 @@ rule ciri2_id:
     input:
         ciri="libs/identification/ciri2/CIRI2.pl",
         sam="data/mapped_data/{sample}.sam",
-        ref="data/raw_data/GRCh38.fa" # no acepta archivo comprimido
+        ref="data/raw_data/GRCh38.fna" # no acepta archivo comprimido
+                                        # Mirar qué tipo utiliza
     output:
         "libs/identification/ciri2/{sample}_results"
     # message:
@@ -154,8 +141,8 @@ rule circexplorer2_id:
 rule circexplorer2_annotation:
     input:
         bsj="libs/identification/circexplorer2/{sample}_back_spliced_junction.bed",
-        ref="data/raw_data/GRCh38.fa",
-        gene="data/raw_data/GRCh38_ann_refFlat.txt"
+        ref="data/raw_data/GRCh38.fna",
+        gene="data/raw_data/hg38_refFlat.txt"
     output:
         "libs/identification/circexplorer2/{sample}_circularRNA_known.txt"
     log:
@@ -176,7 +163,7 @@ rule select_coincidences:
         circexplorer2= "libs/identification/circexplorer2/{sample}_circularRNA_known.txt"
     output:
         "libs/identification/{sample}_coincident_circRNAs.txt",
-        "libs/plots/{sample}_venn_diagram.png"
+        "libs/plots/venn_diagrams/{sample}.png"
     priority: 4
     conda :
         "envs/R.yaml"
@@ -189,7 +176,7 @@ rule end:
     input:
         results = expand("libs/identification/{sample}_coincident_circRNAs.txt",
             sample=SAMPLES),
-        diagrams = expand("libs/plots/{sample}_venn_diagram.png",
+        diagrams = expand("libs/plots/venn_diagrams/{sample}.png",
             sample = SAMPLES)
     output:
         "generated.txt"
