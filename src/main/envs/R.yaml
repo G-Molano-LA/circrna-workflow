@@ -12,3 +12,12 @@ dependencies:
   - r-factoextra
   - r-svglite
   - bioconductor-rtracklayer
+  # NetMiner
+  - bioconductor-impute
+  - bioconductor-preprocesscore
+  - bioconductor-go.db
+  - r-wgcna
+  - r-corpcor
+  - r-bc3net
+  - r-igraph
+  - r-genenet

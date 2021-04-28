@@ -1,0 +1,18 @@
+samples:
+  - SRR12794696
+  - SRR12794698
+  - SRR12794703
+  - SRR12794710
+  - SRR12794713
+  - SRR12794716
+  - SRR12794723
+  - SRR12794726
+suffix:
+  1: _1_val_1.fq.gz
+  2: _2_val_2.fq.gz
+
+threads:
+  bwa: 3
+  ciri: 1
+  circexplorer2: 2
+  ciriquant: 5
