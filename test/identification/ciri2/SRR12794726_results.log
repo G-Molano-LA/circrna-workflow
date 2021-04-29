@@ -1,0 +1,14 @@
+[Wed Apr 28 05:30:22 2021] CIRI begins running
+[Wed Apr 28 05:30:22 2021] Loading reference
+[Wed Apr 28 05:30:59 2021] First scanning
+ Candidate reads with splicing signals: 46977
+ Candidate reads with PEM signals: 45393
+ Candidate circRNAs found: 14851
+[Wed Apr 28 05:51:11 2021] Second scanning
+[Wed Apr 28 06:24:14 2021] Extracting info from temporary files
+ Additional candidate reads found: 14093
+ Additional candidate reads with PEM signals: 12510
+[Wed Apr 28 06:25:05 2021] Summarizing
+ Number of circular RNAs found: 5270
+[Wed Apr 28 06:25:06 2021] CIRI finished its work. Please see output file libs/identification/ciri2/SRR12794726_results for detail.
+--------------------------------------------------------------------------------
