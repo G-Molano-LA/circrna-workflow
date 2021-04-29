@@ -7,12 +7,33 @@ samples:
   - SRR12794716
   - SRR12794723
   - SRR12794726
+
+path:
+  raw_reads: data/raw_data/samples
+  trimmed_reads: data/trimmed_data
+  genome_files: data/raw_data
+
+
+genome:
+  - GRCh38
+
 suffix:
-  1: _1_val_1.fq.gz
-  2: _2_val_2.fq.gz
+  raw:
+    1: _1.fastq.gz
+    2: _2.fastq.gz
+  trimmed:
+    1: _1_val_1.fq.gz
+    2: _2_val_2.fq.gz
 
 threads:
+  fastqc: 3
   bwa: 3
-  ciri: 1
-  circexplorer2: 2
+  ciri2: 1
   ciriquant: 5
+
+envs:
+  quality_control:
+  bwa: envs/bwa.yaml
+  ciri2: envs/ciri2.yaml
+  circexplorer2: envs/circexplorer2.yaml
+  R: envs/R.yaml
