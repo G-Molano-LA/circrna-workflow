@@ -6,12 +6,14 @@ samples:
   - SRR12794713
   - SRR12794716
   - SRR12794723
-  - SRR12794726
+
+trimming: yes
 
 path:
-  raw_reads: data/raw_data/samples
+  raw_reads: data/raw_data/samples # only if trimming == "yes"
   trimmed_reads: data/trimmed_data
   genome_files: data/raw_data
+  outdir: ~/results
 
 
 genome:
