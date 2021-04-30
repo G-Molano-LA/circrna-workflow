@@ -27,12 +27,21 @@ if (is.null(opt$ciri2) || is.null(opt$circexplorer2)){
 }
 
 # 1. Load data
-ciri_results <- read.csv(opt$ciri2, sep='\t')
+ciri_results    <- read.csv(opt$ciri2, sep='\t')
 circexp_results <- read.csv(opt$circexplorer2, sep='\t', header=FALSE)
+
+path <- unlist(str_split(opt$ciri2, "/identification/")) # split the beggining
+outdir <- path[1]
+path <- path[2]
+path <- unlist(str_split(path,"_ciri2.txt")) # split the end
+sample <- path[1]
+
+path_matrix <- paste0(outdir, "/identification/overlap/", sample, "_common.txt")
+path_venn   <- paste0(outdir, "/identification/overlap", sample, "_common.png")
 
 # 2. Reformat 1-based CIRI2 start coordinate to 0-based
 ciri_results$circRNA_start <- ciri_results$circRNA_start - 1
-ciri_results$circRNA_ID <- paste0(ciri_results$chr, ":", ciri_results$circRNA_start,
+ciri_results$circRNA_ID    <- paste0(ciri_results$chr, ":", ciri_results$circRNA_start,
   "-", ciri_results$circRNA_end)
 
 # 3. Add circRNA_ID variable in circexplorer2 dataframe
@@ -60,13 +69,6 @@ overlap <- overlap[!duplicated(overlap), ]
 
 
 # 5. New circRNA matrix
-filename= unlist(str_split(opt$ciri2, "libs/identification/ciri2/"))
-filename <- filename[2]
-filename = unlist(str_split(filename,"_results"))
-filename = filename[1]
-
-path_matrix = paste0("libs/identification/", filename, "_coincident_circRNAs.txt")
-path_venn = paste0("libs/plots/venn_diagrams/", filename, ".png")
 
 write.table(overlap, file = path_matrix, quote = FALSE, sep = "\t", row.names = FALSE)
 
