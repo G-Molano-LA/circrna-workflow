@@ -4,28 +4,34 @@ __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__ = "ALMOST FINISHED" # Falta comprovar funcionamiento con GRCh37
 ################################################################################
 
-
 from snakemake.utils import min_version
 import subprocess
-
 min_version("6.0")
+
+# CONFIG FILES
 configfile: "src/utils/config.yaml"
 
+# VARIABLES
+PATH_genome       = config["path"]["genome_files"]
+PATH_trimmed_reads= config["path"]["trimmed_reads"]
+OUTDIR            = config["path"]["outdir"]
+GENOME            = config["genome"]
+
+# TARGET RULE
 rule results:
     input:
-        results = expand("libs/identification/{sample}_coincident_circRNAs.txt",
-            sample= config["samples"]),
-        diagrams = expand("libs/plots/venn_diagrams/{sample}.png", sample =  config["samples"]),
-        ref=expand("{path}/{genome}.fna", path = config["path"]["genome_files"],
-            genome = config["genome"])
+        txt  = expand("{path}/identification/overlap/{samples}_common.txt",
+            path = OUTDIR, samples = config["samples"]),
+        venn = expand("{path}/identification/overlap/{samples}_common.png",
+            path = OUTDIR, samples = config["samples"]),
+        ref  = f'{PATH_genome}/{GENOME}.fna'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION&REFERENCE-FILES~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule get_ref_genome:
     output:
-        ref = expand("{path}/{genome}.fna", path = config["path"]["genome_files"],
-            genome = config["genome"])
+        ref = f'{PATH_genome}/{GENOME}.fna'
     params:
-        path = config["path"]["genome_files"]
+        path = PATH_genome
     priority: 12
     # message:
     #     "Downloanding"
@@ -48,10 +54,9 @@ rule get_ref_genome:
 
 rule get_ref_annotation:
     output:
-        expand("{path}/{genome}_ann.gtf", genome = config["genome"],
-            path = config["path"]["genome_files"])
+        f'{PATH_genome}/{GENOME}_ann.gtf'
     params:
-        path = config["path"]["genome_files"]
+        path = PATH_genome
     priority: 11
     run:
         if wildcards.genome == 'hg38' or 'GRCh38':
@@ -68,10 +73,9 @@ rule get_ref_annotation:
 
 rule refFlat:
     output:
-        refFlat=expand("{path}/{genome}_refFlat.txt", path = config["path"]["genome_files"],
-            genome = config["genome"])
+        refFlat = f'{PATH_genome}/{GENOME}.refFlat.txt'
     params:
-        path = config["path"]["genome_files"]
+        path = PATH_genome
     priority: 10
     run:
         if wildcards.genome == 'hg38' or 'GRCh38':
@@ -86,15 +90,14 @@ rule refFlat:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BWA-MEM ALIGNMENT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule bwa_index:
     input:
-        ref=expand("{path}/{genome}.fna", path = config["path"]["genome_files"],
-            genome = config["genome"])
+        ref = f'{PATH_genome}/{GENOME}.fna'
     output:
-        index=expand("{path}/bwa/{genome}.fna.{ext}", path = config["path"]["genome_files"],
-            genome = config["genome"], ext=["amb", "ann", "bwt", "pac", "sa"])
+        index=expand("{path}/bwa/{genome}.fna.{ext}", path = PATH_genome,
+            genome = GENOME, ext=["amb", "ann", "bwt", "pac", "sa"])
     params:
-        genome = config["genome"],
+        genome = GENOME,
         script = "src/utils/bwa_index.sh",
-        path = config["path"]["genome_files"]
+        path = PATH_genome
     conda: config["envs"]["bwa"]
     priority: 10
     shell:
@@ -103,25 +106,25 @@ rule bwa_index:
 
 rule bwa_mem:
     input:
-        read1=lambda wildcards: "data/trimmed_data/"+wildcards.sample+config["suffix"]["trimmed"][1],
-        read2=lambda wildcards: "data/trimmed_data/"+wildcards.sample+config["suffix"]["trimmed"][2],
-        index=expand("data/raw_data/bwa/{genome}.fna.{ext}", genome = config["genome"],
-            ext=["amb", "ann", "bwt", "pac", "sa"])
+        read1 = lambda wildcards: f'{PATH_trimmed_reads}/{wildcards.sample}{config["suffix"]["trimmed"][1]}',
+        read2 = lambda wildcards: f'{PATH_trimmed_reads}/{wildcards.sample}{config["suffix"]["trimmed"][2]}',
+        index = expand("{path}/bwa/{genome}.fna.{ext}", genome = GENOME,
+            path = PATH_genome, ext=["amb", "ann", "bwt", "pac", "sa"])
     output:
-        sam=temp("data/mapped_data/{sample}.sam")
+        sam    = temp(f'{OUTDIR}/data/mapped_data/{{sample}}.sam')
     params:
-        score="19", # Do not output alignment with score lower than INT.
-        prefix=expand("data/raw_data/{genome}.fna", genome = config["genome"])
+        score  = "19", # Do not output alignment with score lower than INT.
+        prefix = f'{PATH_genome}/{GENOME}.fna'
     message:
         "BWA-MEM aligner: Starting the alignment of the reads from {input.read1} & {input.read2}\
          THREADS = {threads}\
-         OUTPUT = {output}\
-         GENOME = {params.prefix}\
-         SCORE = All alignment with score lower than {params.score} won't be output\
-         LOG = {log}"
+         OUTPUT  = {output}\
+         GENOME  = {params.prefix}\
+         SCORE   = All alignment with score lower than {params.score} won't be output\
+         LOG     = {log}"
     threads: config["threads"]["bwa"]
     log:
-        "logs/mapped_data/{sample}.log"
+        f'{OUTDIR}logs/mapped_data/{{sample}}.log'
     conda: config["envs"]["bwa"]
     priority: 7
     shell:
@@ -130,7 +133,7 @@ rule bwa_mem:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CIRI2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule dw_ciri2:
     output:
-        "libs/identification/ciri2/CIRI2.pl"
+        "src/tools/CIRI2.pl"
     message:
         "Downloanding alignment tool CIRI2 from official website...\
         SCRIPT = {params.script}"
@@ -143,17 +146,17 @@ rule dw_ciri2:
 
 rule ciri2:
     input:
-        ciri="libs/identification/ciri2/CIRI2.pl",
-        sam="data/mapped_data/{sample}.sam",
-        ref=expand("data/raw_data/{genome}.fna", genome = config["genome"]) # no acepta archivo comprimido
+        ciri = "src/tools/CIRI2.pl",
+        sam  = f'{OUTDIR}/data/mapped_data/{{sample}}.sam',
+        ref  =  f'{PATH_genome}/{GENOME}.fna' # no acepta archivo comprimido
     output:
-        "libs/identification/ciri2/{sample}_results",
+        f'{OUTDIR}/identification/{{sample}}_ciri2.txt'
     threads: config["threads"]["ciri2"]
     message:
         "CIRI2: Starting circRNA identification in {wildcards.sample}.sam file...\
         REFERENCE FILE = {input.ref}\
-        THREADS = {threads} \
-        OUTPUT = {output}"
+        THREADS        = {threads} \
+        OUTPUT         = {output}"
     conda: config["envs"]["ciri2"]
     priority: 5
     shell:
@@ -162,15 +165,15 @@ rule ciri2:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CIRCEXPLORER2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule circexplorer2_id:
     input:
-        sam="data/mapped_data/{sample}.sam"
+        sam = f'{OUTDIR}/data/mapped_data/{{sample}}.sam',
     output:
-        "libs/identification/circexplorer2/{sample}_back_spliced_junction.bed"
+        temp(f'{OUTDIR}/identification/{{sample}}_back_spliced_junction.bed')
     params:
         aligner="BWA"
     message:
         "CIRCEXPLORER2: Extracting back-spliced exon-exon junction information from INPUT = {input} ...\
         ALIGNER = {params.aligner}\
-        OUTPUT = {output}"
+        OUTPUT  = {output}"
     conda: config["envs"]["circexplorer2"]
     priority: 6
     shell:
@@ -179,16 +182,16 @@ rule circexplorer2_id:
 
 rule circexplorer2_annotation:
     input:
-        bsj="libs/identification/circexplorer2/{sample}_back_spliced_junction.bed",
-        ref=expand("data/raw_data/{genome}.fna", genome = config["genome"]),
-        refFlat=expand("data/raw_data/{genome}_refFlat.txt", genome = config["genome"])
+        bsj     = f'{OUTDIR}/identification/{{sample}}_back_spliced_junction.bed',
+        ref     = f'{PATH_genome}/{GENOME}.fna',
+        refFlat = f'{PATH_genome}/{GENOME}.refFlat.txt'
     output:
-        "libs/identification/circexplorer2/{sample}_circularRNA_known.txt"
+        f'{OUTDIR}/identification/{{sample}}_circexp2.txt'
     message:
         "CIRCEXPLORER2: Annotating circRNAs with known RefSeq genes in {input.bsj}. \
-        REFERENCE FILE = {input.ref}\
+        REFERENCE FILE  = {input.ref}\
         ANNOTATING FILE = {input.refFlat} (refFlat format) \
-        OUTPUT = {output}"
+        OUTPUT          = {output}"
     conda: config["envs"]["circexplorer2"]
     priority: 5
     shell:
@@ -198,18 +201,18 @@ rule circexplorer2_annotation:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~OVERLAP~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule select_coincidences:
     input:
-        ciri2="libs/identification/ciri2/{sample}_results",
-        circexplorer2= "libs/identification/circexplorer2/{sample}_circularRNA_known.txt"
+        ciri2         = f'{OUTDIR}/identification/{{sample}}_ciri2.txt',
+        circexplorer2 = f'{OUTDIR}/identification/{{sample}}_circexp2.txt'
     output:
-        txt="libs/identification/{sample}_coincident_circRNAs.txt",
-        venn="libs/plots/venn_diagrams/{sample}.png"
+        txt  = f'{OUTDIR}/identification/overlap/{{sample}}_common.txt',
+        venn = f'{OUTDIR}/identification/overlap/{{sample}}_common.png'
     params:
-        script = "src/utils/select_coincidents.R"
+        script = "src/utils/select_coincidents.R",
     message:
         "OVERLAP: Selecting circRNAs commonly identified by CIRI2 and CircExplorer2 tools... \
-        INPUTS = 1) {input.ciri2} ;  2){input.circexplorer2} \
+        INPUTS  = 1) {input.ciri2} ;  2){input.circexplorer2} \
         OUTPUTS = 1) Venn Diagram: {output.venn} ; 2) Circular matrix: {output.txt} \
-        SCRIPT = {params.script}"
+        SCRIPT  = {params.script}"
     priority: 4
     conda: config["envs"]["R"]
     shell:
