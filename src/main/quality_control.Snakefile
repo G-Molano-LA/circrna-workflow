@@ -15,12 +15,28 @@ SAMPLES      = config["samples"]
 PATH_raws    = config["path"]["raw_reads"]
 PATH_trimmed = config["path"]["trimmed_reads"]
 OUTDIR       = config["path"]["outdir"]
+TRIMMING     = config["trimming"]
+
+# FUNCTIONS
+multiqc1  = f'{OUTDIR}/quality_control/raw/multi_report.html'
+multiqc2  = f'{OUTDIR}/quality_control/trimmed/multi_report_trimmed.html'
+out_files = []
+out_files.append(multiqc1)
+out_files.append(multiqc2)
+
+# def get_target:
+#     if  TRIMMING == "yes":
+#         out_files.append(multiqc1)
+#         out_files.append(multiqc2)
+#         print('YES')
+#     elif TRIMMING == "no":
+#         out_files.append(multiqc1)
+#         print('NO')
 
 # TARGET RULE
 rule results:
     input:
-        "data/raw_data/samples/multi_report.html",
-        "{outdir}/multi_report_trimmed.html"
+        out_files
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FASTQC_PRE-TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -36,12 +52,13 @@ rule fastqc1:
     params:
         outdir = f'{OUTDIR}/quality_control/raw/'
     threads: config["threads"]["fastqc"]
+    conda: config["envs"]["quality_control"]
     # message:
     #     "Starting quality analysis control with FASTQC programm on the "
     #     "following files {input.reads}. Number of threads used are {threads}."
     priority: 10
     shell:
-        "fastqc -t {threads} {input.read2} --outdir={params.outdir}"
+        "fastqc -t {threads} {input.read} --outdir={params.outdir}"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MULTIQC~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule multiqc1:
@@ -55,11 +72,24 @@ rule multiqc1:
         pdf         = "--pdf",
         replace_old = "--force", # revisar que no remplaze al anterior
         outdir      = f'{OUTDIR}/quality_control/raw/'
+    conda: config["envs"]["quality_control"]
     priority: 9
     shell:
         "multiqc {params.pdf} {params.replace_old} {input.zip} --outdir {params.outdir}"
 
 #~~~~~~~~~~~~~~~~~~~~TRIM_GALORE_&_FASTQC_POST-TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~
+checkpoint target:
+    input:
+        html = f'{OUTDIR}/quality_control/raw/multi_report.html'
+    output:
+        "hola.txt"
+    run:
+        if  TRIMMING == "yes":
+            out_files.append(multiqc2)
+        elif TRIMMING == "no":
+            pass
+
+
 rule trimming:
     input:
         read1 = expand("{path}/{sample}{ext}", path = PATH_raws, sample = SAMPLES,
@@ -88,7 +118,8 @@ rule fastqc2:
         zip  = expand("{path}/quality_control/trimmed/{sample}_{replicate}_fastqc.zip",
             path = OUTDIR, sample = SAMPLES, replicate = ["1_val_1", "2_val_2"])
     params:
-        outdir = f'{OUTPUT}/quality_control/trimmed/'
+        outdir = f'{OUTDIR}/quality_control/trimmed/'
+    conda: config["envs"]["quality_control"]
     # message:
     #     "Starting quality analysis control with FASTQC programm on the "
     #     "following files {input.reads}. The number of threads used are {threads}."
@@ -109,6 +140,7 @@ rule multiqc2:
         pdf         = "--pdf",
         replace_old = "--force", # revisar que no remplaze al anterior
         outdir      = f'{OUTDIR}/quality_control/trimmed/'
+    conda: config["envs"]["quality_control"]
     priority: 6
     shell:
         "multiqc {params.pdf} {params.replace_old} {input} --outdir {params.outdir}"
