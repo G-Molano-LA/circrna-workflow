@@ -14,26 +14,26 @@ suppressPackageStartupMessages(library("dplyr"))
 #               help="Show this help message and exit")
 
 option_list <- list(
-  make_option(c("-d", "--design"), action="store", type="character", default=NULL,
-                help="experimental design", metavar="design"),
-  make_option(c("--lib"), type="character", default=NULL,
-              help="File containing library information about samples:
-              sample names, total reads, mapped reads, circular reads, Group and Sex", metavar="FILE1" ),
-  make_option(c("-c", "--circ_counts"), default=NULL, help="Numeric matrix of circular counts",
+  make_option(c("-d", "--design"), action = "store", type = "character", default = NULL,
+                help = "experimental design", metavar = "design"),
+  make_option(c("--lib"), type = "character", default = NULL,
+              help = "File containing library information about samples:
+              sample names, total reads, mapped reads, circular reads, Group and Sex", metavar = "FILE1"),
+  make_option(c("-c", "--circ_counts"), default = NULL, help = "Numeric matrix of circular counts",
               metavar="FILE2" ),
-  make_option(c("-l", "--linear_counts"), default=NULL, help="Numeric matrix of linear counts",
-              metavar="FILE3" ),
+  make_option(c("-l", "--linear_counts"), default = NULL, help = "Numeric matrix of linear counts",
+              metavar = "FILE3" ),
   #make_option(c("-g", "--gene"), default=NULL, help="gene information file", metavar="FILE4"),
    # mirar si aquesta opció es possible incorporarla en funció de la info que hagi en gene_matrix_counts.csv
-  make_option(c("-C", "--circ_info"), default=NULL, help="Circular information file,
+  make_option(c("-C", "--circ_info"), default = NULL, help = "Circular information file,
     containning circRNA annotation information.",
-              metavar="FILE5"),
-  make_option(c("-o", "--out"), default="circrna_edge_DE.csv", help="output file",
-              metavar="output")
+              metavar = "FILE5"),
+  make_option(c("-o", "--out"), default = "circrna_edge_DE.csv", help = "output file",
+              metavar = "output")
   )
 
-parser=OptionParser(option_list=option_list)
-opt=parse_args(parser)
+parser <- OptionParser(option_list=option_list)
+opt    <- parse_args(parser)
 
 if(is.null(opt$design)|| is.null(opt$lib) || is.null(opt$circ_counts) ||
   is.null(opt$linear_counts) || is.null(opt$circ_info)){
