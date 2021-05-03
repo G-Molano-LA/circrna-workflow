@@ -1,3 +1,14 @@
+
+# Modules
+modules:
+  quality_control: yes
+  trimming: yes
+  alignment_&_identification: yes
+  quantification: yes
+  DE_analysis: yes
+  visualization: yes
+
+# Filenames
 samples:
   - SRR12794696
   - SRR12794698
@@ -7,35 +18,79 @@ samples:
   - SRR12794716
   - SRR12794723
 
-trimming: yes
+# Output directory
+outdir: ~/results
+# Path of reference genome files
+genome_files: data/raw_data
+# Genome reference
+genome: GRCh38
 
-path:
-  raw_reads: data/raw_data/samples # only if trimming == "yes"
-  trimmed_reads: data/trimmed_data
-  genome_files: data/raw_data
-  outdir: ~/results
-
-
-genome:
-  - GRCh38
-
-suffix:
-  raw:
-    1: _1.fastq.gz
-    2: _2.fastq.gz
-  trimmed:
-    1: _1_val_1.fq.gz
-    2: _2_val_2.fq.gz
-
-threads:
-  fastqc: 3
-  bwa: 3
-  ciri2: 1
-  ciriquant: 5
-
+# CONDA ENVS
 envs:
-  quality_control:
+  quality_control: envs/quality_control.yaml
   bwa: envs/bwa.yaml
   ciri2: envs/ciri2.yaml
   circexplorer2: envs/circexplorer2.yaml
   R: envs/R.yaml
+  ciriquant: envs/ciriquant.yaml
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~QUALITY_CONTROL~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+quality_control:
+  reads: data/samples
+  # FASTQ file extension: "fastq.gz" or "fastq" or "fq.gz" or "fq", etc
+  suffix:
+    1: _1.fastq.gz
+    2: _2.fastq.gz
+  fastqc_threads: 3
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trimming:
+  reads: data/samples
+  suffix:
+    1: _1.fastq.gz
+    2: _2.fastq.gz
+  fastqc_threads: 3
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT&IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~
+aln_&_id:
+  # Change only if trimming == "no"
+  reads: outdir/data/trimmed
+  # Change only if trimming == "no"
+  suffix:
+    1: _1_val_1.fq.gz
+    2: _2_val_2.fq.gz
+  threads:
+    bwa: 3    # Alignment tool
+    ciri2: 3  # Identification tool
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUANTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+quantification:
+  # Change only if trimming == "no"
+  reads: outdir/data/trimmed
+  # Change only if trimming == "no"
+  suffix:
+    1: _1_val_1.fq.gz
+    2: _2_val_2.fq.gz
+  threads:
+    ciriquant: 5
+
+#~~~~~~~~~~~~~~~~~~DIFFERENTIAL_EXPRESSION_ANALYSIS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+prep_DE: # only if quantification == 'yes'
+  group:
+    - Multiple sclerosis
+    - Multiple sclerosis
+    - Multiple sclerosis
+    - Multiple sclerosis
+    - Healthy control
+    - Healthy control
+    - Healthy control
+    - Healthy control
+  sex:
+    - female
+    - female
+    - male
+    - male
+    - male
+    - male
+    - female
+    - female
