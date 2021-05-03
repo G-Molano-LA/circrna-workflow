@@ -1,0 +1,28 @@
+
+###############################################################################
+## Configuration file for creating circrna_env
+## Author: G. Molano, LA
+###############################################################################
+
+name: circrna_env
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - fastqc
+  - multiqc
+  - python>=3.7
+  - pandas
+  - docopt>=0.6.2
+  - wheel>=0.36.2
+  - bwa>=0.7.17
+  - perl
+  - cufflinks>=2.1.1
+  - bedtools>=0.7.6
+  - scipy
+  - ucsc-genepredtogtf
+  - ucsc-gtftogenepred
+  - pybedtools
+  - pysam>=0.8.4
+  - circexplorer2
