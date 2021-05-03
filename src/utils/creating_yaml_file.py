@@ -3,6 +3,12 @@ __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 
 import subprocess
 import yaml
+import sys
+
+# Passing arguments
+GENOME      = str(sys.argv[1])
+PATH_genome = str(sys.argv[2])
+OUTFILE     = f'{str(sys.argv[3]})/ciriquant_config.yaml'
 
 # Capturing shell output
 conda_path = subprocess.run('snakemake --snakefile src/main/quantification.Snakefile \
@@ -24,13 +30,13 @@ dic_yaml = {'name'      : 'GRCh38',
                  'stringtie': f'{dir_path}/{conda_path}{/bin/stringtie}',
                  'samtools' : f'{dir_path}/{conda_path}{/bin/samtools}'},
             'reference' :
-                {'fasta'         : f'{dir_path}/data/raw_data/GRCh38.fa',
-                 'gft'           : f'{dir_path}/data/raw_data/GRCh38_ann.gtf',
-                 'bwa_index'     : f'{dir_path}/data/raw_data/bwa/GRCh38',
-                 'hitsat2_index' : f'{dir_path}/data/raw_data/hisat2/GRCh38'}
+                {'fasta'         : f'{PATH_genome}/{GENOME}.fna',
+                 'gft'           : f'{PATH_genome}/{GENOME}_ann.gtf',
+                 'bwa_index'     : f'{PATH_genome}/bwa/{GENOME}',
+                 'hitsat2_index' : f'{PATH_genome}/hisat2/{GENOME}'
                  }
 
 # Writing YAML file
-with open(r'libs/ciriquant/config_file.yaml', 'w') as file:
+with open(OUTFILE, 'w') as file:
     documents = yaml.dump(dic_yaml, file)
 print("Done")
