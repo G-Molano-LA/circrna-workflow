@@ -1,32 +1,34 @@
+#!/bin/R
 
-
-suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("argparse"))
 author = "G. Molano, LA (gonmola@hotmail.es)"
 
 
-option_list <- list(
-  make_option(c("--samples"), default = NULL, type = "character", help = "sample names"),
-  make_option(c("--dir"), default = NULL, type = "character", help = "sample directory"),
-  make_option(c("--group"), default = NULL, type = "character", help "group variable. e.g control or treatment"),
-  make_option(c("--sex"), default = NULL,type = "character", help = "sex variable"),
-  make_option(c("--outdir"), default = NULL)
-)
+parser <- ArgumentParser(description = 'Create some list')
+parser$add_argument("--samples", action = 'store', nargs = '+', default = NULL,
+  help = "list of sample names")
+parser$add_argument("--group", action = 'store', nargs = '+', default = NULL,
+  help = "list of group values")
+parser$add_argument("--sex", action = 'store', nargs = '+', default = NULL,
+  help = "list of sex values")
+parser$add_argument("--dir", action = 'store', default = NULL, help = "directory")
+parser$add_argument("--outdir", action = 'store', default = NULL, help = "output directory")
 
-parser <- OptionParser(option_list = option_list)
-opt    <- parser_args(parser)
+opt <- parser$parse_args()
 
 if(is.null(opt$samples) || is.null(opt$dir) || is.null(opt$group)){
-  print_help(parser)
+  parser$print_help()
   stop("Options --samples/--dir/--group must be supplied\n", call. = FALSE)
 }
 
-# Passing args
 
-sample_names <- as.vector(opt$samples)
-sample_group <- as.vector(opt$group)
-sample_sex   <- as.vector(opt$sex)
+# Passing args
+sample_names <- opt$samples
+sample_group <- opt$group
+sample_sex   <- opt$sex
 dir          <- opt$dir
 outdir       <- opt$outdir
+
 
 # Creating content
 # 1. sample.lst
