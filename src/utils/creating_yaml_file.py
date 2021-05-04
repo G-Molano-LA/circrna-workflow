@@ -8,11 +8,10 @@ import sys
 # Passing arguments
 GENOME      = str(sys.argv[1])
 PATH_genome = str(sys.argv[2])
-OUTFILE     = f'{str(sys.argv[3]})/ciriquant_config.yaml'
+OUTFILE     = f'{str(sys.argv[3])}/ciriquant_config.yaml'
 
 # Capturing shell output
-conda_path = subprocess.run('snakemake --snakefile src/main/quantification.Snakefile \
-                                   --use-conda --list-conda-envs',
+conda_path = subprocess.run('snakemake --use-conda --list-conda-envs',
                         shell = True, text = True, capture_output = True)
 start_index = conda_path.stdout.find('snakemake')
 end_index = len(conda_path.stdout)
@@ -23,18 +22,19 @@ dir_path = subprocess.run('pwd', shell = True, text = True, capture_output = Tru
 dir_path = dir_path.stdout.rstrip('\n')
 
 # Creating dictionary for yaml file
-dic_yaml = {'name'      : 'GRCh38',
+dic_yaml = {'name'      : GENOME,
             'tools'     :
-                {'bwa'      : f'{dir_path}/{conda_path}{/bin/bwa}',
-                 'hisat2'   : f'{dir_path}/{conda_path}{/bin/hisat2}',
-                 'stringtie': f'{dir_path}/{conda_path}{/bin/stringtie}',
-                 'samtools' : f'{dir_path}/{conda_path}{/bin/samtools}'},
+                {'bwa'      : f'{dir_path}/{conda_path}/bin/bwa',
+                 'hisat2'   : f'{dir_path}/{conda_path}/bin/hisat2',
+                 'stringtie': f'{dir_path}/{conda_path}/bin/stringtie',
+                 'samtools' : f'{dir_path}/{conda_path}/bin/samtools'},
             'reference' :
                 {'fasta'         : f'{PATH_genome}/{GENOME}.fna',
                  'gft'           : f'{PATH_genome}/{GENOME}_ann.gtf',
                  'bwa_index'     : f'{PATH_genome}/bwa/{GENOME}',
                  'hitsat2_index' : f'{PATH_genome}/hisat2/{GENOME}'
                  }
+            }
 
 # Writing YAML file
 with open(OUTFILE, 'w') as file:
