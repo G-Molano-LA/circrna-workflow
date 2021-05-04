@@ -118,7 +118,7 @@ dev.off()
 #~~~~~~~~~~~~~~~~~~~~~PRINCIPAL COMPONENTS ANALYSIS ~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # more info : http://www.sthda.com/english/wiki/wiki.php?id_contents=7851
 # Data treatment
-pca <- prcomp(circ_counts, center = TRUE, scale = TRUE)
+pca <- prcomp(circ_counts3, center = TRUE, scale = TRUE)
 
 # General plots
 scree_plot <- fviz_screeplot(pca, ncp=10)
@@ -139,23 +139,23 @@ dim2_dim3 <- fviz_pca_ind(pca, axes = c(2,3), col.ind="cos2") +
 # 4. Save ggplots
 ################################################################################
 
-plots <- list(volcano_plot = volcano_plot,heatmap = heatmap, boxplot = boxplot, 
+plots <- list(volcano_plot = volcano_plot,heatmap = heatmap, boxplot = boxplot,
               violinplot = violinplot, histogram = histogram, scree_plot = scree_plot,
               graph_of_variables = graph_of_variables, dim1_dim2 = dim1_dim2,
               dim1_dim3 = dim1_dim3, dim2_dim3 = dim2_dim3) # falta dendro
 
 for (i in 1:length(plots)){
   switch(opt$output,
-    svg = ggsave(filename = paste0("libs/plots/", names(plots[i]), ".svg"), 
+    svg = ggsave(filename = paste0("libs/plots/", names(plots[i]), ".svg"),
                  plot = plots[[i]], device = "svg"),
-    pdf = ggsave(filename = paste0("libs/plots/", names(plots[i]), ".pdf"), 
+    pdf = ggsave(filename = paste0("libs/plots/", names(plots[i]), ".pdf"),
                  plot = plots[[i]], device = "pdf")
   )
 }
 
 switch(opt$output,
-       svg = ggsave(filename = paste0("libs/plots/", names(plots[i]), ".svg"), 
+       svg = ggsave(filename = paste0("libs/plots/", names(plots[i]), ".svg"),
                     plot = plots[[i]], device = "svg"),
-       pdf = ggsave(filename = paste0("libs/plots/", names(plots[i]), "pdf"), 
+       pdf = ggsave(filename = paste0("libs/plots/", names(plots[i]), "pdf"),
                     plot = plots[[i]], device = "pdf")
 )
