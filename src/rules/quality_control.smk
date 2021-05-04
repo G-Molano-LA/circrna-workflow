@@ -14,7 +14,7 @@ rule quality_control_results:
 rule fastqc1:
     input:
         reads = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
-            ext = [config["suffix"]["raw"][1], config["quality_control"]["suffix"][2]])
+            ext = [config["quality_control"]["suffix"][1], config["quality_control"]["suffix"][2]])
     output:
         html = expand("{outdir}/quality_control/raw/{sample}_{replicate}_fastqc.html",
             outdir = OUTDIR, sample = SAMPLES, replicate = [1,2]),

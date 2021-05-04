@@ -24,13 +24,13 @@ rule get_ref_genome:
     # message:
     #     "Downloanding"
     run:
-        if wildcards.genome == 'GRCh38':
+        if GENOME == 'GRCh38':
             subprocess.run('wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fna.gz \
                             -O {params.path}/GRCh38.fna.gz \
                             && gunzip {params.path}/GRCh38.fna.gz \
                             && rm {params.path}/GRCh38.fna.gz',
                             shell = True, text = True) # UCSC format
-        elif wildcards.genome == 'GRCh37':
+        elif GENOME == 'GRCh37':
             subprocess.run('wget -c ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/technical/reference/human_g1k_v37.fasta.gz \
                             -O {params.path}/GRCh37.fna.gz \
                             && gunzip {params.path}/GRCh37.fna.gz \
@@ -47,12 +47,12 @@ rule get_ref_annotation:
         path = PATH_genome
     priority: 11
     run:
-        if wildcards.genome == 'hg38' or 'GRCh38':
+        if GENOME == 'GRCh38':
             subprocess.run("wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gtf.gz \
                             -O {params.path}/GRCh38_ann.gtf.gz \
                             && gunzip {params.path}/GRCh38_ann.gtf.gz",
                             shell = True, text = True) # UCSC format
-        elif wildcards.genome == 'hg37' or 'GRCh37' or 'hg19':
+        elif GENOME== 'GRCh37':
             subprocess.run("wget -c http://ftp.ensembl.org/pub/grch37/current/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.gtf.gz \
                             -O {params.path}/GRCh37_ann.gtf.gz \
                             && gunzip {params.path}/GRCh37_ann.gtf.gz",
@@ -66,12 +66,12 @@ rule refFlat:
         path = PATH_genome
     priority: 10
     run:
-        if wildcards.genome == 'hg38' or 'GRCh38':
+        if GENOME == 'GRCh38':
             subprocess.run("wget -c https://hgdownload.cse.ucsc.edu/goldenpath/hg38/database/refFlat.txt.gz \
                             -O {params.path}/GRCh38_refFlat.txt.gz \
                             && gunzip {params.path}/GRCh38_refFlat.txt",
                             shell = True, text = True)
-        elif wildcards.genome == 'hg37' or 'GRCh37' or 'hg19':
+        elif GENOME == 'GRCh37':
             subprocess.run("bash src/utils/gtf_to_refFlat.sh {params.path}",
                             shell = True, text = True)
 

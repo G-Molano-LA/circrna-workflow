@@ -10,97 +10,96 @@ rule quantification_results:
             sample = SAMPLES)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~GENOME_INDEXS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-rule hisat2_index:
-    input:
-       ref = f'{PATH_genome}/{GENOME}.fna'
-    output:
-      expand("{path}/hitsa2/{genome}.{ext}.ht2", path = PATH_genome,
-        genome = GENOME, ext = [1,2,3,4,5,6,7,8])
-    params:
-        prefix = GENOME,
-        path   = PATH_genome
-    priority: 10
-    shell:
-      """
-      genome={params.prefix}
-      path={params.path}
-
-      if [[ $genome == "GRCh38" ]];
-        then
-            echo "Downloading hisat2 index files from NCBI repository (https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.hisat2_index.tar.gz)..."
-            wget -c  https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.hisat2_index.tar.gz \
-                -O "$genome/hisat2/GRCh38.hisat2_index.tar.gz"
-            tar -zxvf "$genome/bwa/GRCh38.hisat2_index.tar.gz" -C "$genome/hisat2"
-
-            pushd "$path/hisat2/"
-            rm GRCh38.hisat2_index.tar.gz
-            rename 's/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna/GRCh38/' *
-            popd
-
-      elif [[ $genome == "GRCh37" ]];
-        then
-            echo "Downloading hisat2 index files from UCSC repository (https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/analysisSet/hg19.p13.plusMT.no_alt_analysis_set.hisat2_index.tar.gz)..."
-            wget -c  https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/analysisSet/hg19.p13.plusMT.no_alt_analysis_set.hisat2_index.tar.gz \
-                -O "$genome/hisat2/GRCh37.hisat2_index.tar.gz"
-            tar -zxvf "$genome/bwa/GRCh37.hisat2_index.tar.gz" -C "$genome/hisat2"
-
-            pushd "$path/hisat2/"
-            rm GRCh37.hisat2_index.tar.gz
-            rename 's//hg19.p13.plusMT.no_alt_analysis_set/GRCh37/' *
-            popd
-        else
-            echo "Please specify a genome in the config.yaml file. Genome: GRCh38(hg38) or GRCh37(hg37/hg19)."
-        fi
-      """
-
-rule fai_index:
-    input:
-        ref = f'{PATH_genome}/{GENOME}.fna'
-    output:
-        f'{PATH_genome}/{GENOME}.fna.fai'
-    params:
-        prefix = GENOME,
-        path   = PATH_genome
-    conda: config["envs"]["ciriquant"]
-    priority: 10
-    shell:
-        """
-        genome={params.prefix}
-        path={params.path}
-
-        if [[ $genome == "GRCh38" ]];
-          then
-            echo "Downloading a fai index from NCBI repository (https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.fai)..."
-            wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.fai\
-                -O "$genome/GRCh38.fna.fai"
-
-        elif [[ $genome == "GRCh37" ]];
-          then
-            echo "Creating a fai index.."
-            samtools faidx {input} -o {output}
-        """
+# rule hisat2_index:
+#     output:
+#       expand("{path}/hisat2/{genome}.{ext}.ht2", path = PATH_genome,
+#         genome = GENOME, ext = [1,2,3,4,5,6,7,8])
+#     params:
+#         prefix = GENOME,
+#         path   = PATH_genome
+#     priority: 10
+#     shell:
+#       """
+#       genome={params.prefix}
+#       path={params.path}
+#
+#       if [[ $genome == "GRCh38" ]];
+#         then
+#             echo "Downloading hisat2 index files from NCBI repository (https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.hisat2_index.tar.gz)..."
+#             wget -c  https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.hisat2_index.tar.gz \
+#                 -O "$path/hisat2/GRCh38.hisat2_index.tar.gz"
+#             tar -zxvf "$path/hisat2/GRCh38.hisat2_index.tar.gz" -C "$path/hisat2/"
+#
+#             pushd "$path/hisat2/"
+#             rm GRCh38.hisat2_index.tar.gz
+#             rename 's/GCA_000001405.15_GRCh38_no_alt_analysis_set/GRCh38/' *
+#             popd
+#
+#       elif [[ $genome == "GRCh37" ]];
+#         then
+#             echo "Downloading hisat2 index files from UCSC repository (https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/analysisSet/hg19.p13.plusMT.no_alt_analysis_set.hisat2_index.tar.gz)..."
+#             wget -c  https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/analysisSet/hg19.p13.plusMT.no_alt_analysis_set.hisat2_index.tar.gz \
+#                 -O '$path/hisat2/GRCh37.hisat2_index.tar.gz'
+#             tar -zxvf "$path/hisat2/GRCh37.hisat2_index.tar.gz" -C "$path/hisat2/"
+#
+#             pushd "$path/hisat2/"
+#             rm GRCh37.hisat2_index.tar.gz
+#             rename 's/hg19.p13.plusMT.no_alt_analysis_set/GRCh37/' *
+#             popd
+#         else
+#             echo "Please specify a genome in the config.yaml file. Genome: GRCh38(hg38) or GRCh37(hg37/hg19)."
+#         fi
+#       """
+#
+# rule fai_index:
+#     # input:
+#     #     ref = f'{PATH_genome}/{GENOME}.fna'
+#     output:
+#         f'{PATH_genome}/{GENOME}.fna.fai'
+#     params:
+#         prefix = GENOME,
+#         path   = PATH_genome
+#     conda: config["envs"]["ciriquant"]
+#     priority: 10
+#     shell:
+#         """
+#         genome={params.prefix}
+#         path={params.path}
+#
+#         if [[ $genome == "GRCh38" ]];
+#           then
+#             echo "Downloading a fai index from NCBI repository (https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.fai)..."
+#             wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.fai\
+#                 -O "$path/GRCh38.fna.fai"
+#
+#         elif [[ $genome == "GRCh37" ]];
+#           then
+#             echo "Creating a fai index.."
+#             samtools faidx {input} -o {output}
+#         fi
+#         """
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CIRIQUANT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule ciriquant_config:
     input:
-        index = expand("{path}/hitsa2/{genome}.{ext}.ht2", path = PATH_genome,
+        index = expand("{path}/hisat2/{genome}.{ext}.ht2", path = PATH_genome,
           genome = GENOME, ext = [1,2,3,4,5,6,7,8]),
         fai   = f'{PATH_genome}/{GENOME}.fna.fai'
     output:
         config = f'{OUTDIR}/ciriquant/ciriquant_config.yaml'
     params:
         genome      = GENOME,
-        genome_path = f'{PATH_genome}/{GENOME}',
+        genome_path = PATH_genome,
         outdir      = f'{OUTDIR}/ciriquant'
     priority: 9
-    script:
-        "src/utils/creating_yaml_file.py {params.genome_path} {params.outdir}"
+    shell:
+        " python3 src/utils/creating_yaml_file.py {params.genome} {params.genome_path} {params.outdir}"
 
 rule ciriquant:
     input:
         read1  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["suffix"][1]}',
         read2  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["suffix"][2]}',
-        ciri2  = lambda wildcards :f'{OUTDIR}/identification/overlap/{wildcards.sample}_common.txt',
+        ciri2  = lambda wildcards :f'{OUTDIR}/identification/overlap/{wildcards.sample}_common.txt', # potser aquest path també el podria facilitar l'usuari
         config = f'{OUTDIR}/ciriquant/ciriquant_config.yaml'
     output:
         # Linear transcripts alignment

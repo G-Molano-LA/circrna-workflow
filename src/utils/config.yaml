@@ -1,12 +1,12 @@
 
 # Modules
 modules:
-  quality_control: yes
-  trimming: yes
-  alignment_&_identification: yes
+  quality_control: no
+  trimming: no
+  alignment_and_identification: no
   quantification: yes
-  DE_analysis: yes
-  visualization: yes
+  DE_analysis: no
+  visualization: no
 
 # Filenames
 samples:
@@ -17,26 +17,27 @@ samples:
   - SRR12794713
   - SRR12794716
   - SRR12794723
+  - SRR12794726
 
 # Output directory
-outdir: ~/results
+outdir: test
 # Path of reference genome files
 genome_files: data/raw_data
-# Genome reference
+# Genome reference GRCh37 or GRCh38 !!!
 genome: GRCh38
 
 # CONDA ENVS
-envs:
-  quality_control: envs/quality_control.yaml
-  bwa: envs/bwa.yaml
-  ciri2: envs/ciri2.yaml
-  circexplorer2: envs/circexplorer2.yaml
-  R: envs/R.yaml
-  ciriquant: envs/ciriquant.yaml
+envs: # By default, snakemake searchs their envs files in the same dir that rules = The path to the environment definition is interpreted as relative to the Snakefile that contains the rule
+  quality_control: ../envs/quality_control.yaml  # adding '../' indicates that envs are one dir up, in the same that rules dir
+  bwa: ../envs/bwa.yaml
+  ciri2: ../envs/ciri2.yaml
+  circexplorer2: ../envs/circexplorer2.yaml
+  R: ../envs/R.yaml
+  ciriquant: ../envs/ciriquant.yaml
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~QUALITY_CONTROL~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 quality_control:
-  reads: data/samples
+  reads: data/raw_data/samples
   # FASTQ file extension: "fastq.gz" or "fastq" or "fq.gz" or "fq", etc
   suffix:
     1: _1.fastq.gz
@@ -45,16 +46,16 @@ quality_control:
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 trimming:
-  reads: data/samples
+  reads: "" # equal to quality_control reads. Important deixar en blanc si no s'utilitza
   suffix:
     1: _1.fastq.gz
     2: _2.fastq.gz
   fastqc_threads: 3
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT&IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT_AND_IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~
 aln_&_id:
   # Change only if trimming == "no"
-  reads: outdir/data/trimmed
+  reads: ~/results/data/trimmed
   # Change only if trimming == "no"
   suffix:
     1: _1_val_1.fq.gz
@@ -66,7 +67,7 @@ aln_&_id:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUANTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 quantification:
   # Change only if trimming == "no"
-  reads: outdir/data/trimmed
+  reads: test/data/trimmed
   # Change only if trimming == "no"
   suffix:
     1: _1_val_1.fq.gz
@@ -94,3 +95,6 @@ prep_DE: # only if quantification == 'yes'
     - male
     - female
     - female
+
+DE:
+  design: ~group+sex

@@ -1,0 +1,11 @@
+name: GRCh38
+reference:
+  bwa_index: data/raw_data/bwa/GRCh38
+  fasta: data/raw_data/GRCh38.fna
+  gft: data/raw_data/GRCh38_ann.gtf
+  hitsat2_index: data/raw_data/hisat2/GRCh38
+tools:
+  bwa: /home/alejandra/circrna-workflow//bin/bwa
+  hisat2: /home/alejandra/circrna-workflow//bin/hisat2
+  samtools: /home/alejandra/circrna-workflow//bin/samtools
+  stringtie: /home/alejandra/circrna-workflow//bin/stringtie
