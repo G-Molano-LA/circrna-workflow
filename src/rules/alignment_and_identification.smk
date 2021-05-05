@@ -25,16 +25,14 @@ rule get_ref_genome:
     #     "Downloanding"
     run:
         if GENOME == 'GRCh38':
-            subprocess.run('wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fna.gz \
+            shell('wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fna.gz \
                             -O {params.path}/GRCh38.fna.gz \
-                            && gunzip {params.path}/GRCh38.fna.gz \
-                            && rm {params.path}/GRCh38.fna.gz',
+                            && gunzip {params.path}/GRCh38.fna.gz',
                             shell = True, text = True) # UCSC format
         elif GENOME == 'GRCh37':
-            subprocess.run('wget -c ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/technical/reference/human_g1k_v37.fasta.gz \
+            shell('wget -c ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/technical/reference/human_g1k_v37.fasta.gz \
                             -O {params.path}/GRCh37.fna.gz \
-                            && gunzip {params.path}/GRCh37.fna.gz \
-                            && rm {params.path}/GRCh37.fna.gz',
+                            && gunzip {params.path}/GRCh37.fna.gz',
                             shell = True, text = True) # ensEMBL format
         else:
             print("Please specify a genome in the config.yaml file. Genome: hg38/GRCh38 or hg37/GRCh37/hg19")
@@ -48,12 +46,12 @@ rule get_ref_annotation:
     priority: 11
     run:
         if GENOME == 'GRCh38':
-            subprocess.run("wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gtf.gz \
+            shell("wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gtf.gz \
                             -O {params.path}/GRCh38_ann.gtf.gz \
                             && gunzip {params.path}/GRCh38_ann.gtf.gz",
                             shell = True, text = True) # UCSC format
         elif GENOME== 'GRCh37':
-            subprocess.run("wget -c http://ftp.ensembl.org/pub/grch37/current/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.gtf.gz \
+            shell("wget -c http://ftp.ensembl.org/pub/grch37/current/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.gtf.gz \
                             -O {params.path}/GRCh37_ann.gtf.gz \
                             && gunzip {params.path}/GRCh37_ann.gtf.gz",
                             shell = True, text = True) # ensEMBL format
@@ -67,12 +65,12 @@ rule refFlat:
     priority: 10
     run:
         if GENOME == 'GRCh38':
-            subprocess.run("wget -c https://hgdownload.cse.ucsc.edu/goldenpath/hg38/database/refFlat.txt.gz \
+            shell("wget -c https://hgdownload.cse.ucsc.edu/goldenpath/hg38/database/refFlat.txt.gz \
                             -O {params.path}/GRCh38_refFlat.txt.gz \
                             && gunzip {params.path}/GRCh38_refFlat.txt",
                             shell = True, text = True)
         elif GENOME == 'GRCh37':
-            subprocess.run("bash src/utils/gtf_to_refFlat.sh {params.path}",
+            shell("bash src/utils/gtf_to_refFlat.sh {params.path}",
                             shell = True, text = True)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BWA-MEM ALIGNMENT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -97,12 +95,12 @@ rule bwa_index:
         then
             echo "Downloading genome index files from NCBI repository (https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bwa_index.tar.gz)..."
             wget -c  https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/GO_TO_CURRENT_VERSION/GRCh38_major_release_seqs_for_alignment_pipelines/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bwa_index.tar.gz \
-                -O "$genome/bwa/GRCh38.bwa_index.tar.gz"
-            tar -zxvf "$genome/bwa/GRCh38.bwa_index.tar.gz" -C "$genome/bwa"
+                -O "$path/bwa/GRCh38.bwa_index.tar.gz"
+            tar -zxvf "$path/bwa/GRCh38.bwa_index.tar.gz" -C "$path/bwa"
 
             pushd "$path/bwa/"
             rm GRCh38.bwa_index.tar.gz
-            rename 's/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna/GRCh38/' *
+            rename 's/GCA_000001405.15_GRCh38_no_alt_analysis_set/GRCh38/' *
             popd
         elif [[ $genome == "GRCh37" ]];
         then
