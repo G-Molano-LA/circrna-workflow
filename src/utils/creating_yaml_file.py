@@ -8,31 +8,27 @@ import sys
 # Passing arguments
 GENOME      = str(sys.argv[1])
 PATH_genome = str(sys.argv[2])
-OUTFILE     = f'{str(sys.argv[3])}/ciriquant_config.yaml'
+OUTFILE     = str(sys.argv[3])
 
-# Capturing shell output
-conda_path = subprocess.run('snakemake --use-conda --list-conda-envs',
-                        shell = True, text = True, capture_output = True)
-start_index = conda_path.stdout.find('snakemake')
-end_index = len(conda_path.stdout)
-conda_path = conda_path.stdout[start_index:end_index]
-conda_path = conda_path.rstrip('\n')
+# Capturing conda path
+conda_path = subprocess.check_output('which bwa', shell = True)
+conda_path = conda_path.rstrip('/bwa\n')
 
-dir_path = subprocess.run('pwd', shell = True, text = True, capture_output = True)
-dir_path = dir_path.stdout.rstrip('\n')
+dir_path = subprocess.check_output('pwd', shell = True)
+dir_path = dir_path.rstrip('\n')
 
 # Creating dictionary for yaml file
 dic_yaml = {'name'      : GENOME,
             'tools'     :
-                {'bwa'      : f'{dir_path}/{conda_path}/bin/bwa',
-                 'hisat2'   : f'{dir_path}/{conda_path}/bin/hisat2',
-                 'stringtie': f'{dir_path}/{conda_path}/bin/stringtie',
-                 'samtools' : f'{dir_path}/{conda_path}/bin/samtools'},
+                {'bwa'      : '{}/bwa'.format(conda_path),
+                 'hisat2'   : '{}/hisat2'.format(conda_path),
+                 'stringtie': '{}/stringtie'.format(conda_path),
+                 'samtools' : '{}/samtools'.format(conda_path)},
             'reference' :
-                {'fasta'         : f'{PATH_genome}/{GENOME}.fna',
-                 'gft'           : f'{PATH_genome}/{GENOME}_ann.gtf',
-                 'bwa_index'     : f'{PATH_genome}/bwa/{GENOME}',
-                 'hitsat2_index' : f'{PATH_genome}/hisat2/{GENOME}'
+                {'fasta'         : '{}/{}/{}.fna'.format(dir_path, PATH_genome, GENOME),
+                 'gtf'           : '{}/{}/{}_ann.gtf'.format(dir_path, PATH_genome, GENOME),
+                 'bwa_index'     : '{}/{}/bwa/{}.fna'.format(dir_path, PATH_genome, GENOME),
+                 'hisat_index' : '{}/{}/hisat2/{}'.format(dir_path, PATH_genome, GENOME)
                  }
             }
 
