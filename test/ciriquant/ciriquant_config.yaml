@@ -1,11 +1,11 @@
 name: GRCh38
 reference:
-  bwa_index: data/raw_data/bwa/GRCh38
-  fasta: data/raw_data/GRCh38.fna
-  gft: data/raw_data/GRCh38_ann.gtf
-  hitsat2_index: data/raw_data/hisat2/GRCh38
+  bwa_index: /home/alejandra/circrna-workflow/data/raw_data/bwa/GRCh38.fna
+  fasta: /home/alejandra/circrna-workflow/data/raw_data/GRCh38.fna
+  gtf: /home/alejandra/circrna-workflow/data/raw_data/GRCh38_ann.gtf
+  hisat_index: /home/alejandra/circrna-workflow/data/raw_data/hisat2/GRCh38
 tools:
-  bwa: /home/alejandra/circrna-workflow//bin/bwa
-  hisat2: /home/alejandra/circrna-workflow//bin/hisat2
-  samtools: /home/alejandra/circrna-workflow//bin/samtools
-  stringtie: /home/alejandra/circrna-workflow//bin/stringtie
+  bwa: /home/alejandra/circrna-workflow/.snakemake/conda/97a231434efa2515d136721a99668751/bin/bwa
+  hisat2: /home/alejandra/circrna-workflow/.snakemake/conda/97a231434efa2515d136721a99668751/bin/hisat2
+  samtools: /home/alejandra/circrna-workflow/.snakemake/conda/97a231434efa2515d136721a99668751/bin/samtools
+  stringtie: /home/alejandra/circrna-workflow/.snakemake/conda/97a231434efa2515d136721a99668751/bin/stringtie
