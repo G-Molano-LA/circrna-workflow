@@ -112,9 +112,9 @@ rule ciriquant:
         config = f'{OUTDIR}/ciriquant/ciriquant_config.yaml'
     output:
         # Linear transcripts alignment
-        bam         = temp(f'{OUTDIR}/ciriquant/align/{{sample}}.bam'),
-        sorted_bam  = temp(f'{OUTDIR}/ciriquant/align/{{sample}}.sorted.bam'),
-        sam_index   = temp(f'{OUTDIR}/ciriquant/align/{{sample}}.sorted.bam.bai'),
+        bam         = f'{OUTDIR}/ciriquant/align/{{sample}}.bam',
+        sorted_bam  = f'{OUTDIR}/ciriquant/align/{{sample}}.sorted.bam',
+        sam_index   = f'{OUTDIR}/ciriquant/align/{{sample}}.sorted.bam.bai',
         # Linear gene abundance
         linear_transcripts_name = f'{OUTDIR}/ciriquant/gene/{{sample}}_cov.gtf', # StringTie outputs a file with the given name with all transcripts in the provided reference file that are fully covered by reads
         linear_out              = f'{OUTDIR}/ciriquant/gene/{{sample}}_out.gtf',
@@ -124,12 +124,13 @@ rule ciriquant:
     threads: config["quantification"]["threads"]["ciriquant"]
     params:
         tool   = "CIRI2",
-        outdir = f'{OUTDIR}/ciriquant'
+        outdir = f'{OUTDIR}/ciriquant',
     conda: config["envs"]["ciriquant"]
     priority: 8
     shell:
         "CIRIquant -t {threads} -1 {input.read1} -2 {input.read2} \
                     --config {input.config}\
                      -o {params.outdir}\
+                     -p {wildcards.sample}\
                      --circ {input.ciri2}\
                      --tool {params.tool}"
