@@ -3,6 +3,9 @@
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__ = "IN PROCESS"
 
+import subprocess
+import yaml
+
 # TARGET RULE
 rule quantification_results:
     input:
@@ -82,18 +85,24 @@ rule quantification_results:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CIRIQUANT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule ciriquant_config:
     input:
-        index = expand("{path}/hisat2/{genome}.{ext}.ht2", path = PATH_genome,
+        hisat2 = expand("{path}/hisat2/{genome}.{ext}.ht2", path = PATH_genome,
           genome = GENOME, ext = [1,2,3,4,5,6,7,8]),
-        fai   = f'{PATH_genome}/{GENOME}.fna.fai'
+        fai    = f'{PATH_genome}/{GENOME}.fna.fai',
+        ref    = f'{PATH_genome}/{GENOME}.fna',
+        gtf    = f'{PATH_genome}/{GENOME}_ann.gtf',
+        bwa    = expand("{path}/bwa/{genome}.fna.{ext}", path = PATH_genome,
+            genome = GENOME, ext=["amb", "ann", "bwt", "pac", "sa"])
     output:
         config = f'{OUTDIR}/ciriquant/ciriquant_config.yaml'
     params:
-        genome      = GENOME,
-        genome_path = PATH_genome,
-        outdir      = f'{OUTDIR}/ciriquant'
+        script = "src/utils/creating_yaml_file.py",
+        genome = GENOME,
+        path   = PATH_genome
+    conda: config["envs"]["ciriquant"]
     priority: 9
     shell:
-        " python3 src/utils/creating_yaml_file.py {params.genome} {params.genome_path} {params.outdir}"
+        "python {params.script} {params.genome} {params.path} {output}"
+
 
 rule ciriquant:
     input:
