@@ -39,4 +39,7 @@ rule all:
         # Differential expression analysis
         *(rules.prep_DE_results.input if config['modules']['DE_analysis'] else []),
 
-        *(rules.DE_results.input if config['modules']['DE_analysis'] else [])
+        *(rules.DE_results.input if config['modules']['DE_analysis'] else []),
+
+        # Visualization
+        *(rules.visualization_results.input if config['modules']['visualization'] else [])
