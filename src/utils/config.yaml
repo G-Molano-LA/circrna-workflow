@@ -4,23 +4,23 @@ modules:
   quality_control: no
   trimming: no
   alignment_and_identification: no
-  quantification: yes
+  quantification: no
   DE_analysis: no
-  visualization: no
+  visualization: yes
 
 # Filenames
 samples:
-  - SRR12794696
-  - SRR12794698
+  - SRR12794685
+  - SRR12794695
   - SRR12794703
-  - SRR12794710
+  - SRR12794706
   - SRR12794713
-  - SRR12794716
-  - SRR12794723
-  - SRR12794726
+  - SRR12794715
+  - SRR12794724
+  - SRR12794728
 
 # Output directory
-outdir: test
+outdir: lib
 # Path of reference genome files
 genome_files: data/raw_data
 # Genome reference GRCh37 or GRCh38 !!!
@@ -46,7 +46,7 @@ quality_control:
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 trimming:
-  reads: "" # equal to quality_control reads. Important deixar en blanc si no s'utilitza
+  reads: data/raw_data/samples # equal to quality_control reads. Important deixar en blanc si no s'utilitza
   suffix:
     1: _1.fastq.gz
     2: _2.fastq.gz
@@ -55,7 +55,7 @@ trimming:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT_AND_IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~
 aln_&_id:
   # Change only if trimming == "no"
-  reads: ~/results/data/trimmed
+  reads: test/data/trimmed
   # Change only if trimming == "no"
   suffix:
     1: _1_val_1.fq.gz
@@ -98,3 +98,20 @@ prep_DE: # only if quantification == 'yes'
 
 DE:
   design: ~group+sex
+  pvalue:
+  fold_change:
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~COEXPRESSION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+netminer:
+  filepath:
+  threads:
+  percThreshold: 0.005
+  S1N: 3
+  S2N: 2
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~VISUALIZATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+visualization:
+  count_data: libs/DE_analysis/circular_counts_sub.csv
+  metadata: libs/DE_analysis/circular_info.csv
+  normalized: no
+  out_format: pdf

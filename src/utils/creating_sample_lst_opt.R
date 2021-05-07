@@ -1,17 +1,27 @@
 #!/bin/R
 
+################################################################################
+# Rscript to obtain configuration files (containing sample name, sample path and
+# condition samples such as group and sex) that are required for CIRIquant_prep.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Author: G. Molano, LA (gonmola@hotmail.es)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Date              : 04-05-2021
+# Last modification : 06-05-2021
+################################################################################
+
 suppressPackageStartupMessages(library("argparse"))
-author = "G. Molano, LA (gonmola@hotmail.es)"
 
 
 parser <- ArgumentParser(description = 'Create some list')
-parser$add_argument("--samples", action = 'store', nargs = '+', default = NULL,
-  help = "list of sample names")
-parser$add_argument("--group", action = 'store', nargs = '+', default = NULL,
-  help = "list of group values")
+parser$add_argument("--samples", required = TRUE,  default = NULL, action = 'store',
+  nargs = '+', help = "list of sample names")
+parser$add_argument("--group", required = TRUE, action = 'store', nargs = '+',
+  default = NULL, help = "list of group values")
 parser$add_argument("--sex", action = 'store', nargs = '+', default = NULL,
   help = "list of sex values")
-parser$add_argument("--dir", action = 'store', default = NULL, help = "directory")
+parser$add_argument("--dir",  required = TRUE, action = 'store', default = NULL,
+  help = "directory")
 parser$add_argument("--outdir", action = 'store', default = NULL, help = "output directory")
 
 opt <- parser$parse_args()

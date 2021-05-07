@@ -1,17 +1,23 @@
-###############################################################################
-## Configuration file for creating circrna_env
-## Author: G. Molano, LA
-###############################################################################
+################################################################################
+# YAML file containning R packaages required for pipeline deployment
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Author: G. Molano, LA (gonmola@hotmail.es)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Date              : 06-05-2021
+# Last modification : 06-05-2021
+################################################################################
 name : r-environment
 dependencies:
   - r-essentials
   - r-base
   - r-ggrepel
   - r-venndiagram
-  - r-optparse
+  - r-argparse # r-optparse deprecated
   - r-factoextra
   - r-svglite
   - bioconductor-rtracklayer
+  - bioconductor-deseq2
+  - bioconductor-edger
   # NetMiner
   - bioconductor-impute
   - bioconductor-preprocesscore
@@ -21,4 +27,3 @@ dependencies:
   - r-bc3net
   - r-igraph
   - r-genenet
-  - r-argparse
