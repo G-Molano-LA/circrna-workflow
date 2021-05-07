@@ -1,31 +1,33 @@
 #!bin/bash/python3
 
-__author__ = "G. Molano, LA (gonmola@hotmail.es)"
-__state__ = "NOT STARTED"
+################################################################################
+# Snakefile to visualize normalized circRNA counts.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Author: G. Molano, LA (gonmola@hotmail.es)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Date              : 06-05-2021
+# Last modification : 06-05-2021
+################################################################################
+METADATA   = config["visualization"]["metadata"]
+COUNT_data = config["visualization"]["count_data"]
 
-# Depend on a minimum snakemake version
-from snakemake.utils import min_version
-min_version("6.0")
-###############################################################################
 rule visualization_results:
     input:
-
+        directory(f'{OUTDIR}/visualization')
 
 rule plots:
     input:
-        script="src/circ_DE.R",
-        data="lib/DE_analysis/circrna_DE.csv",
+        data = COUNT_data if COUNT_data != None else f'{OUTDIR}/DE_analysis/circular_count_matrix.csv'
     output:
-        "libs/DE_analysis/circrna_DE.{params.output}"
+        directory(f'{OUTDIR}/visualization')
     params:
-        output="pdf",
-        pval="",
-        FC=""
-    conda:
-        ""
+        norm      = config["visualization"]["normalized"],
+        circ_info = 'None' if COUNT_data != 'None' else f'{OUTDIR}/DE_analysis/circular_info.csv',
+        metadata  = METADATA if COUNT_data != 'None' else f'{OUTDIR}/DE_analysis/library_info.csv',
+        output    = config["visualization"]["out_format"],
+        script    = "src/tools/visualization.R"
+    conda: config["envs"]["R"]
     shell:
-        "Rscript {input.script} \
-        -d {input.data}\
-        -p {params.pval}\
-        -FC {params.FC}\
-        -o {params.output}"
+        "Rscript {params.script} --data {input.data} --norm {params.norm}\
+        --circ_info {params.circ_info} --lib {params.metadata} --output {params.output}\
+        --outdir {output}"
