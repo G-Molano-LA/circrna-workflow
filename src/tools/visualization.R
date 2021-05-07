@@ -1,67 +1,66 @@
 #!/bin/R
 
 ###############################################################################
-## R script for visualization data
-## Author: G. Molano, LA
+# R script for visualization data
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Author: G. Molano, LA (gonmola@hotmail.es)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Date              : 09-04-2021
+# Last modification : 06-05-2021
 ###############################################################################
 
 # Dependencies
+suppressPackageStartupMessages(library("DESeq2"))
 suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("ggrepel"))
 suppressPackageStartupMessages(library("dplyr"))
-suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("reshape2"))
 suppressPackageStartupMessages(library("factoextra"))
+
+check_norm <- function(norm, lib, circ_info){
+  if(norm == "no" && circ_info != 'None'){
+    circ_info             <- read.csv(opt$circ_info, row.names = 1)
+    rownames(circ_counts) <- rownames(circ_info)
+    colnames(circ_counts) <- rownames(lib)
+    DESeq_count_data      <- DESeqDataSetFromMatrix(countData = circ_counts,
+                                                colData  = metadata)
+    circ_counts <- counts(DESeq_count_data, normalized = TRUE)
+    return(circ_counts)
+  }else if(norm == "no" && circ_info == 'None'){
+    DESeq_count_data <- DESeqDataSetFromMatrix(countData = circ_counts,
+                                                colData  = metadata)
+    circ_counts <- counts(DESeq_count_data, normalized = TRUE)
+    return(circ_counts)
+  }else if(norm == "yes"){
+    return(circ_counts)
+  }
+}
 
 ################################################################################
 # 1. Input
 ################################################################################
-option_list <- list(
-  make_option(c("-p", "--pvalue"), type="numeric", default=0.05,
-              help="pvalue", metavar="pval" ),
-  make_option(c("-f", "--foldchange"),type="numeric", default=1.5, help="foldchange",
-              metavar="FC" ),
-  make_option(c("-o", "--output"),type="character", default="pdf")
-  )
-parser=OptionParser(option_list=option_list)
-opt=parse_args(parser)
+parser <- ArgumentParser(description = 'Visualization')
+parser$add_argument( "--data", default = NULL, help = "Normalized Count Matrix")
+parser$add_argument("--norm", default = "no", help = "Boolean variable")
+parser$add_argument("--lib", default = NULL, help =
+  "File containing library information about samples: sample names, total reads, mapped reads, circular reads, Group and Sex")
+parser$add_argument("--circ_info", default = NULL, help =
+  "Circular information file, containning circRNA annotation information.")
+parser$add_argument( "--output",type = "character", default = "svg")
+parser$add_argument("--outdir", type = "character", default = NULL)
+
+opt <- parser$parse_args()
+
+# Load data
+circ_counts <- as.matrix(read.csv(opt$data))
+metadata    <- read.csv(opt$lib, row.names = 1
+
+circ_counts <- check_norm(opt$norm, metadata, opt$circ_info)
 
 ################################################################################
-# 2. Data: differential expression matrix + input values
+# 2. Visualization
 ################################################################################
-DE_data <- read.csv("libs/DE_analysis/circrna_DE.csv", row.names=1)
-pval = -log2(opt$pvalue)
-FC = log2(opt$foldchange)
-
-#~~~~~~~~~~~~~~~~~~~~~VOLCANO PLOT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Data treatment: creating groups
-DE_data["minusLog2Pvalue"] <- -log2(DE_data$PValue)
-DE_data["group"] <- "Not_Significant"
-DE_data[which(DE_data['minusLog2Pvalue'] > pval & DE_data["logFC"] > FC ),"group"] <- "Up"
-DE_data[which(DE_data['minusLog2Pvalue'] > pval & DE_data["logFC"] < -FC ),"group"] <- "Down"
-DE_data$group <- as.factor(DE_data$group)
-##Top10 circRNAs (by pvalue), which names will be ploted
-top20<- DE_data$id[1:20]
-DE_data <- DE_data %>%
-  mutate(plotname=ifelse(id %in% top20, name, "" ))
-
-# Plot
-volcano_plot <-
- ggplot(DE_data, aes(x = logFC, y = minusLog2Pvalue, color = group)) +
-    geom_point(size=0.5)+
-    scale_colour_manual(values=c("red", "grey", "blue"))+
-    geom_text_repel(aes(label= plotname), size=3)+
-    geom_hline(yintercept = pval, linetype = "dashed", size = 0.5) +
-    geom_vline(xintercept = c(FC, -FC), linetype = "dashed", size = 0.5 ) +
-    xlab("log2FC") +
-    ylab("-log10(p-value)")
-
-
-################################################################################
-# 3. Data: normalized expression matrix
-################################################################################
-circ_counts <- read.csv("libs/network/TMM_counts.txt", sep = "", row.names=1)
-
 #~~~~~~~~~~~~~~~~~~~~~HEATMAP~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Data treatment: Plot top10 DE (by pvalue) circular RNAs
 circ_counts1 <- filter(circ_counts, rownames(circ_counts) %in% top20)
@@ -103,15 +102,15 @@ ggplot(circ_counts2, aes(x=value)) +
 #~~~~~~~~~~~~~~~~~~~~~DENDROGRAM~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Data treatment
 circ_counts3 <- t(circ_counts) # row=samples, columns=circRNAs
-dist1 <- dist(circ_counts3, method = "euclidean") # Euclidean distance
-dendro <- hclust(dist1, method = "average") #  Hierarchical Clustering with hclust
+dist1        <- dist(circ_counts3, method = "euclidean") # Euclidean distance
+dendro       <- hclust(dist1, method = "average") #  Hierarchical Clustering with hclust
 
 # Save Plot
-dendro <- as.dendrogram(dendro)
-upper_ylim <- round(max(dist1), digits = -2) # round to hundredths
+dendro      <- as.dendrogram(dendro)
+upper_ylim  <- round(max(dist1), digits = -2) # round to hundredths
 
-svg(file="/libs/plots/dendrograma.svg")
-plot(dendro, ylab = "Euclidean Distance",xlab= "Samples", main = "Cluster Dendrogram",
+svg(file = "/libs/plots/dendrograma.svg")
+plot(dendro, ylab = "Euclidean Distance",xlab = "Samples", main = "Cluster Dendrogram",
   ylim = c(0,upper_ylim))
 dev.off()
 
@@ -121,7 +120,7 @@ dev.off()
 pca <- prcomp(circ_counts3, center = TRUE, scale = TRUE)
 
 # General plots
-scree_plot <- fviz_screeplot(pca, ncp=10)
+scree_plot         <- fviz_screeplot(pca, ncp = 10)
 graph_of_variables <- fviz_pca_var(pca, col.var = "contrib") +
   theme_minimal()
 # Individual plots
@@ -136,26 +135,26 @@ dim2_dim3 <- fviz_pca_ind(pca, axes = c(2,3), col.ind="cos2") +
                     high="red", midpoint=0.50)
 
 ################################################################################
-# 4. Save ggplots
+# 3. Save ggplots
 ################################################################################
 
-plots <- list(volcano_plot = volcano_plot,heatmap = heatmap, boxplot = boxplot,
-              violinplot = violinplot, histogram = histogram, scree_plot = scree_plot,
+plots <- list(heatmap = heatmap, boxplot = boxplot, violinplot = violinplot,
+              histogram = histogram, scree_plot = scree_plot,
               graph_of_variables = graph_of_variables, dim1_dim2 = dim1_dim2,
-              dim1_dim3 = dim1_dim3, dim2_dim3 = dim2_dim3) # falta dendro
+              dim1_dim3 = dim1_dim3, dim2_dim3 = dim2_dim3)
 
 for (i in 1:length(plots)){
   switch(opt$output,
-    svg = ggsave(filename = paste0("libs/plots/", names(plots[i]), ".svg"),
+    svg = ggsave(filename = paste0(opt$outdir, "/", names(plots[i]), ".svg"),
                  plot = plots[[i]], device = "svg"),
-    pdf = ggsave(filename = paste0("libs/plots/", names(plots[i]), ".pdf"),
+    pdf = ggsave(filename = paste0(opt$outdir, "/", names(plots[i]), ".pdf"),
                  plot = plots[[i]], device = "pdf")
   )
 }
 
 switch(opt$output,
-       svg = ggsave(filename = paste0("libs/plots/", names(plots[i]), ".svg"),
+       svg = ggsave(filename = paste0(opt$outdir, "/", names(plots[i]), ".svg"),
                     plot = plots[[i]], device = "svg"),
-       pdf = ggsave(filename = paste0("libs/plots/", names(plots[i]), "pdf"),
+       pdf = ggsave(filename = paste0(opt$outdir, "/", names(plots[i]), ".pdf"),
                     plot = plots[[i]], device = "pdf")
 )
