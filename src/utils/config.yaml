@@ -20,7 +20,7 @@ samples:
   - SRR12794728
 
 # Output directory
-outdir: lib
+outdir: test
 # Path of reference genome files
 genome_files: data/raw_data
 # Genome reference GRCh37 or GRCh38 !!!
@@ -112,6 +112,7 @@ netminer:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~VISUALIZATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 visualization:
   count_data: libs/DE_analysis/circular_counts_sub.csv
-  metadata: libs/DE_analysis/circular_info.csv
+  metadata: libs/DE_analysis/metadata_samples.csv
   normalized: no
+  design: ~group+sex
   out_format: pdf
