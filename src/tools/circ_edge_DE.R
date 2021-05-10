@@ -7,7 +7,7 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 25-03-2021
-# Last modification : 06-05-2021
+# Last modification : 07-05-2021
 ################################################################################
 
 suppressPackageStartupMessages(library("edgeR"))
@@ -17,20 +17,21 @@ suppressPackageStartupMessages(library("dplyr"))
 
 # !! Hacer una nota al usuario de poner el nombre en de las columnas con la primera
 # en mayúscula, siempre y cuando ponga él sus propios archivos
-check_lib <- function(lib){
-  if(ncol(lib) == 5 ){
-    lib      <- lib %>% rename(Group = group)
-    metadata <- as.factor(lib['group'])
-    return(metadata)
-  }elif(ncol(lib) == 6){
-    lib            <- lib %>% rename(Group = group)
-    lib            <- lib %>% rename(Sex = sex)
-    metadata       <- cbind(lib['group'], lib['sex'])
+check_lib <- function(metadata){
+  if('Group' %in% colnames(metadata) & 'Sex' %in% colnames(metadata) ){
+    metadata       <- metadata %>% rename(group = Group)
+    metadata       <- metadata %>% rename(sex = Sex)
+
     metadata$group <- as.factor(metadata$group)
     metadata$sex   <- as.factor(metadata$sex)
+    metadata       <- cbind(metadata['group'], metadata['sex'])
     return(metadata)
+    return(metadata)
+  }else if('Group' %in% colnames(metadata)){
+    metadata       <- metadata %>% rename(group = Group)
+    metadata       <- as.factor(metadata['group'])
   }else{
-    stop(paste0("ERROR: Invalid number of columns in library information file."))
+    stop(paste0("ERROR: 'Group' column must be supplied in metadata"))
   }
 }
 
@@ -113,7 +114,7 @@ circrna_DGE <- DGEList(counts       = circrna_counts,
                        genes        = circ_info,
                        lib.size     = linear_DGE$samples[, "lib.size"],
                        norm.factors = linear_DGE$samples[, "norm.factors"])
-
+circ_counts <- circrna_DGE$counts
 print("Done.")
 print("Starting differential expression analysis of circular RNAs...")
 
@@ -162,12 +163,26 @@ volcano_plot <-
     xlab("log2FC") +
     ylab("-log10(p-value)")
 
+#~~~~~~~~~~~~~~~~~~~~~HEATMAP~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Data treatment: Plot top20 DE (by pvalue) circular RNAs
+circ_counts1 <- filter(circ_counts, rownames(circ_counts) %in% top20)
+circ_counts1 <- melt(as.matrix(circ_counts1)) # changing format
+colnames(circ_counts1) <- c("Circular_RNAs", "Samples", "value")
+
+# Plot
+heatmap <-
+ggplot(circ_counts1, aes(x=Samples, y=Circular_RNAs, fill=value)) +
+geom_tile(colour = "white") +
+labs(fill = "TMM counts") +
+scale_fill_gradient(low="white", high = "steelblue")
+
 # Download data
 DE_matrix_path <- paste0(opt$outdir,"/circrna_DE.csv")
 volcano_path   <- paste0(opt$outdir,"/volcano_plot.svg")
+heatmap_path   <- paste0(opt$outdir,"/heatmap.svg")
 
 write.csv(circrna_df, file = DE_matrix_path, quote = FALSE)
 ggsave(filename = volcano_path , plot = volcano_plot, device = "svg")
-
+ggsave(filename = heatmap_path , plot = heatmap, device = "svg")
 print(paste("Differential Expression analysis done. Output files:\n",
-            DE_matrix_path, "\n", volcano_path, "\n"))
+            DE_matrix_path, "\n", volcano_path, "\n", heatmap_path, "\n"))
