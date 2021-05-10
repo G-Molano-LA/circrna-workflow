@@ -3,6 +3,7 @@
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__ = "IN PROCESS"
 
+DE_DESIGN   = config["DE"]["design"]
 
 rule DE_results:
     input:
@@ -20,7 +21,7 @@ rule edgeR:
         DE_matrix    = f'{OUTDIR}/DE_analysis/circrna_DE.csv',
         volcano_plot = f'{OUTDIR}/DE_analysis/volcano_plot.svg'
     params:
-        design = config["DE"]["design"],
+        design = DE_DESIGN,
         pval   = config["DE"]["pvalue"],
         FC     = config["DE"]["fold_change"],
         outdir = f'{OUTDIR}/DE_analysis',

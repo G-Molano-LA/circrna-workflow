@@ -3,12 +3,15 @@
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__ = "IN PROCESS"
 
+LIB_INFO    = f'{OUTDIR}/DE_analysis/library_info.csv'
+CIRC_INFO   = f'{OUTDIR}/DE_analysis/circular_info.csv'
+CIRC_COUNTS = f'{OUTDIR}/DE_analysis/circular_count_matrix.csv'
 
 rule prep_DE_results:
     input:
-        lib_info    = f'{OUTDIR}/DE_analysis/library_info.csv',
-        circ_info   = f'{OUTDIR}/DE_analysis/circular_info.csv',
-        circ_counts = f'{OUTDIR}/DE_analysis/circular_count_matrix.csv',
+        lib_info    = LIB_INFO,
+        circ_info   = CIRC_INFO,
+        circ_counts = CIRC_COUNTS,
         ratio       = f'{OUTDIR}/DE_analysis/junction_ratio.csv',
         gene        = f'{OUTDIR}/DE_analysis/gene_count_matrix.csv',
         transcript  = f'{OUTDIR}/DE_analysis/transcript_count_matrix.csv'
@@ -39,9 +42,9 @@ rule prep_CIRIquant:
     input:
         circular_file = f'{OUTDIR}/DE_analysis/prep_DE/sample_circ.lst'
     output:
-        lib_info    = f'{OUTDIR}/DE_analysis/library_info.csv',
-        circ_info   = f'{OUTDIR}/DE_analysis/circular_info.csv',
-        circ_counts = f'{OUTDIR}/DE_analysis/circular_count_matrix.csv',
+        lib_info    = LIB_INFO,
+        circ_info   = CIRC_INFO',
+        circ_counts = CIRC_COUNTS,
         ratio       = f'{OUTDIR}/DE_analysis/junction_ratio.csv'
     priority: 9
     conda: config["envs"]["ciriquant"]
