@@ -110,6 +110,6 @@ files <- list(Raw = raw_counts, FPKM = fpkm_counts, Median = median_counts,
 
 for(i in 1:length(files)){
   write.table(files[[i]],
-              file = paste0(opt$outdir, names(files[i]), "_Count.txt" )
+              file = paste0(opt$outdir, names(files[i]), "_Count.txt"),
               row.names = TRUE, quote = FALSE)
 }
