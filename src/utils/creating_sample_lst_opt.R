@@ -7,19 +7,18 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 04-05-2021
-# Last modification : 06-05-2021
+# Last modification : 10-05-2021
 ################################################################################
 
 suppressPackageStartupMessages(library("argparse"))
 
+source("src/utils/utils.R")
 
+# SCRIPT ARGUMENTS
 parser <- ArgumentParser(description = 'Create some list')
-parser$add_argument("--samples", required = TRUE,  default = NULL, action = 'store',
-  nargs = '+', help = "list of sample names")
-parser$add_argument("--group", required = TRUE, action = 'store', nargs = '+',
-  default = NULL, help = "list of group values")
-parser$add_argument("--sex", action = 'store', nargs = '+', default = NULL,
-  help = "list of sex values")
+parser$add_argument("--metadata", required = TRUE,  default = NULL, action = 'store',
+  help = "File containing sample names and metadata variables such as group and sex.")
+parser$add_argument("--sep", default = ",", action = 'store', help = "Separator")
 parser$add_argument("--dir",  required = TRUE, action = 'store', default = NULL,
   help = "directory")
 parser$add_argument("--outdir", action = 'store', default = NULL, help = "output directory")
@@ -33,29 +32,34 @@ if(is.null(opt$samples) || is.null(opt$dir) || is.null(opt$group)){
 
 
 # Passing args
-sample_names <- opt$samples
-sample_group <- opt$group
-sample_sex   <- opt$sex
-dir          <- opt$dir
-outdir       <- opt$outdir
+sep      <- check_sep(opt$sep)
+metadata <- read.csv(opt$metadata, row.names = 1, sep = sep)
+metadata <- check_metadata(metadata)
+dir      <- opt$dir
+outdir   <- opt$outdir
 
 
 # Creating content
 # 1. sample.lst
 circular_path <- vector()
-for (i in 1:length(sample_names)){
-  circular_path[i] <- paste0(dir,"/",sample_names[i],".gtf")}
+for (i in 1:length(metadata$sample)){
+  circular_path[i] <- paste0(dir,"/",metadata$sample[i],".gtf")}
 
-sample_lst <- cbind(sample_names, circular_path, sample_group, sample_sex)
+if('sex' %in% colnames(metadata)){
+  sample_lst <- cbind(metadata$sample, circular_path, metadata$group, metadata$sex)
+}else{
+  sample_lst <- cbind(metadata$sample, circular_path, metadata$group)
+}
+
 
 # 2. sample_gen.lst
 linear_dir <- paste0(dir,"/gene/")
 
 linear_path <- vector()
-for (i in 1:length(sample_names)){
-  linear_path[i] <- paste0(linear_dir,sample_names[i],"_out.gtf")}
+for (i in 1:length(metadata$sample)){
+  linear_path[i] <- paste0(linear_dir,metadata$sample[i],"_out.gtf")}
 
-sample_gene_lst <- cbind(sample_names, linear_path)
+sample_gene_lst <- cbind(metadata$sample, linear_path)
 
 
 # Write tsv file
