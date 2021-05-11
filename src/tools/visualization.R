@@ -6,7 +6,7 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 09-04-2021
-# Last modification : 07-05-2021
+# Last modification : 10-05-2021
 ###############################################################################
 
 # Dependencies
@@ -18,51 +18,7 @@ suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("reshape2"))
 suppressPackageStartupMessages(library("factoextra"))
 
-# Functions
-check_metadata <- function(metadata){
-  if('Group' %in% colnames(metadata) & 'Sex' %in% colnames(metadata) ){
-    metadata       <- metadata %>% rename(group = Group)
-    metadata       <- metadata %>% rename(sex = Sex)
-
-    metadata$group <- as.factor(metadata$group)
-    metadata$sex   <- as.factor(metadata$sex)
-    metadata       <- cbind(metadata['group'], metadata['sex'])
-    return(metadata)
-  }else if('Group' %in% colnames(metadata)){
-    metadata            <- metadata %>% rename(group = Group)
-    metadata       <- as.factor(metadata['group'])
-    return(metadata)
-  }else{
-    stop(paste0("ERROR: 'Group' column must be supplied in metadata"))
-  }
-}
-
-check_norm <- function(norm, metadata, circ_info, design){
-  design <- as.formula(design)
-
-  if(norm == "False" && circ_info != 'None'){
-    circ_info             <- read.csv(opt$circ_info, row.names = 1)
-
-    rownames(circ_counts) <- rownames(circ_info)
-    colnames(circ_counts) <- rownames(metadata)
-    DESeq_count_data      <- DESeqDataSetFromMatrix(countData = circ_counts,
-                                                    colData   = metadata,
-                                                    design    = design)
-    DESeq_count_data <- estimateSizeFactors(DESeq_count_data)
-    circ_counts      <- as.matrix(counts(DESeq_count_data, normalized = TRUE))
-    return(circ_counts)
-  }else if(norm == "False" && circ_info == 'None'){
-    circ_counts      <- as.matrix(read.csv(opt$data, row.names = 1))
-    DESeq_count_data <- DESeqDataSetFromMatrix(countData = circ_counts,
-                                                colData  = metadata,
-                                                design   = design)
-    DESeq_count_data <- estimateSizeFactors(DESeq_count_data)
-    circ_counts      <- as.matrix(counts(DESeq_count_data, normalized = TRUE))
-    return(circ_counts)
-  }else if(norm == "True"){
-    return(circ_counts)
-  }
-}
+source("src/utils/utils.R")
 
 ################################################################################
 # 1. Input
@@ -176,3 +132,20 @@ switch(opt$output,
        pdf = ggsave(filename = paste0(opt$outdir, "/", names(plots[i]), ".pdf"),
                     plot = plots[[i]], device = "pdf")
 )
+
+# Error in h(simpleError(msg, call)) :
+#   error in evaluating the argument 'x' in selecting a method for function 'as.matrix': duplicate 'row.names' are not allowed
+# Calls: check_norm -> as.matrix -> read.csv -> read.table
+# Execution halted
+# [Mon May 10 21:01:53 2021]
+# Error in rule plots:
+#     jobid: 1
+#     output: test/visualization/dendrogram.svg, test/visualization/boxplot.pdf, test/visualization/violin_plot.pdf, test/visualization/histogram.pdf
+#     conda-env: /home/alejandra/circrna-workflow/.snakemake/conda/46ebc1bf4e3c1421cc083c26a5f5105b
+#     shell:
+#         Rscript src/tools/visualization.R --data libs/DE_analysis/circular_counts.csv --norm False        --circ_info None --lib libs/DE_analysis/metadata.csv --output pdf        --outdir test/visualization
+#         (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+#
+# Shutting down, this might take some time.
+# Exiting because a job execution failed. Look above for error message
+# Complete log: /home/alejandra/circrna-workflow/.snakemake/log/2021-05-10T205307.803882.snakemake.log
