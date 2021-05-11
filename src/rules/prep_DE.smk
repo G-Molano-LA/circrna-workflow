@@ -1,7 +1,7 @@
 #!bin/bash/python3
 
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
-__state__ = "IN PROCESS"
+__state__  = "IN PROCESS"
 
 LIB_INFO    = f'{OUTDIR}/DE_analysis/library_info.csv'
 CIRC_INFO   = f'{OUTDIR}/DE_analysis/circular_info.csv'
@@ -21,29 +21,27 @@ rule prep_DE_results:
 rule prep_previous_files:
     output:
         circular_file = f'{OUTDIR}/DE_analysis/prep_DE/sample_circ.lst',
-        linear_file = f'{OUTDIR}/DE_analysis/prep_DE/sample_gene.lst'
+        linear_file   = f'{OUTDIR}/DE_analysis/prep_DE/sample_gene.lst'
     params:
-        dir     = f'{OUTDIR}/DE_analysis/prep_DE',
-        outdir  = f'{OUTDIR}/DE_analysis/prep_DE',
-        samples = SAMPLES,
-        group   = config["prep_DE"]["group"],
-        sex     = config["prep_DE"]["sex"],
-        script  = "src/main/utils/creating_sample_lst_opt.R"
+        dir      = f'{OUTDIR}/DE_analysis/prep_DE',
+        outdir   = f'{OUTDIR}/DE_analysis/prep_DE',
+        metadata = config["DE"]["metadata"],
+        separator= config["DE"]["sep"],
+        script   = "src/main/utils/creating_sample_lst_opt.R"
     priority: 10
     conda: config["envs"]["R"]
     shell:
-        "Rscript {params.script} --samples {params.samples}\
-            --group {params.group}\
-            --sex {params.sex}\
+        "Rscript {params.script} --metadata {params.metadata}\
+            --sep {params.separator}\
             --dir {params.dir}\
-            --outdir {params.outdir} "
+            --outdir {params.outdir}"
 
 rule prep_CIRIquant:
     input:
         circular_file = f'{OUTDIR}/DE_analysis/prep_DE/sample_circ.lst'
     output:
         lib_info    = LIB_INFO,
-        circ_info   = CIRC_INFO',
+        circ_info   = CIRC_INFO,
         circ_counts = CIRC_COUNTS,
         ratio       = f'{OUTDIR}/DE_analysis/junction_ratio.csv'
     priority: 9
