@@ -1,7 +1,7 @@
 #!bin/bash/python3
 
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
-__state__ = "IN PROCESS"
+__state__  = "IN PROCESS"
 
 DE_DESIGN   = config["DE"]["design"]
 

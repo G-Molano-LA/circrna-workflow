@@ -75,28 +75,11 @@ quantification:
   threads:
     ciriquant: 5
 
-#~~~~~~~~~~~~~~~~~~DIFFERENTIAL_EXPRESSION_ANALYSIS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-prep_DE: # only if quantification == 'yes'
-  group:
-    - Multiple sclerosis
-    - Multiple sclerosis
-    - Multiple sclerosis
-    - Multiple sclerosis
-    - Healthy control
-    - Healthy control
-    - Healthy control
-    - Healthy control
-  sex:
-    - female
-    - female
-    - male
-    - male
-    - male
-    - male
-    - female
-    - female
-
+# #~~~~~~~~~~~~~~~~~~DIFFERENTIAL_EXPRESSION_ANALYSIS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Complete only if quantification == 'yes'
 DE:
+  metadata: libs/DE_analysis/metadata.csv
+  sep: comma
   design: ~group+sex
   pvalue:
   fold_change:
@@ -111,8 +94,8 @@ netminer:
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~VISUALIZATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 visualization:
-  count_data: libs/DE_analysis/circular_counts_sub.csv
-  metadata: libs/DE_analysis/metadata_samples.csv
+  count_data: libs/DE_analysis/circular_counts.csv
+  metadata: libs/DE_analysis/metadata.csv
   normalized: no
   design: ~group+sex
   out_format: pdf
