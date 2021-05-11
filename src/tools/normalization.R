@@ -6,33 +6,14 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 12-04-2021
-# Last modification : 06-05-2021
+# Last modification : 10-05-2021
 ################################################################################
 
 suppressPackageStartupMessages(library("DESeq2"))
 suppressPackageStartupMessages(library("edgeR"))
 suppressPackageStartupMessages(library("argparse"))
 
-# FUNCTIONS
-
-# !! Hacer una nota al usuario de poner el nombre en de las columnas con la primera
-# en mayúscula, siempre y cuando ponga él sus propios archivos
-check_lib <- function(lib){
-  if(ncol(lib) == 5 ){
-    lib      <- lib %>% rename(Group = group)
-    metadata <- as.factor(lib['group'])
-    return(metadata)
-  }elif(ncol(lib) == 6){
-    lib            <- lib %>% rename(Group = group)
-    lib            <- lib %>% rename(Sex = sex)
-    metadata       <- cbind(lib['group'], lib['sex'])
-    metadata$group <- as.factor(metadata$group)
-    metadata$sex   <- as.factor(metadata$sex)
-    return(metadata)
-  }else{
-    stop(paste0("ERROR: Invalid number of columns in library information file."))
-  }
-}
+source("src/utils/utils.R")
 
 # SCRIPT ARGUMENTS
 parser <- ArgumentParser(description = "Normalizing raw counts")
@@ -59,7 +40,7 @@ circ_counts           <- as.matrix(read.csv(opt$circ_counts))
 rownames(circ_counts) <- circ_info$id
 
 metadata    <- read.csv(opt$metadata, row.names = 1)
-metadata    <- check_lib(metadata)
+metadata    <- check_metadata(metadata)
 
 DESeq_count_data <- DESeqDataSetFromMatrix(countData = circ_counts,
                                             colData  = metadata)
