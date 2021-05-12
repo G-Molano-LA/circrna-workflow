@@ -108,7 +108,7 @@ rule ciriquant:
     input:
         read1  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["suffix"][1]}',
         read2  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["suffix"][2]}',
-        ciri2  = lambda wildcards :f'{OUTDIR}/identification/overlap/{wildcards.sample}_common.txt', # potser aquest path també el podria facilitar l'usuari
+        ciri2  = lambda wildcards: f'{OUTDIR}/identification/overlap/{wildcards.sample}_common.txt', # potser aquest path també el podria facilitar l'usuari
         config = f'{OUTDIR}/ciriquant/ciriquant_config.yaml'
     output:
         # Linear transcripts alignment
@@ -120,7 +120,7 @@ rule ciriquant:
         linear_out              = f'{OUTDIR}/ciriquant/gene/{{sample}}_out.gtf',
         gene_abundance          = f'{OUTDIR}/ciriquant/gene/{{sample}}_genes.list',
         # circRNAs quantification
-        circular = f'{OUTDIR}/ciriquant/{{sample}}.gtf' # REVISAR si este output se genera en este directorio
+        circular = f'{OUTDIR}/ciriquant/{{sample}}.gtf'
     threads: config["quantification"]["threads"]["ciriquant"]
     params:
         tool   = "CIRI2",

@@ -6,7 +6,7 @@
 # Date              : 06-05-2021
 # Last modification : 06-05-2021
 ################################################################################
-name : r-environment
+name : r-env
 dependencies:
   - r-essentials
   - r-base

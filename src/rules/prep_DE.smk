@@ -3,6 +3,8 @@
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__  = "IN PROCESS"
 
+METADATA_DE    = config["DE"]["metadata"]
+
 LIB_INFO    = f'{OUTDIR}/DE_analysis/library_info.csv'
 CIRC_INFO   = f'{OUTDIR}/DE_analysis/circular_info.csv'
 CIRC_COUNTS = f'{OUTDIR}/DE_analysis/circular_count_matrix.csv'
@@ -25,7 +27,7 @@ rule prep_previous_files:
     params:
         dir      = f'{OUTDIR}/DE_analysis/prep_DE',
         outdir   = f'{OUTDIR}/DE_analysis/prep_DE',
-        metadata = config["DE"]["metadata"],
+        metadata = METADATA_DE,
         separator= config["DE"]["sep"],
         script   = "src/main/utils/creating_sample_lst_opt.R"
     priority: 10
