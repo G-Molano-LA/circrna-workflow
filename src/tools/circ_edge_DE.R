@@ -7,7 +7,7 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 25-03-2021
-# Last modification : 07-05-2021
+# Last modification : 11-05-2021
 ################################################################################
 
 suppressPackageStartupMessages(library("edgeR"))
@@ -15,25 +15,7 @@ suppressPackageStartupMessages(library("statmod"))
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("dplyr"))
 
-# !! Hacer una nota al usuario de poner el nombre en de las columnas con la primera
-# en mayúscula, siempre y cuando ponga él sus propios archivos
-check_lib <- function(metadata){
-  if('Group' %in% colnames(metadata) & 'Sex' %in% colnames(metadata) ){
-    metadata       <- metadata %>% rename(group = Group)
-    metadata       <- metadata %>% rename(sex = Sex)
-
-    metadata$group <- as.factor(metadata$group)
-    metadata$sex   <- as.factor(metadata$sex)
-    metadata       <- cbind(metadata['group'], metadata['sex'])
-    return(metadata)
-    return(metadata)
-  }else if('Group' %in% colnames(metadata)){
-    metadata       <- metadata %>% rename(group = Group)
-    metadata       <- as.factor(metadata['group'])
-  }else{
-    stop(paste0("ERROR: 'Group' column must be supplied in metadata"))
-  }
-}
+source("src/utils/utils.R")
 
 
 option_list <- list(
@@ -82,7 +64,7 @@ if(is.null(opt$design)|| is.null(opt$lib) || is.null(opt$circ_counts) ||
 print("Loading data...")
 
 lib_mtx        <- read.csv(opt$lib, row.names = 1)
-metadata       <- check_lib(lib_mtx)
+metadata       <- check_metadata(lib_mtx)
 circ_info      <- read.csv(opt$circ_info)
 circrna_counts <-as.matrix(read.csv(opt$circ_counts))
 linear_counts  <- as.matrix(read.csv(opt$linear_counts))
