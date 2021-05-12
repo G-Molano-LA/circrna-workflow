@@ -6,8 +6,12 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 06-05-2021
-# Last modification : 06-05-2021
+# Last modification : 11-05-2021
 ################################################################################
+DATA_CO     = config["netminer"]["count_data"]
+METADATA_CO = config["netminer"]["metadata"]
+DESIGN_CO   = config["netminer"]["design"]
+GENE_LENGTH  = config["netminer"]["gene_length"]
 
 rule coexpression_results:
     input:
@@ -15,20 +19,22 @@ rule coexpression_results:
 
 rule normalization:
     input:
-        circ_counts   = f'{OUTDIR}/DE_analysis/circular_count_matrix.csv',
-        metadata      = f'{OUTDIR}/DE_analysis/library_info.csv',
-        circ_info     = f'{OUTDIR}/DE_analysis/circular_info.csv'
+        circ_counts   = CIRC_COUNTS if DATA_CO is None else DATA_CO ,
+        metadata      = METADATA_DE if METADATA_CO is None else METADATA_CO
     output:
         expand("{outdir}/data/normalized_counts/{norm}_Count.txt", outdir = OUTDIR,
             norm = ["Raw", "FPKM", "Median", "VST", "TMM", "UQ"])
     params:
-        outdir = f'{OUTDIR}/data/normalized_counts/",
-        script = 'src/tools/normalization.R'
+        design    = DE_DESIGN if DESIGN_CO is None else DESIGN_CO,
+        circ_info = CIRC_INFO if DATA_CO is None else GENE_LENGTH,
+        outdir    = f'{OUTDIR}/data/normalized_counts/',
+        script    = 'src/tools/normalization.R'
     conda: config["envs"]["R"]
     shell:
         "Rscript {params.script} --circ_counts {input.circ_counts}\
                 --metadata {input.metadata}\
-                --circ_info {input.circ_info}\
+                --design {params.design}\
+                --circ_info {params.circ_info}\
                 --outdir {params.outdir}"
 rule netminer:
     input:
@@ -37,10 +43,10 @@ rule netminer:
     output:
         f'{OUTDIR}/coexpression/final_geneNet.tab'
     params:
-        filepath      = config["netminer"]["filepath"],
+        filepath      = f'{OUTDIR}/data/normalized_counts',
         percThreshold = config["netminer"]["percThreshold"],
         S1N           = config["netminer"]["S1N"],
-        S2N           = config["netminer"]["S2N"],,
+        S2N           = config["netminer"]["S2N"],
         script        = "src/tools/ensemble_method_for_construction_consensus_network.R"
     threads: config["netminer"]["threads"]
     conda: config["envs"]["R"]
