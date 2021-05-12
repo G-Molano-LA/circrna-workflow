@@ -3,6 +3,12 @@
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__ = "ALMOST FINISHED" # requires execution to finish it
 
+# VARIABLES
+DATA_TRI  = config["trimming"]["reads"]
+TRI_READ1 = expand("{path}/{sample}{ext}", path = config["trimming"]["reads"],
+    sample = SAMPLES, ext = config["trimming"]["suffix"][1])
+TRI_READ2 = expand("{path}/{sample}{ext}", path = config["trimming"]["reads"],
+    sample = SAMPLES, ext = config["trimming"]["suffix"][2])
 
 # TARGET RULE
 rule trimming_results:
@@ -13,10 +19,8 @@ rule trimming_results:
 
 rule trimming:
     input:
-        read1 = expand("{path}/{sample}{ext}", path = config["trimming"]["reads"],
-            sample = SAMPLES, ext = config["trimming"]["suffix"][1]),
-        read2 = expand("{path}/{sample}{ext}", path = config["trimming"]["reads"],
-            sample = SAMPLES, ext = config["trimming"]["suffix"][2])
+        read1 = TRI_READ1 if DATA_TRI is not None else RAW_READ1,
+        read2 = TRI_READ2 if DATA_TRI is not None else RAW_READ2
     output:
         reads = expand("{outdir}/data/trimmed/{sample}_{replicate}.fq.gz",  outdir = OUTDIR,
             sample = SAMPLES, replicate = ["1_val_1", "2_val_2"]),

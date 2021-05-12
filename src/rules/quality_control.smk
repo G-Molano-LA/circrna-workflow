@@ -3,6 +3,10 @@
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__ = "ALMOST FINISHED" # requires execution to finish it
 
+RAW_READ1 = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
+    ext = config["quality_control"]["suffix"][1])
+RAW_READ2 = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
+    ext = config["quality_control"]["suffix"][2])
 
 # TARGET RULE
 rule quality_control_results:
@@ -13,8 +17,8 @@ rule quality_control_results:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FASTQC~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule fastqc1:
     input:
-        reads = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
-            ext = [config["quality_control"]["suffix"][1], config["quality_control"]["suffix"][2]])
+        read1 = RAW_READ1,
+        read2 = RAW_READ2
     output:
         html = expand("{outdir}/quality_control/raw/{sample}_{replicate}_fastqc.html",
             outdir = OUTDIR, sample = SAMPLES, replicate = [1,2]),
@@ -29,7 +33,7 @@ rule fastqc1:
     #     "following files {input.reads}. Number of threads used are {threads}."
     priority: 10
     shell:
-        "fastqc -t {threads} {input.reads} --outdir={params.outdir}"
+        "fastqc -t {threads} {input.read1} {input.read2} --outdir={params.outdir}"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MULTIQC~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule multiqc1:
