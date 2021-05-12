@@ -4,20 +4,20 @@ modules:
   quality_control: no
   trimming: no
   alignment_and_identification: no
-  quantification: no
+  quantification: yes
+  coexpression: no
   DE_analysis: no
-  visualization: yes
+  visualization: no
 
 # Filenames
 samples:
-  - SRR12794685
-  - SRR12794695
+  - SRR12794696
+  - SRR12794698
   - SRR12794703
-  - SRR12794706
   - SRR12794713
-  - SRR12794715
-  - SRR12794724
-  - SRR12794728
+  - SRR12794716
+  - SRR12794723
+  - SRR12794726
 
 # Output directory
 outdir: test
@@ -55,11 +55,11 @@ trimming:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT_AND_IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~
 aln_&_id:
   # Change only if trimming == "no"
-  reads: test/data/trimmed
+  reads:
   # Change only if trimming == "no"
   suffix:
-    1: _1_val_1.fq.gz
-    2: _2_val_2.fq.gz
+    1:
+    2:
   threads:
     bwa: 3    # Alignment tool
     ciri2: 3  # Identification tool
@@ -73,7 +73,7 @@ quantification:
     1: _1_val_1.fq.gz
     2: _2_val_2.fq.gz
   threads:
-    ciriquant: 5
+    ciriquant: 6
 
 # #~~~~~~~~~~~~~~~~~~DIFFERENTIAL_EXPRESSION_ANALYSIS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Complete only if quantification == 'yes'
@@ -86,16 +86,27 @@ DE:
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~COEXPRESSION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 netminer:
-  filepath:
-  threads:
+  # Input data
+  count_data: libs/DE_analysis/circular_counts.csv
+  metadata: libs/DE_analysis/metadata.csv
+  gene_length: libs/DE_analysis/circular_info.csv
+  design: ~group+sex
+  # Params tool
+  threads: 5 # minimun
   percThreshold: 0.005
   S1N: 3
   S2N: 2
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~VISUALIZATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 visualization:
-  count_data: libs/DE_analysis/circular_counts.csv
+  # 1st column = rownames. 1st row = colnames
+  count_data: libs/DE_analysis/circular_counts_modified.csv
   metadata: libs/DE_analysis/metadata.csv
   normalized: no
   design: ~group+sex
-  out_format: pdf
+  # Image settings
+  # device: pdf, jpeg, pgn or svg
+  out_format: svg
+  units: in
+  width: 12
+  height: 12
