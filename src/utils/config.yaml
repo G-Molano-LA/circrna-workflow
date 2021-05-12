@@ -53,13 +53,17 @@ trimming:
   fastqc_threads: 3
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT_AND_IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~
-aln_&_id:
+aln_and_id:
   # Change only if trimming == "no"
   reads:
   # Change only if trimming == "no"
   suffix:
     1:
     2:
+bwa_index: # poner prefix. 
+reference:
+annotation:
+refFlat:
   threads:
     bwa: 3    # Alignment tool
     ciri2: 3  # Identification tool
@@ -72,6 +76,13 @@ quantification:
   suffix:
     1: _1_val_1.fq.gz
     2: _2_val_2.fq.gz
+  reference:
+  annotation:
+  bwa_index:
+  hisat2_index:
+  # localted in the same dir that ref
+  fai_index:
+  # Mandatory
   threads:
     ciriquant: 6
 

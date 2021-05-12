@@ -1,9 +1,30 @@
 #!/usr/bin/python3
-################################################################################
+
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__ = "ALMOST FINISHED" # Falta comprovar funcionamiento con GRCh37
+
+################################################################################
+# Snakefile to align and identification circRNAs from RNA-seq data.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Author: G. Molano, LA (gonmola@hotmail.es)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Date              :
+# Last modification : 12-05-2021
 ################################################################################
 
+# VARIABLES
+REFERENCE    = f'{PATH_genome}/{GENOME}.fna'
+ANNOTATION   = f'{PATH_genome}/{GENOME}_ann.gtf'
+REFFLAT_ANN  = f'{PATH_genome}/{GENOME}.refFlat.txt'
+BWA_INDEX    = expand("{path}/bwa/{genome}.fna.{ext}", path = PATH_genome,
+    genome = GENOME, ext=["amb", "ann", "bwt", "pac", "sa"])
+
+BWA_ALN     = config["aln_and_id"]["bwa_index"]
+REF_ALN     = config["aln_and_id"]["reference"]
+ANN_ALN     = config["aln_and_id"]["annotation"]
+REFFLAT_ALN = config["aln_and_id"]["refFlat"]
+ALN_READ1   = lambda wildcards: f'{config["aln_and_id"]["reads"]}/{wildcards.sample}{config["aln_and_id"]["suffix"][1]}'
+ALN_READ2   = lambda wildcards: f'{config["aln_and_id"]["reads"]}/{wildcards.sample}{config["aln_and_id"]["suffix"][2]}'
 
 # TARGET RULE
 rule alignment_and_identification_results:
@@ -17,7 +38,7 @@ rule alignment_and_identification_results:
 #~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION&REFERENCE-FILES~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule get_ref_genome:
     output:
-        ref = f'{PATH_genome}/{GENOME}.fna'
+        ref = REFERENCE
     params:
         path = PATH_genome
     priority: 12
@@ -40,7 +61,7 @@ rule get_ref_genome:
 
 rule get_ref_annotation:
     output:
-        f'{PATH_genome}/{GENOME}_ann.gtf'
+        ANNOTATION
     params:
         path = PATH_genome
     priority: 11
@@ -59,7 +80,7 @@ rule get_ref_annotation:
 
 rule refFlat:
     output:
-        refFlat = f'{PATH_genome}/{GENOME}.refFlat.txt'
+        REFFLAT_ANN
     params:
         path = PATH_genome
     priority: 10
@@ -76,10 +97,9 @@ rule refFlat:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BWA-MEM ALIGNMENT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule bwa_index:
     input:
-        ref = f'{PATH_genome}/{GENOME}.fna'
+        REFERENCE
     output:
-        index=expand("{path}/bwa/{genome}.fna.{ext}", path = PATH_genome,
-            genome = GENOME, ext=["amb", "ann", "bwt", "pac", "sa"])
+        BWA_INDEX
     params:
         genome = GENOME,
         script = "src/utils/bwa_index.sh",
@@ -113,15 +133,14 @@ rule bwa_index:
 
 rule bwa_mem:
     input:
-        read1 = lambda wildcards: f'{config["aln_&_id"]["reads"]}/{wildcards.sample}{config["aln_&_id"]["suffix"][1]}',
-        read2 = lambda wildcards: f'{config["aln_&_id"]["reads"]}/{wildcards.sample}{config["aln_&_id"]["suffix"][2]}',
-        index = expand("{path}/bwa/{genome}.fna.{ext}", genome = GENOME,
-            path = PATH_genome, ext=["amb", "ann", "bwt", "pac", "sa"])
+        read1 = ALN_READ1,
+        read2 = ALN_READ1,
+        index = dir(BWA_ALN) if BWA_INDEX is not None else BWA_INDEX
     output:
         sam    = temp(f'{OUTDIR}/data/mapped_data/{{sample}}.sam')
     params:
         score  = "19", # Do not output alignment with score lower than INT.
-        prefix = f'{PATH_genome}/{GENOME}.fna'
+        prefix = BWA_ALN if BWA_INDEX is not None else REFERENCE
     message:
         "BWA-MEM aligner: Starting the alignment of the reads from {input.read1} & {input.read2}\
          THREADS = {threads}\
@@ -129,7 +148,7 @@ rule bwa_mem:
          GENOME  = {params.prefix}\
          SCORE   = All alignment with score lower than {params.score} won't be output\
          LOG     = {log}"
-    threads: config["aln_&_id"]["threads"]["bwa"]
+    threads: config["aln_and_id"]["threads"]["bwa"]
     log:
         f'{OUTDIR}logs/mapped_data/{{sample}}.log'
     conda: config["envs"]["bwa"]
@@ -165,7 +184,7 @@ rule ciri2:
         ref  =  f'{PATH_genome}/{GENOME}.fna' # no acepta archivo comprimido
     output:
         f'{OUTDIR}/identification/{{sample}}_ciri2.txt'
-    threads: config["aln_&_id"]["threads"]["ciri2"]
+    threads: config["aln_and_id"]["threads"]["ciri2"]
     message:
         "CIRI2: Starting circRNA identification in {wildcards.sample}.sam file...\
         REFERENCE FILE = {input.ref}\
@@ -197,8 +216,8 @@ rule circexplorer2_id:
 rule circexplorer2_annotation:
     input:
         bsj     = f'{OUTDIR}/identification/{{sample}}_back_spliced_junction.bed',
-        ref     = f'{PATH_genome}/{GENOME}.fna',
-        refFlat = f'{PATH_genome}/{GENOME}.refFlat.txt'
+        ref     = REFERENCE,
+        refFlat = REFFLAT_ANN
     output:
         f'{OUTDIR}/identification/{{sample}}_circexp2.txt'
     message:

@@ -14,6 +14,7 @@ suppressPackageStartupMessages(library("edgeR"))
 suppressPackageStartupMessages(library("statmod"))
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("reshape2"))
 
 source("src/utils/utils.R")
 
@@ -147,16 +148,10 @@ volcano_plot <-
 
 #~~~~~~~~~~~~~~~~~~~~~HEATMAP~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Data treatment: Plot top20 DE (by pvalue) circular RNAs
-circ_counts1 <- filter(circ_counts, rownames(circ_counts) %in% top20)
-circ_counts1 <- melt(as.matrix(circ_counts1)) # changing format
-colnames(circ_counts1) <- c("Circular_RNAs", "Samples", "value")
+circ_counts1 <- as.matrix(filter(circ_counts, rownames(circ_counts) %in% top20))
 
 # Plot
-heatmap <-
-ggplot(circ_counts1, aes(x=Samples, y=Circular_RNAs, fill=value)) +
-geom_tile(colour = "white") +
-labs(fill = "TMM counts") +
-scale_fill_gradient(low="white", high = "steelblue")
+heatmap <- heatmap(circ_counts1, scale = 'none')
 
 # Download data
 DE_matrix_path <- paste0(opt$outdir,"/circrna_DE.csv")
@@ -164,7 +159,11 @@ volcano_path   <- paste0(opt$outdir,"/volcano_plot.svg")
 heatmap_path   <- paste0(opt$outdir,"/heatmap.svg")
 
 write.csv(circrna_df, file = DE_matrix_path, quote = FALSE)
+
 ggsave(filename = volcano_path , plot = volcano_plot, device = "svg")
-ggsave(filename = heatmap_path , plot = heatmap, device = "svg")
+svg(file = heatmap_path)
+heatmap
+dev.off()
+
 print(paste("Differential Expression analysis done. Output files:\n",
             DE_matrix_path, "\n", volcano_path, "\n", heatmap_path, "\n"))

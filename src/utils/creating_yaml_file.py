@@ -6,9 +6,16 @@ import yaml
 import sys
 
 # Passing arguments
-GENOME      = str(sys.argv[1])
-PATH_genome = str(sys.argv[2])
-OUTFILE     = str(sys.argv[3])
+HISAT2_INDEX= str(sys.argv[1])
+BWA_INDEX   = str(sys.argv[2])
+REFRENCE    = str(sys.argv[3])
+ANNOTATION  = str(sys.argv[4])
+OUTFILE     = str(sys.argv[5])
+
+HISAT2_BOL     = str(sys.argv[6])
+BWA_BOL        = str(sys.argv[7])
+REFERENCE_BOL  = str(sys.argv[8])
+ANNOTATION_BOL = str(sys.argv[9])
 
 # Capturing conda path
 conda_path = subprocess.check_output('which bwa', shell = True)
@@ -17,6 +24,17 @@ conda_path = conda_path.rstrip('/bwa\n')
 dir_path = subprocess.check_output('pwd', shell = True)
 dir_path = dir_path.rstrip('\n')
 
+# Conditional path assignment
+paths = [ REFERENCE, ANNOTATION, BWA_INDEX, HISAT2_INDEX ]
+files = [ REFERENCE_BOL, ANNOTATION_BOL, BWA_BOL, HISAT2_BOL ]
+
+count = -1
+for boolean in files:
+    count = count + 1
+    if boolean is True:
+        pass
+    else:
+        paths[count] = '{}/{}'.format(dir_path, paths[counts])
 # Creating dictionary for yaml file
 dic_yaml = {'name'      : GENOME,
             'tools'     :
@@ -25,10 +43,10 @@ dic_yaml = {'name'      : GENOME,
                  'stringtie': '{}/stringtie'.format(conda_path),
                  'samtools' : '{}/samtools'.format(conda_path)},
             'reference' :
-                {'fasta'         : '{}/{}/{}.fna'.format(dir_path, PATH_genome, GENOME),
-                 'gtf'           : '{}/{}/{}_ann.gtf'.format(dir_path, PATH_genome, GENOME),
-                 'bwa_index'     : '{}/{}/bwa/{}.fna'.format(dir_path, PATH_genome, GENOME),
-                 'hisat_index' : '{}/{}/hisat2/{}'.format(dir_path, PATH_genome, GENOME)
+                {'fasta'         : paths[0],
+                 'gtf'           : paths[1],
+                 'bwa_index'     : paths[2],
+                 'hisat_index'   : paths[3] 
                  }
             }
 

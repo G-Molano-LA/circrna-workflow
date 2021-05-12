@@ -3,8 +3,16 @@
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__ = "ALMOST FINISHED" # requires execution to finish it
 
+################################################################################
+# Snakefile to trimming RNA-seq reads.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Author: G. Molano, LA (gonmola@hotmail.es)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Date              :
+# Last modification : 12-05-2021
+################################################################################
+
 # VARIABLES
-DATA_TRI  = config["trimming"]["reads"]
 TRI_READ1 = expand("{path}/{sample}{ext}", path = config["trimming"]["reads"],
     sample = SAMPLES, ext = config["trimming"]["suffix"][1])
 TRI_READ2 = expand("{path}/{sample}{ext}", path = config["trimming"]["reads"],
@@ -19,8 +27,8 @@ rule trimming_results:
 
 rule trimming:
     input:
-        read1 = TRI_READ1 if DATA_TRI is not None else RAW_READ1,
-        read2 = TRI_READ2 if DATA_TRI is not None else RAW_READ2
+        read1 = RAW_READ1 if QUALITY is 'yes' else TRI_READ1,
+        read2 = RAW_READ2 if QUALITY is 'yes' else TRI_READ2
     output:
         reads = expand("{outdir}/data/trimmed/{sample}_{replicate}.fq.gz",  outdir = OUTDIR,
             sample = SAMPLES, replicate = ["1_val_1", "2_val_2"]),
