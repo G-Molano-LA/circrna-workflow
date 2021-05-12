@@ -6,12 +6,13 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 12-04-2021
-# Last modification : 10-05-2021
+# Last modification : 11-05-2021
 ################################################################################
 
 suppressPackageStartupMessages(library("DESeq2"))
 suppressPackageStartupMessages(library("edgeR"))
 suppressPackageStartupMessages(library("argparse"))
+suppressPackageStartupMessages(library("dplyr"))
 
 source("src/utils/utils.R")
 
@@ -21,6 +22,8 @@ parser$add_argument("--circ_counts", action = 'store', default = NULL, help =
   "circular counts matrix")
 parser$add_argument("--metadata", action = 'store', default = NULL, help =
     "Metadata information")
+parser$add_argument("--design", action = 'store', default = NULL, help =
+    "Experimental design")
 parser$add_argument("--circ_info", action = 'store', default = NULL, help =
     "Circular information")
 parser$add_argument("--outdir", action = 'store', default = NULL, help = "output directory")
@@ -34,19 +37,16 @@ if(is.null(opt$circ_counts)){
 
 
 # LOAD DATA
+metadata    <- check_metadata(opt$metadata)
+design      <- as.formula(opt$design)
 circ_info   <- read.csv(opt$circ_info)
-
-circ_counts           <- as.matrix(read.csv(opt$circ_counts))
-rownames(circ_counts) <- circ_info$id
-
-metadata    <- read.csv(opt$metadata, row.names = 1)
-metadata    <- check_metadata(metadata)
+circ_counts <- check_data_co(opt$circ_counts, circ_info)
 
 DESeq_count_data <- DESeqDataSetFromMatrix(countData = circ_counts,
-                                            colData  = metadata)
-DGE              <- DGEList(counts = counts,
-                            samples= metadata,
-                            genes  = circ_info)
+                                            colData  = metadata,
+                                            design = design)
+DGE              <- DGEList(counts = circ_counts,
+                            samples= metadata)
 
 # 1. Raw Counts
 raw_counts <- counts(DESeq_count_data)
@@ -92,5 +92,5 @@ files <- list(Raw = raw_counts, FPKM = fpkm_counts, Median = median_counts,
 for(i in 1:length(files)){
   write.table(files[[i]],
               file = paste0(opt$outdir, names(files[i]), "_Count.txt"),
-              row.names = TRUE, quote = FALSE)
+              row.names = TRUE, quote = FALSE, sep = "\t")
 }
