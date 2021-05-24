@@ -58,8 +58,12 @@ for (id in circexp_results$circRNA_ID) {
 }
 overlap <- overlap[!duplicated(overlap), ]
 
+# 5. Reconvert CIRI2 start coordinate format to 1-based
+overla$circRNA_start <- ciri_results$circRNA_start + 1
+overlap$circRNA_ID <- paste0(overla$chr, ":", overlap$circRNA_start,
+  "|", overlap$circRNA_end)
 
-# 5. New circRNA matrix
+# 6. New circRNA matrix
 filename= unlist(str_split(opt$ciri2, "libs/identification/ciri2/"))
 filename <- filename[2]
 filename = unlist(str_split(filename,"_results"))
@@ -70,7 +74,7 @@ path_venn = paste0("libs/plots/venn_diagrams/", filename, ".png")
 
 write.table(overlap, file = path_matrix, quote = FALSE, sep = "\t", row.names = FALSE)
 
-# 6. Grafical representation: Venn Diagramm
+# 7. Grafical representation: Venn Diagramm
 venn <- draw.pairwise.venn(
   area1 = nrow(circexp_results),
   area2 = nrow(ciri_results),
