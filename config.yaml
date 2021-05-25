@@ -1,0 +1,125 @@
+
+# Modules
+modules:
+  quality_control: no
+  trimming: no
+  alignment_and_identification: no
+  quantification: no
+  DE_analysis: yes
+  coexpression: no
+  visualization: no
+
+# Filenames
+samples:
+  - SRR12794696
+  - SRR12794698
+  - SRR12794703
+  - SRR12794713
+  - SRR12794716
+  - SRR12794723
+  - SRR12794726
+
+# Output directory
+outdir: test
+# Path of reference genome files
+genome_files: data/raw_data
+# Genome reference GRCh37 or GRCh38 !!!
+genome: GRCh38
+
+# CONDA ENVS
+envs: # By default, snakemake searchs their envs files in the same dir that rules = The path to the environment definition is interpreted as relative to the Snakefile that contains the rule
+  quality_control: ../envs/quality_control.yaml  # adding '../' indicates that envs are one dir up, in the same that rules dir
+  bwa: ../envs/bwa.yaml
+  ciri2: ../envs/ciri2.yaml
+  circexplorer2: ../envs/circexplorer2.yaml
+  R: ../envs/R.yaml
+  ciriquant: ../envs/ciriquant.yaml
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~QUALITY_CONTROL~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+quality_control:
+  reads: data/raw_data/samples
+  # FASTQ file extension: "fastq.gz" or "fastq" or "fq.gz" or "fq", etc
+  suffix:
+    1: _1.fastq.gz
+    2: _2.fastq.gz
+  fastqc_threads: 3
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+trimming:
+  reads: data/raw_data/samples # equal to quality_control reads. Important deixar en blanc si no s'utilitza
+  suffix:
+    1: _1.fastq.gz
+    2: _2.fastq.gz
+  fastqc_threads: 3
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT_AND_IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~
+aln_and_id:
+  # Change only if trimming == "no"
+  reads:
+  # Change only if trimming == "no"
+  suffix:
+    1:
+    2:
+  bwa_index: # poner prefix.
+  reference:
+  annotation:
+  refFlat:
+  threads:
+    bwa: 3    # Alignment tool
+    ciri2: 3  # Identification tool
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUANTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+quantification:
+  # Change only if trimming == "no"
+  reads: test/data/trimmed
+  # Change only if trimming == "no"
+  suffix:
+    1: _1_val_1.fq.gz
+    2: _2_val_2.fq.gz
+  reference:
+  annotation:
+  bwa_index:
+  hisat2_index:
+  # localted in the same dir that ref
+  fai_index:
+  # Mandatory
+  threads:
+    ciriquant: 6
+
+# #~~~~~~~~~~~~~~~~~~DIFFERENTIAL_EXPRESSION_ANALYSIS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Complete only if quantification == 'yes'
+DE:
+  metadata: libs/DE_analysis/sub_samples/metadata_samples_copy.csv
+  metadata_sep: comma
+  design: ~group+sex
+  pvalue: 0.05
+  fold_change: 2
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~COEXPRESSION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+netminer:
+  # Input data
+  count_data: libs/DE_analysis/circular_counts.csv
+  metadata: libs/DE_analysis/metadata.csv
+  metadata_sep:
+  gene_length: libs/DE_analysis/circular_info.csv
+  design: ~group+sex
+  # Params tool
+  threads: 5 # minimun
+  percThreshold: 0.005
+  S1N: 3
+  S2N: 2
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~VISUALIZATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+visualization:
+  # 1st column = rownames. 1st row = colnames
+  count_data: libs/DE_analysis/circular_counts_modified.csv
+  metadata: libs/DE_analysis/metadata.csv
+  metadata_sep:
+  normalized: no
+  design: ~group+sex
+  # Image settings
+  # device: pdf, jpeg, pgn or svg
+  out_format: svg
+  units: in
+  width: 12
+  height: 12
