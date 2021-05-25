@@ -30,38 +30,34 @@ if (is.null(opt$ciri2) || is.null(opt$circexplorer2)){
 ciri_results <- read.csv(opt$ciri2, sep='\t')
 circexp_results <- read.csv(opt$circexplorer2, sep='\t', header=FALSE)
 
-# 2. Reformat 1-based CIRI2 start coordinate to 0-based
-ciri_results$circRNA_start <- ciri_results$circRNA_start - 1
-ciri_results$circRNA_ID <- paste0(ciri_results$chr, ":", ciri_results$circRNA_start,
-  "-", ciri_results$circRNA_end)
-
-# 3. Add circRNA_ID variable in circexplorer2 dataframe
+# 2. Add circRNA_ID variable in circexplorer2 dataframe
 colnames(circexp_results) <- c("chrom", "start", "end", "name", "score", "strand",
   "thickStart", "thickEnd", "itemRgb", "exonCount", "exonSizes", "exonOffsets",
   "readNumber", "circType","geneName","isoformName", "index", "flankIntron")
 
-circexp_results$circRNA_ID <- paste0(circexp_results$chr, ":", circexp_results$start,"-",
-  circexp_results$end) # CircExplorer start coordinate is 0-based
+# 3. Reformat 0-based CircExplorer2 start coordinate to 1-based
+circexp_results$start <- circexp_results$start + 1
+circexp_results$circRNA_ID <- paste0(circexp_results$chr, ":", circexp_results$start,"|",
+  circexp_results$end) # CIRI start coordinate is 0-based
 
 # 4. Filtering ciri2 results by common circRNAs with circexplorer2
 overlap = data.frame()
-ciri_results <- add_column(ciri_results, gene_id = NA, .after = "circRNA_type") # adding genename from circexplorer2 results
+ciri_results <- add_column(ciri_results, gene_name = NA, .after = "junction_reads_ID") # adding genename from circexplorer2 results
+ciri_results <- add_column(ciri_results, exon_count = NA, .after = "gene_name")
+ciri_results <- add_column(ciri_results, exon_sizes = NA, .after = "exon_count")
 
 for (id in circexp_results$circRNA_ID) {
   if(id %in% ciri_results$circRNA_ID) {
     index1 <- which(circexp_results$circRNA_ID == id)
     index2 <- which(ciri_results$circRNA_ID == id)
 
-    ciri_results$gene_id[index2] <- circexp_results$geneName[index1]
+    ciri_results$gene_name[index2] <- circexp_results$geneName[index1]
+    ciri_results$exon_count[index2] <- circexp_results$exonCount[index1]
+    ciri_results$exon_sizes[index2] <- circexp_results$exonSizes[index1]
     overlap <- rbind(overlap, ciri_results[index2, ])
   }
 }
 overlap <- overlap[!duplicated(overlap), ]
-
-# 5. Reconvert CIRI2 start coordinate format to 1-based
-overla$circRNA_start <- ciri_results$circRNA_start + 1
-overlap$circRNA_ID <- paste0(overla$chr, ":", overlap$circRNA_start,
-  "|", overlap$circRNA_end)
 
 # 6. New circRNA matrix
 filename= unlist(str_split(opt$ciri2, "libs/identification/ciri2/"))
