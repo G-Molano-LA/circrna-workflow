@@ -4,9 +4,9 @@ modules:
   quality_control: no
   trimming: no
   alignment_and_identification: no
-  quantification: yes
+  quantification: no
+  DE_analysis: yes
   coexpression: no
-  DE_analysis: no
   visualization: no
 
 # Filenames
@@ -60,10 +60,10 @@ aln_and_id:
   suffix:
     1:
     2:
-bwa_index: # poner prefix. 
-reference:
-annotation:
-refFlat:
+  bwa_index: # poner prefix.
+  reference:
+  annotation:
+  refFlat:
   threads:
     bwa: 3    # Alignment tool
     ciri2: 3  # Identification tool
@@ -89,17 +89,18 @@ quantification:
 # #~~~~~~~~~~~~~~~~~~DIFFERENTIAL_EXPRESSION_ANALYSIS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Complete only if quantification == 'yes'
 DE:
-  metadata: libs/DE_analysis/metadata.csv
-  sep: comma
+  metadata: libs/DE_analysis/sub_samples/metadata_samples_copy.csv
+  metadata_sep: comma
   design: ~group+sex
-  pvalue:
-  fold_change:
+  pvalue: 0.05
+  fold_change: 2
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~COEXPRESSION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 netminer:
   # Input data
   count_data: libs/DE_analysis/circular_counts.csv
   metadata: libs/DE_analysis/metadata.csv
+  metadata_sep:
   gene_length: libs/DE_analysis/circular_info.csv
   design: ~group+sex
   # Params tool
@@ -113,6 +114,7 @@ visualization:
   # 1st column = rownames. 1st row = colnames
   count_data: libs/DE_analysis/circular_counts_modified.csv
   metadata: libs/DE_analysis/metadata.csv
+  metadata_sep:
   normalized: no
   design: ~group+sex
   # Image settings
