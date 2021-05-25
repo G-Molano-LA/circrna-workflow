@@ -17,8 +17,8 @@ suppressPackageStartupMessages(library("dplyr"))
 # !! Hacer una nota al usuario de poner el nombre en de las columnas con la primera
 # en mayúscula, siempre y cuando ponga él sus propios archivos
 
-check_metadata <- function(opt_metadata){
-  metadata    <- read.csv(opt_metadata)
+check_metadata <- function(opt_metadata, sep){
+  metadata    <- read.csv(opt_metadata, sep = sep)
   if('Sample' %in% colnames(metadata)){
     metadata          <- metadata %>% rename(sample = Sample)
     rownames(metadata)<- metadata$sample
@@ -34,7 +34,7 @@ check_metadata <- function(opt_metadata){
     return(metadata)
   }else if('Group' %in% colnames(metadata)){
     metadata       <- metadata %>% rename(group = Group)
-    metadata       <- as.factor(metadata['group'])
+    metadata       <- as.factor(metadata$group)
     return(metadata)
   }else{
     stop(paste0("ERROR: 'Group' column must be supplied in metadata."))
