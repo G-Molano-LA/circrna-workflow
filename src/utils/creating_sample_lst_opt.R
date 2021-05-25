@@ -25,16 +25,15 @@ parser$add_argument("--outdir", action = 'store', default = NULL, help = "output
 
 opt <- parser$parse_args()
 
-if(is.null(opt$samples) || is.null(opt$dir) || is.null(opt$group)){
+if(is.null(opt$metadata) || is.null(opt$sep) || is.null(opt$dir)){
   parser$print_help()
-  stop("Options --samples/--dir/--group must be supplied\n", call. = FALSE)
+  stop("Options --metadata/--sep/--dir must be supplied\n", call. = FALSE)
 }
 
 
 # Passing args
 sep      <- check_sep(opt$sep)
-metadata <- read.csv(opt$metadata, row.names = 1, sep = sep)
-metadata <- check_metadata(metadata)
+metadata <- check_metadata(opt$metadata, sep)
 dir      <- opt$dir
 outdir   <- opt$outdir
 
@@ -46,9 +45,9 @@ for (i in 1:length(metadata$sample)){
   circular_path[i] <- paste0(dir,"/",metadata$sample[i],".gtf")}
 
 if('sex' %in% colnames(metadata)){
-  sample_lst <- cbind(metadata$sample, circular_path, metadata$group, metadata$sex)
+  sample_lst <- cbind(metadata$sample, circular_path, as.vector(metadata$group), as.vector(metadata$sex))
 }else{
-  sample_lst <- cbind(metadata$sample, circular_path, metadata$group)
+  sample_lst <- cbind(metadata$sample, circular_path, as.vector(metadata$group))
 }
 
 
@@ -63,7 +62,7 @@ sample_gene_lst <- cbind(metadata$sample, linear_path)
 
 
 # Write tsv file
-write.table(sample_lst, file = paste0(outdir,"/DE_analysis/prep_DE/sample_circ.lst"), row.names = FALSE,
+write.table(sample_lst, file = paste0(outdir,"/sample_circ.lst"), row.names = FALSE,
   col.names = FALSE, quote = FALSE)
-write.table(sample_gene_lst, file = paste0(outdir,"/DE_analysis/prep_DE/sample_gene.lst"), row.names = FALSE,
+write.table(sample_gene_lst, file = paste0(outdir,"/sample_gene.lst"), row.names = FALSE,
   col.names = FALSE, quote = FALSE)
