@@ -22,6 +22,7 @@ parser$add_argument("--circ_counts", action = 'store', default = NULL, help =
   "circular counts matrix")
 parser$add_argument("--metadata", action = 'store', default = NULL, help =
     "Metadata information")
+parser$add_argument("--sep", default = ",", action = 'store', help = "Separator")
 parser$add_argument("--design", action = 'store', default = NULL, help =
     "Experimental design")
 parser$add_argument("--circ_info", action = 'store', default = NULL, help =
@@ -37,7 +38,8 @@ if(is.null(opt$circ_counts)){
 
 
 # LOAD DATA
-metadata    <- check_metadata(opt$metadata)
+sep         <- check_sep(opt$sep)
+metadata    <- check_metadata(opt$metadata, sep)
 design      <- as.formula(opt$design)
 circ_info   <- read.csv(opt$circ_info)
 circ_counts <- check_data_co(opt$circ_counts, circ_info)
@@ -53,7 +55,13 @@ raw_counts <- counts(DESeq_count_data)
 
 
 # 2. FPKM Counts
-mcols(DESeq_count_data)$basepairs <- circ_info$end-circ_info$start # length of circRNAs
+# 2.1. Calculate circRNA length. Only exoncircRNAs.
+list <- strsplit(circ_info$exon_sizes, ",")
+circ_info <- add_column(circ_info, length = NA, .after = "exon_sizes")
+for (i in 1:length(list)) {
+  circ_info$length[i] <- sum(as.numeric(list[[i]]))
+}
+mcols(DESeq_count_data)$basepairs <- circ_info$length # length of circRNAs
 fpkm_counts <- fpkm(DESeq_count_data)
 
 

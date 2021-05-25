@@ -27,8 +27,9 @@ parser <- ArgumentParser(description = 'Visualization')
 parser$add_argument( "--data", default = NULL, help = "Normalized Count Matrix")
 parser$add_argument("--norm", default = "no", help = "Boolean variable")
 parser$add_argument("--design", default = "~group", help = "Experimental design")
-parser$add_argument("--lib", default = NULL, help =
+parser$add_argument("--metadata", default = NULL, help =
   "File containing library information about samples: sample names, total reads, mapped reads, circular reads, Group and Sex")
+parser$add_argument("--sep", default = ",", action = 'store', help = "Separator")
 parser$add_argument("--circ_info", default = NULL, help =
   "Circular information file, containning circRNA annotation information.")
 parser$add_argument( "--output",type = "character", default = "svg")
@@ -40,7 +41,8 @@ parser$add_argument("--outdir", type = "character", default = NULL)
 opt <- parser$parse_args()
 
 # Load data
-metadata    <- check_metadata(opt$lib)
+sep         <- check_sep(opt$sep)
+metadata    <- check_metadata(opt$metadata, sep)
 
 circ_counts <- check_norm(opt$norm, metadata, opt$circ_info, opt$design)
 
