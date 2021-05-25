@@ -27,12 +27,14 @@ rule normalization:
     params:
         design    = DE_DESIGN if DESIGN_CO is None else DESIGN_CO,
         circ_info = CIRC_INFO if DATA_CO is None else GENE_LENGTH,
+        separator = config["netminer"]["metadata_sep"],
         outdir    = f'{OUTDIR}/data/normalized_counts/',
         script    = 'src/tools/normalization.R'
     conda: config["envs"]["R"]
     shell:
         "Rscript {params.script} --circ_counts {input.circ_counts}\
                 --metadata {input.metadata}\
+                --sep {params.separator}\
                 --design {params.design}\
                 --circ_info {params.circ_info}\
                 --outdir {params.outdir}"

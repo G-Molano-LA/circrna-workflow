@@ -33,6 +33,7 @@ rule plots:
         norm      = config["visualization"]["normalized"],
         circ_info = CIRC_INFO if DATA_VI is 'None' else  None,
         metadata  = METADATA if DATA_VI is 'None' else METADATA_VI,
+        separator = config["visualization"]["metadata_sep"],
         design    = DE_DESIGN if DESIGN_VI is 'None' else DESIGN_VI,
         output    = FORMAT_VI,
         units     = config["visualization"]["units"],
@@ -43,6 +44,7 @@ rule plots:
     conda: config["envs"]["R"]
     shell:
         "Rscript {params.script} --data {input.data} --norm {params.norm}\
-        --circ_info {params.circ_info} --lib {params.metadata} --output {params.output}\
+        --circ_info {params.circ_info} --metadata {params.metadata} --sep {params.separator}\
+        --output {params.output}\
         --units {params.units} --height {params.height} --width {params.width}\
         --outdir {params.outdir}"

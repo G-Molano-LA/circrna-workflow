@@ -27,8 +27,8 @@ rule trimming_results:
 
 rule trimming:
     input:
-        read1 = RAW_READ1 if QUALITY is 'yes' else TRI_READ1,
-        read2 = RAW_READ2 if QUALITY is 'yes' else TRI_READ2
+        read1 = RAW_READ1 if QUALITY == 'yes' else TRI_READ1,
+        read2 = RAW_READ2 if QUALITY == 'yes' else TRI_READ2
     output:
         reads = expand("{outdir}/data/trimmed/{sample}_{replicate}.fq.gz",  outdir = OUTDIR,
             sample = SAMPLES, replicate = ["1_val_1", "2_val_2"]),

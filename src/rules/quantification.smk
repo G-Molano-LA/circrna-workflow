@@ -8,7 +8,7 @@ __state__ = "IN PROCESS"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Date              : 
+# Date              :
 # Last modification : 12-05-2021
 ################################################################################
 import subprocess
@@ -24,6 +24,7 @@ BWA_INDEX_QUANT    = config["quantification"][["bwa_index"]
 FAI_INDEX_QUANT    = config["quantification"]["fai_index"]
 REFERENCE_QUANT    = config["quantification"]["reference"]
 ANNOTATION_QUANT   = config["quantification"]["annotation"]
+
 
 
 

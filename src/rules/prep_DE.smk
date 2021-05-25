@@ -25,11 +25,11 @@ rule prep_previous_files:
         circular_file = f'{OUTDIR}/DE_analysis/prep_DE/sample_circ.lst',
         linear_file   = f'{OUTDIR}/DE_analysis/prep_DE/sample_gene.lst'
     params:
-        dir      = f'{OUTDIR}/DE_analysis/prep_DE',
+        dir      = f'{OUTDIR}/ciriquant', # directory of ciriquant results
         outdir   = f'{OUTDIR}/DE_analysis/prep_DE',
         metadata = METADATA_DE,
-        separator= config["DE"]["sep"],
-        script   = "src/main/utils/creating_sample_lst_opt.R"
+        separator= config["DE"]["metadata_sep"],
+        script   = "src/utils/creating_sample_lst_opt.R"
     priority: 10
     conda: config["envs"]["R"]
     shell:
