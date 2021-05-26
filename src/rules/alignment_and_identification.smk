@@ -9,7 +9,7 @@ __state__ = "ALMOST FINISHED" # Falta comprovar funcionamiento con GRCh37
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              :
-# Last modification : 12-05-2021
+# Last modification : 26-05-2021
 ################################################################################
 
 # VARIABLES
@@ -23,17 +23,17 @@ BWA_ALN     = config["aln_and_id"]["bwa_index"]
 REF_ALN     = config["aln_and_id"]["reference"]
 ANN_ALN     = config["aln_and_id"]["annotation"]
 REFFLAT_ALN = config["aln_and_id"]["refFlat"]
+CF          = config["aln_and_id"]["sample_threshold"]
+CS          = config["aln_and_id"]["merged_threshold"]
 ALN_READ1   = lambda wildcards: f'{config["aln_and_id"]["reads"]}/{wildcards.sample}{config["aln_and_id"]["suffix"][1]}'
 ALN_READ2   = lambda wildcards: f'{config["aln_and_id"]["reads"]}/{wildcards.sample}{config["aln_and_id"]["suffix"][2]}'
 
 # TARGET RULE
 rule alignment_and_identification_results:
     input:
-        txt  = expand("{path}/identification/overlap/{samples}_common.txt",
-            path = OUTDIR, samples = config["samples"]),
-        venn = expand("{path}/identification/overlap/{samples}_common.png",
-            path = OUTDIR, samples = config["samples"]),
-        ref  = f'{PATH_genome}/{GENOME}.fna'
+        bed  = f'{OUTDIR}/identification/overlap/summary_overlap.bed',
+        venn = f'{OUTDIR}/identification/overlap/summary_overlap.png',
+        ref  = REFERENCE
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION&REFERENCE-FILES~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule get_ref_genome:
@@ -183,7 +183,7 @@ rule ciri2:
         sam  = f'{OUTDIR}/data/mapped_data/{{sample}}.sam',
         ref  =  f'{PATH_genome}/{GENOME}.fna' # no acepta archivo comprimido
     output:
-        f'{OUTDIR}/identification/{{sample}}_ciri2.txt'
+        f'{OUTDIR}/identification/ciri2/{{sample}}_results.txt'
     threads: config["aln_and_id"]["threads"]["ciri2"]
     message:
         "CIRI2: Starting circRNA identification in {wildcards.sample}.sam file...\
@@ -195,12 +195,29 @@ rule ciri2:
     shell:
         "perl {input.ciri} -I {input.sam} -O {output} -F {input.ref} -T {threads}"
 
+rule ciri2_results:
+    input:
+        expand("{outdir}/identification/ciri2/{sample}_results.txt",
+            outdir = OUTDIR, sample = SAMPLES)
+    output:
+        f'{OUTDIR}/identification/ciri2/ciri2_results.bed'
+    params:
+        tool             = "ciri2",
+        script           = "src/utils/circM.py",
+        sample_threshold = CF,
+        merged_threshold = CS
+    priority: 4
+    conda: config["envs"]["R"]
+    shell:
+        "python2 {params.script} -f {input} -a {params.tool}\
+                -cf {params.sample_threshold} -cs {params.merged_threshold} > {output}"
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CIRCEXPLORER2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule circexplorer2_id:
     input:
         sam = f'{OUTDIR}/data/mapped_data/{{sample}}.sam',
     output:
-        temp(f'{OUTDIR}/identification/{{sample}}_back_spliced_junction.bed')
+        temp(f'{OUTDIR}/identification/circexplorer2/{{sample}}_back_spliced_junction.bed')
     params:
         aligner="BWA"
     message:
@@ -215,11 +232,11 @@ rule circexplorer2_id:
 
 rule circexplorer2_annotation:
     input:
-        bsj     = f'{OUTDIR}/identification/{{sample}}_back_spliced_junction.bed',
+        bsj     = f'{OUTDIR}/identification/circexplorer2/{{sample}}_back_spliced_junction.bed',
         ref     = REFERENCE,
         refFlat = REFFLAT_ANN
     output:
-        f'{OUTDIR}/identification/{{sample}}_circexp2.txt'
+        f'{OUTDIR}/identification/circexplorer2/{{sample}}_circularRNA_known.txt'
     message:
         "CIRCEXPLORER2: Annotating circRNAs with known RefSeq genes in {input.bsj}. \
         REFERENCE FILE  = {input.ref}\
@@ -231,24 +248,86 @@ rule circexplorer2_annotation:
         "CIRCexplorer2 annotate -r {input.refFlat} -g {input.ref} -b {input.bsj} "
         "-o {output}"
 
+rule circexplorer2_results:
+    input:
+        expand("{outdir}/identification/circexplorer2/{sample}_circularRNA_known.txt",
+            outdir = OUTDIR, sample = SAMPLES)
+    output:
+        f'{OUTDIR}/identification/circexplorer2/circexplorer2_results.bed'
+    params:
+        tool   = "circexplorer2",
+        script = "src/utils/circM.py",
+        sample_threshold = CF,
+        merged_threshold = CS
+    priority: 4
+    conda: config["envs"]["R"]
+    shell:
+        "python2 {params.script} -f {input} -a {params.tool}\
+                -cf {params.sample_threshold} -cs {params.merged_threshold} > {output}"
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~OVERLAP~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule select_coincidences:
     input:
-        ciri2         = f'{OUTDIR}/identification/{{sample}}_ciri2.txt',
-        circexplorer2 = f'{OUTDIR}/identification/{{sample}}_circexp2.txt'
+        ciri2         = f'{OUTDIR}/identification/ciri2/{{sample}}_results.txt',
+        circexplorer2 = f'{OUTDIR}/identification/circexplorer2/{{sample}}_circularRNA_known.txt'
     output:
         txt  = f'{OUTDIR}/identification/overlap/{{sample}}_common.txt',
         venn = f'{OUTDIR}/identification/overlap/{{sample}}_common.png'
     params:
         script = "src/utils/select_coincidents.R",
+        outdir = f'{OUTDIR}/identification/overlap/',
+        sample = f'{{sample}}'
     message:
         "OVERLAP: Selecting circRNAs commonly identified by CIRI2 and CircExplorer2 tools... \
         INPUTS  = 1) {input.ciri2} ;  2){input.circexplorer2} \
         OUTPUTS = 1) Venn Diagram: {output.venn} ; 2) Circular matrix: {output.txt} \
         SCRIPT  = {params.script}"
-    priority: 4
+    priority: 3
     conda: config["envs"]["R"]
     shell:
         "Rscript {params.script} \
          --ciri2 {input.ciri2} \
-         --circexplorer2 {input.circexplorer2}"
+         --circexplorer2 {input.circexplorer2}\
+         --sample {params.sample}\
+         --outdir {params.outdir}"
+
+rule overlap_results:
+    input:
+        expand("{outdir}/identification/overlap/{sample}_common.txt",
+            outdir = OUTDIR, sample = SAMPLES)
+    output:
+        f'{OUTDIR}/identification/overlap/summary_overlap.bed'
+    params:
+        tool   = "ciri2",
+        script = "src/utils/circM.py",
+        sample_threshold = CF,
+        merged_threshold = CS
+    priority: 2
+    conda: config["envs"]["R"]
+    shell:
+        "python2 {params.script} -f {input} -a {params.tool}\
+                -cf {params.sample_threshold} -cs {params.merged_threshold} > {output}"
+
+rule overlap_visualization:
+    input:
+        ciri2         = f'{OUTDIR}/identification/ciri2/ciri2_results.bed',
+        circexplorer2 = f'{OUTDIR}/identification/circexplorer2/circexplorer2_results.bed',
+        overlap       = f'{OUTDIR}/identification/overlap/summary_overlap.bed'
+    output:
+        venn = f'{OUTDIR}/identification/overlap/summary_overlap.png'
+    params:
+        script = "src/utils/overlap_visualization.R",
+        outdir = f'{OUTDIR}/identification/overlap/'
+    message:
+        "OVERLAP: Selecting circRNAs commonly identified by CIRI2 and CircExplorer2 tools... \
+        INPUTS  = 1) {input.ciri2} ;  2){input.circexplorer2}; 3) {input.overlap} \
+        OUTPUTS = 1) Venn Diagram: {output.venn} \
+        SCRIPT  = {params.script}"
+    priority: 1
+    conda: config["envs"]["R"]
+    shell:
+        "Rscript {params.script} \
+         --ciri2 {input.ciri2} \
+         --circexplorer2 {input.circexplorer2}\
+         --overlap {input.overlap}\
+         --outdir {params.outdir}"

@@ -9,7 +9,7 @@ __state__ = "IN PROCESS"
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              :
-# Last modification : 12-05-2021
+# Last modification : 26-05-2021
 ################################################################################
 import subprocess
 import yaml
@@ -19,20 +19,20 @@ FAI_INDEX    = f'{PATH_genome}/{GENOME}.fna.fai'
 HISAT2_INDEX = expand("{path}/hisat2/{genome}.{ext}.ht2", path = PATH_genome,
   genome = GENOME, ext = [1,2,3,4,5,6,7,8])
 
-HISAT2_INDEX_QUANT = config["quantification"][["hisat2_index"]
-BWA_INDEX_QUANT    = config["quantification"][["bwa_index"]
+HISAT2_INDEX_QUANT = config["quantification"]["hisat2_index"]
+BWA_INDEX_QUANT    = config["quantification"]["bwa_index"]
 FAI_INDEX_QUANT    = config["quantification"]["fai_index"]
 REFERENCE_QUANT    = config["quantification"]["reference"]
 ANNOTATION_QUANT   = config["quantification"]["annotation"]
-
+CF_QUANT           = config["quantification"]["sample_threshold"]
+CS_QUANT           = config["quantification"]["merged_threshold"]
 
 
 
 # TARGET RULE
 rule quantification_results:
     input:
-        circular = expand("{outdir}/ciriquant/{sample}.gtf", outdir = OUTDIR,
-            sample = SAMPLES)
+        f'{OUTDIR}/ciriquant/summary.bed'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~GENOME_INDEXS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule hisat2_index:
@@ -124,14 +124,14 @@ rule ciriquant_config:
     priority: 9
     shell:
         "python {params.script} {input.hisat2} {input.bwa} {input.ref} {input.gtf} {output}\
-                {params.hisat2} {params.bwa} {params.fai} {params.ref} {params.gtf}"
+                {params.hisat2} {params.bwa} {params.ref} {params.gtf}"
 
 
 rule ciriquant:
     input:
-        read1  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["suffix"][1]}',
-        read2  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["suffix"][2]}',
-        ciri2  = lambda wildcards: f'{OUTDIR}/identification/overlap/{wildcards.sample}_common.txt', # potser aquest path també el podria facilitar l'usuari
+        read1  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["read_suffix"][1]}',
+        read2  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["read_suffix"][2]}',
+        ciri2  = lambda wildcards: f'{config["quantification"]["circRNAs"]}/{wildcards.sample}{config["quantification"]["circ_suffix"]}', # potser aquest path també el podria facilitar l'usuari
         config = f'{OUTDIR}/ciriquant/ciriquant_config.yaml'
     output:
         # Linear transcripts alignment
@@ -156,3 +156,19 @@ rule ciriquant:
                      -p {wildcards.sample}\
                      --circ {input.ciri2}\
                      --tool {params.tool}"
+
+rule ciriquant_results:
+    input:
+        expand("{outdir}/ciriquant/{sample}.gtf", outdir = OUTDIR, sample = SAMPLES)
+    output:
+        f'{OUTDIR}/ciriquant/summary.bed'
+    params:
+        tool   = "ciriquant",
+        script = "src/utils/circM.py",
+        sample_threshold = CF_QUANT,
+        merged_threshold = CS_QUANT
+    priority: 7
+    conda: config["envs"]["R"]
+    shell:
+        "python2 {params.script} -f {input} -a {params.tool}\
+                -cf {params.sample_threshold} -cs {params.merged_threshold} > {output}"
