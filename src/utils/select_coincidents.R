@@ -2,24 +2,26 @@
 
 ###############################################################################
 ## R script for selecting common identified circRNAS by CIRI2 & CircExplorer2
-## Author: G. Molano, LA (gonmola@hotmail.es)
-###############################################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Author: G. Molano, LA (gonmola@hotmail.es)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Date              : 16-04-2021
+# Last modification : 26-05-2021
+################################################################################
 suppressPackageStartupMessages(library("VennDiagram"))
-suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("stringr"))
 suppressPackageStartupMessages(library("tibble"))
 
-option_list <- list(
-  make_option(c("--ciri2"), default=NULL, help="File containing results from CIRI2
-    identification" ),
-  make_option(c("--circexplorer2"), default=NULL, help="File containing results from
-    CircExplorer2 identification")
-)
+parser <- ArgumentParser(description = 'circRNA identified list')
+parser$add_argument("--ciri2", default = NULL, help = "File containing results from CIRI2 identification")
+parser$add_argument("--circexplorer2", default = NULL, help = "File containing results from CircExplorer2 identification")
+parser$add_argument("--sample", default = NULL, help = "Sample name")
+parser$add_argument("--outdir", action = 'store', default = NULL, help = "output directory")
 
-parser <- OptionParser(option_list=option_list)
-opt <- parse_args(parser)
+opt <- parser$parse_args()
 
-if (is.null(opt$ciri2) || is.null(opt$circexplorer2)){
+if (is.null(opt$ciri2) || is.null(opt$circexplorer2) || is.null(opt$sample) || is.null(opt$outdir)){
   print_help(parser)
   stop("Results from ciri2 and circexplorer2 identification must be supplied", call.=FALSE)
 }else{
@@ -60,13 +62,8 @@ for (id in circexp_results$circRNA_ID) {
 overlap <- overlap[!duplicated(overlap), ]
 
 # 6. New circRNA matrix
-filename= unlist(str_split(opt$ciri2, "libs/identification/ciri2/"))
-filename <- filename[2]
-filename = unlist(str_split(filename,"_results"))
-filename = filename[1]
-
-path_matrix = paste0("libs/identification/", filename, "_coincident_circRNAs.txt")
-path_venn = paste0("libs/plots/venn_diagrams/", filename, ".png")
+path_matrix = paste0(opt$outdir, opt$sample, "_common.txt")
+path_venn = paste0(opt$outdir, opt$sample, "_common.png")
 
 write.table(overlap, file = path_matrix, quote = FALSE, sep = "\t", row.names = FALSE)
 
@@ -75,7 +72,8 @@ venn <- draw.pairwise.venn(
   area1 = nrow(circexp_results),
   area2 = nrow(ciri_results),
   cross.area = nrow(overlap),
-  category = c("CircExplorer2", "CIRI2"),
+  category = c(paste0("CircExplorer2\n","(n = ", nrow(circexp_results), ")"),
+               paste0("CIRI2\n","(n = ", nrow(ciri_results), ")")),
 
   # Circles
   fill = c("lightblue", "palegreen"),
