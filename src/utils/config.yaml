@@ -4,8 +4,8 @@ modules:
   quality_control: no
   trimming: no
   alignment_and_identification: no
-  quantification: no
-  DE_analysis: yes
+  quantification: yes
+  DE_analysis: no
   coexpression: no
   visualization: no
 
@@ -37,12 +37,15 @@ envs: # By default, snakemake searchs their envs files in the same dir that rule
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~QUALITY_CONTROL~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 quality_control:
+  # Input data
   reads: data/raw_data/samples
   # FASTQ file extension: "fastq.gz" or "fastq" or "fq.gz" or "fq", etc
   suffix:
     1: _1.fastq.gz
     2: _2.fastq.gz
-  fastqc_threads: 3
+
+  # Parameters
+  threads: 3
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 trimming:
@@ -50,46 +53,58 @@ trimming:
   suffix:
     1: _1.fastq.gz
     2: _2.fastq.gz
-  fastqc_threads: 3
+
+  # Parameters
+  threads: 3
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT_AND_IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~
 aln_and_id:
-  # Change only if trimming == "no"
-  reads:
-  # Change only if trimming == "no"
-  suffix:
+  # Input data
+  reads: # Change only if trimming == "no"
+  suffix: # Change only if trimming == "no"
     1:
     2:
   bwa_index: # poner prefix.
   reference:
   annotation:
   refFlat:
+
+  # Parameters
+  sample_threshold: 2 # Minimum number of circRNA reads in one sample to be included.
+  merged_threshold: 2 # Minimum number of circRNA reads in total to be included.
   threads:
     bwa: 3    # Alignment tool
     ciri2: 3  # Identification tool
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUANTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 quantification:
-  # Change only if trimming == "no"
-  reads: test/data/trimmed
-  # Change only if trimming == "no"
-  suffix:
+  # Input data
+  reads: /media/nagemial/Elements/TFG/data/esclerosis/trimmed_data # Change only if trimming == "no"
+  read_suffix: # Change only if trimming == "no"
     1: _1_val_1.fq.gz
     2: _2_val_2.fq.gz
+
+  circRNAs: test/identification/overlap
+  circ_suffix: _coincident_circRNAs.txt
+
   reference:
   annotation:
   bwa_index:
   hisat2_index:
-  # localted in the same dir that ref
-  fai_index:
-  # Mandatory
+  fai_index: # localted in the same dir that ref
+
+  # Parameters
+  sample_threshold: 2 # Minimum number of circRNA reads in one sample to be included.
+  merged_threshold: 2 # Minimum number of circRNA reads in total to be included.
   threads:
     ciriquant: 6
 
 # #~~~~~~~~~~~~~~~~~~DIFFERENTIAL_EXPRESSION_ANALYSIS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Complete only if quantification == 'yes'
 DE:
+  # Input data
   metadata: libs/DE_analysis/sub_samples/metadata_samples_copy.csv
+
+  # Parameters
   metadata_sep: comma
   design: ~group+sex
   pvalue: 0.05
@@ -100,10 +115,11 @@ netminer:
   # Input data
   count_data: libs/DE_analysis/circular_counts.csv
   metadata: libs/DE_analysis/metadata.csv
-  metadata_sep:
   gene_length: libs/DE_analysis/circular_info.csv
+
+  # Parameters
+  metadata_sep:
   design: ~group+sex
-  # Params tool
   threads: 5 # minimun
   percThreshold: 0.005
   S1N: 3
@@ -111,12 +127,16 @@ netminer:
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~VISUALIZATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 visualization:
+  # Input data
   # 1st column = rownames. 1st row = colnames
   count_data: libs/DE_analysis/circular_counts_modified.csv
   metadata: libs/DE_analysis/metadata.csv
-  metadata_sep:
+
+  # Parameters
   normalized: no
+  metadata_sep:
   design: ~group+sex
+
   # Image settings
   # device: pdf, jpeg, pgn or svg
   out_format: svg
