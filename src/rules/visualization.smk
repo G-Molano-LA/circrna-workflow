@@ -6,7 +6,7 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 06-05-2021
-# Last modification : 11-05-2021
+# Last modification : 26-05-2021
 ################################################################################
 METADATA_VI = config["visualization"]["metadata"]
 DATA_VI     = config["visualization"]["count_data"]

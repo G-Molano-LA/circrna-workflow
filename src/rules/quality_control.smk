@@ -2,7 +2,14 @@
 
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 __state__ = "ALMOST FINISHED" # requires execution to finish it
-
+################################################################################
+# Snakefile to realize a quality control of RNA-seq reads.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Author: G. Molano, LA (gonmola@hotmail.es)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Date              :
+# Last modification : 26-05-2021
+################################################################################
 RAW_READ1 = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
     ext = config["quality_control"]["suffix"][1])
 RAW_READ2 = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
@@ -26,7 +33,7 @@ rule fastqc1:
             outdir = OUTDIR, sample = SAMPLES, replicate = [1,2])
     params:
         outdir = f'{OUTDIR}/quality_control/raw/'
-    threads: config["trimming"]["fastqc_threads"]
+    threads: config["trimming"]["threads"]
     conda: config["envs"]["quality_control"]
     # message:
     #     "Starting quality analysis control with FASTQC programm on the "

@@ -9,7 +9,7 @@ __state__ = "ALMOST FINISHED" # requires execution to finish it
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              :
-# Last modification : 12-05-2021
+# Last modification : 26-05-2021
 ################################################################################
 
 # VARIABLES
@@ -63,7 +63,7 @@ rule fastqc2:
     # message:
     #     "Starting quality analysis control with FASTQC programm on the "
     #     "following files {input.reads}. The number of threads used are {threads}."
-    threads: config["quality_control"]["fastqc_threads"]
+    threads: config["quality_control"]["threads"]
     priority: 7
     shell:
         "fastqc -t {threads} {input.reads} --outdir={params.outdir}"
