@@ -5,9 +5,10 @@ modules:
   trimming: no
   alignment_and_identification: no
   quantification: yes
+  annotation: no
   DE_analysis: no
   coexpression: no
-  visualization: no
+  visualization: yes
 
 # Filenames
 samples:
@@ -65,7 +66,7 @@ aln_and_id:
     1:
     2:
   bwa_index: # poner prefix.
-  reference:
+  reference: # NOT COMPRESSED FILES
   annotation:
   refFlat:
 
@@ -95,18 +96,27 @@ quantification:
   # Parameters
   sample_threshold: 2 # Minimum number of circRNA reads in one sample to be included.
   merged_threshold: 2 # Minimum number of circRNA reads in total to be included.
+  # 0: unstranded, 1: read1 match the sense strand, 2: read1 match the antisense strand
+  library_type: 1
   threads:
     ciriquant: 6
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+annotation:
+  # Input data
+  file:
+  # Parameters
+  # Extra fields: genomic.length, spliced.seq, length, samples, repeats, annotation, best.transcript, gene.symbol, circRNA.study
+  fields: genomic.length repeats annotation gene.symbol  # sin commas. Poner así
 
-# #~~~~~~~~~~~~~~~~~~DIFFERENTIAL_EXPRESSION_ANALYSIS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~DIFFERENTIAL_EXPRESSION_ANALYSIS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Complete only if quantification == 'yes'
 DE:
   # Input data
-  metadata: libs/DE_analysis/sub_samples/metadata_samples_copy.csv
+  metadata: # Sample, Group, (Sex) variable columns
 
   # Parameters
   metadata_sep: comma
-  design: ~group+sex
+  design: ~group
   pvalue: 0.05
   fold_change: 2
 
@@ -125,17 +135,17 @@ netminer:
   S1N: 3
   S2N: 2
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~VISUALIZATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~QC_VISUALIZATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 visualization:
   # Input data
   # 1st column = rownames. 1st row = colnames
-  count_data: libs/DE_analysis/circular_counts_modified.csv
-  metadata: libs/DE_analysis/metadata.csv
+  count_data:
+  metadata: libs/DE_analysis/sub_samples/metadata_samples_copy.csv
 
   # Parameters
-  normalized: no
-  metadata_sep:
-  design: ~group+sex
+  normalized: False
+  metadata_sep: comma
+  design:
 
   # Image settings
   # device: pdf, jpeg, pgn or svg
