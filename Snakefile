@@ -17,6 +17,7 @@ OUTDIR       = config["outdir"]
 QUALITY         = config['modules']['quality_control']
 TRIMMING        = config['modules']['trimming']
 ALN_and_ID      = config['modules']['alignment_and_identification']
+ANNOTATION      = config["modules"]['annotation']
 QUANTIFICATION  = config['modules']['quantification']
 DE_ANALYSIS     = config['modules']['DE_analysis']
 VISUALIZATION   = config['modules']['visualization']
@@ -26,7 +27,7 @@ include: "src/rules/quality_control.smk"
 include: "src/rules/trimming.smk"
 include: "src/rules/alignment_and_identification.smk"
 include: "src/rules/quantification.smk"
-include: "src/rules/prep_DE.smk"
+include: "src/rules/annotation.smk"
 include: "src/rules/DE_analysis.smk"
 include: "src/rules/visualization.smk"
 
@@ -44,9 +45,10 @@ rule all:
         # quantification
         *(rules.quantification_results.input if QUANTIFICATION else []),
 
-        # Differential expression analysis
-        *(rules.prep_DE_results.input if QUANTIFICATION and DE_ANALYSIS  else []),
+        # Annotation
+        *(rules.annotation_results.input if ANNOTATION else []),
 
+        # Differential expression analysis,
         *(rules.DE_results.input if QUANTIFICATION and DE_ANALYSIS else []),
 
         # Visualization
