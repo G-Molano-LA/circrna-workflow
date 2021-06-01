@@ -9,15 +9,22 @@ __state__ = "IN PROCESS"
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              :
-# Last modification : 26-05-2021
+# Last modification : 28-05-2021
 ################################################################################
 import subprocess
 import yaml
 
 # VARIABLES
-FAI_INDEX    = f'{PATH_genome}/{GENOME}.fna.fai'
-HISAT2_INDEX = expand("{path}/hisat2/{genome}.{ext}.ht2", path = PATH_genome,
+## Generated
+FAI_INDEX     = f'{PATH_genome}/{GENOME}.fna.fai'
+HISAT2_INDEX  = expand("{path}/hisat2/{genome}.{ext}.ht2", path = PATH_genome,
   genome = GENOME, ext = [1,2,3,4,5,6,7,8])
+PREFIX_HISAT2 = f'{PATH_genome}/hisat2/{GENOME}'
+RES_QUANT     = f'{OUTDIR}/quantification/summary/summary.bed'
+## Config file
+R1_QUANT           = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["read_suffix"][1]}'
+R2_QUANT           = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["read_suffix"][2]}'
+CIRC_QUANT         = lambda wildcards: f'{config["quantification"]["circRNAs"]}/{wildcards.sample}{config["quantification"]["circ_suffix"]}'
 
 HISAT2_INDEX_QUANT = config["quantification"]["hisat2_index"]
 BWA_INDEX_QUANT    = config["quantification"]["bwa_index"]
@@ -25,14 +32,14 @@ FAI_INDEX_QUANT    = config["quantification"]["fai_index"]
 REFERENCE_QUANT    = config["quantification"]["reference"]
 ANNOTATION_QUANT   = config["quantification"]["annotation"]
 CF_QUANT           = config["quantification"]["sample_threshold"]
-CS_QUANT           = config["quantification"]["merged_threshold"]
+CM_QUANT           = config["quantification"]["merged_threshold"]
 
 
 
 # TARGET RULE
 rule quantification_results:
     input:
-        f'{OUTDIR}/ciriquant/summary.bed'
+        RES_QUANT
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~GENOME_INDEXS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule hisat2_index:
@@ -114,61 +121,64 @@ rule ciriquant_config:
     output:
         config = f'{OUTDIR}/ciriquant/ciriquant_config.yaml'
     params:
-        script = "src/utils/creating_yaml_file.py",
-        genome = GENOME,
-        hisat2 = True if HISAT2_INDEX_QUANT is not None else False,
-        bwa    = True if BWA_INDEX_QUANT is not None else False,
-        ref    = True if REFERENCE_QUANT is not None else False,
-        gtf    = True if ANNOTATION_QUANT is not None else False
+        script        = "src/utils/creating_yaml_file.py",
+        genome        = GENOME,
+        prefix_bwa    = BWA_INDEX_QUANT if BWA_INDEX_QUANT is not None else PREFIX_BWA,
+        prefix_hisat2 = HISAT2_INDEX_QUANT if HISAT2_INDEX_QUANT is not None else PREFIX_HISAT2,
+        hisat2        = True if HISAT2_INDEX_QUANT is not None else False,
+        bwa           = True if BWA_INDEX_QUANT is not None else False,
+        ref           = True if REFERENCE_QUANT is not None else False,
+        gtf           = True if ANNOTATION_QUANT is not None else False
     conda: config["envs"]["ciriquant"]
     priority: 9
     shell:
-        "python {params.script} {input.hisat2} {input.bwa} {input.ref} {input.gtf} {output}\
+        "python {params.script} {params.genome} {params.prefix_hisat2} {params.prefix_bwa} {input.ref} {input.gtf} {output}\
                 {params.hisat2} {params.bwa} {params.ref} {params.gtf}"
 
 
 rule ciriquant:
     input:
-        read1  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["read_suffix"][1]}',
-        read2  = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["read_suffix"][2]}',
-        ciri2  = lambda wildcards: f'{config["quantification"]["circRNAs"]}/{wildcards.sample}{config["quantification"]["circ_suffix"]}', # potser aquest path també el podria facilitar l'usuari
-        config = f'{OUTDIR}/ciriquant/ciriquant_config.yaml'
+        read1  = R1_QUANT if R1_QUANT is not None else R1_TRI,
+        read2  = R2_QUANT if R2_QUANT is not None else R2_TRI,
+        ciri2  = CIRC_QUANT if CIRC_QUANT is not None else RES_ID,
+        config = f'{OUTDIR}/quantification/ciriquant_config.yaml'
     output:
         # Linear transcripts alignment
-        sorted_bam  = f'{OUTDIR}/ciriquant/align/{{sample}}.sorted.bam',
-        sam_index   = f'{OUTDIR}/ciriquant/align/{{sample}}.sorted.bam.bai',
+        sorted_bam  = f'{OUTDIR}/quantification/align/{{sample}}.sorted.bam',
+        sam_index   = f'{OUTDIR}/quantification/align/{{sample}}.sorted.bam.bai',
         # Linear gene abundance
-        linear_transcripts_name = f'{OUTDIR}/ciriquant/gene/{{sample}}_cov.gtf', # StringTie outputs a file with the given name with all transcripts in the provided reference file that are fully covered by reads
-        linear_out              = f'{OUTDIR}/ciriquant/gene/{{sample}}_out.gtf',
-        gene_abundance          = f'{OUTDIR}/ciriquant/gene/{{sample}}_genes.list',
+        linear_transcripts_name = f'{OUTDIR}/quantification/gene/{{sample}}_cov.gtf', # StringTie outputs a file with the given name with all transcripts in the provided reference file that are fully covered by reads
+        linear_out              = f'{OUTDIR}/quantification/gene/{{sample}}_out.gtf',
+        gene_abundance          = f'{OUTDIR}/quantification/gene/{{sample}}_genes.list',
         # circRNAs quantification
-        circular = f'{OUTDIR}/ciriquant/{{sample}}.gtf'
+        circular = f'{OUTDIR}/quantification/{{sample}}.gtf'
     threads: config["quantification"]["threads"]["ciriquant"]
     params:
-        tool   = "CIRI2",
-        outdir = f'{OUTDIR}/ciriquant',
+        tool    = "CIRI2",
+        library = config["quantification"]["library_type"],
+        outdir  = f'{OUTDIR}/quantification,
     conda: config["envs"]["ciriquant"]
     priority: 8
     shell:
         "CIRIquant -t {threads} -1 {input.read1} -2 {input.read2} \
                     --config {input.config}\
                      -o {params.outdir}\
+                     -l {params.library}\
                      -p {wildcards.sample}\
                      --circ {input.ciri2}\
                      --tool {params.tool}"
 
 rule ciriquant_results:
     input:
-        expand("{outdir}/ciriquant/{sample}.gtf", outdir = OUTDIR, sample = SAMPLES)
+        expand("{outdir}/quantification/{sample}.gtf", outdir = OUTDIR, sample = SAMPLES)
     output:
-        f'{OUTDIR}/ciriquant/summary.bed'
+        RES_QUANT
     params:
         tool   = "ciriquant",
         script = "src/utils/circM.py",
         sample_threshold = CF_QUANT,
-        merged_threshold = CS_QUANT
+        merged_threshold = CM_QUANT
     priority: 7
-    conda: config["envs"]["R"]
     shell:
         "python2 {params.script} -f {input} -a {params.tool}\
-                -cf {params.sample_threshold} -cs {params.merged_threshold} > {output}"
+                -cf {params.sample_threshold} -cm {params.merged_threshold} > {output}"
