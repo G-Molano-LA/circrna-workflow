@@ -9,7 +9,7 @@ __state__ = "ALMOST FINISHED" # Falta comprovar funcionamiento con GRCh37
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              :
-# Last modification : 26-05-2021
+# Last modification : 01-06-2021
 ################################################################################
 
 # VARIABLES
@@ -46,7 +46,7 @@ rule get_ref_genome:
         ref = REFERENCE
     params:
         path = PATH_genome
-    priority: 12
+    priority: 95
     # message:
     #     "Downloanding"
     run:
@@ -69,7 +69,7 @@ rule get_ref_annotation:
         ANNOTATION
     params:
         path = PATH_genome
-    priority: 11
+    priority: 94
     run:
         if GENOME == 'GRCh38':
             shell("wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gtf.gz \
@@ -88,7 +88,7 @@ rule refFlat:
         REFFLAT_ANN
     params:
         path = PATH_genome
-    priority: 10
+    priority: 93
     run:
         if GENOME == 'GRCh38':
             shell("wget -c https://hgdownload.cse.ucsc.edu/goldenpath/hg38/database/refFlat.txt.gz \
@@ -110,7 +110,7 @@ rule bwa_index:
         script = "src/utils/bwa_index.sh",
         path = PATH_genome
     conda: config["envs"]["bwa"]
-    priority: 10
+    priority: 93
     shell:
         """
         genome={params.genome}
@@ -157,7 +157,7 @@ rule bwa_mem:
     log:
         f'{OUTDIR}logs/mapped_data/{{sample}}.log'
     conda: config["envs"]["bwa"]
-    priority: 7
+    priority: 92
     shell:
         "bwa mem -T {params.score} -t {threads} {params.prefix} {input.read1} {input.read2} 1> {output.sam} 2> {log}"
 
@@ -170,7 +170,7 @@ rule dw_ciri2:
         SCRIPT = {params.script}"
     params:
         script = "src/utils/install_ciri2.sh"
-    priority: 6
+    priority: 91
     shell:
         """
         wget https://sourceforge.net/projects/ciri/files/CIRI2/CIRI_v2.0.6.zip
@@ -196,7 +196,7 @@ rule ciri2:
         THREADS        = {threads} \
         OUTPUT         = {output}"
     conda: config["envs"]["ciri2"]
-    priority: 5
+    priority: 90
     shell:
         "perl {input.ciri} -I {input.sam} -O {output} -F {input.ref} -T {threads}"
 
@@ -211,7 +211,7 @@ rule ciri2_results:
         script           = "src/utils/circM.py",
         sample_threshold = CF,
         merged_threshold = CM
-    priority: 4
+    priority: 89
     conda: config["envs"]["R"]
     shell:
         "python2 {params.script} -f {input} -a {params.tool}\
@@ -230,7 +230,7 @@ rule circexplorer2_id:
         ALIGNER = {params.aligner}\
         OUTPUT  = {output}"
     conda: config["envs"]["circexplorer2"]
-    priority: 6
+    priority: 90
     shell:
         "CIRCexplorer2 parse -t {params.aligner} --bed={output} {input}"
 
@@ -248,7 +248,7 @@ rule circexplorer2_annotation:
         ANNOTATING FILE = {input.refFlat} (refFlat format) \
         OUTPUT          = {output}"
     conda: config["envs"]["circexplorer2"]
-    priority: 5
+    priority: 89
     shell:
         "CIRCexplorer2 annotate -r {input.refFlat} -g {input.ref} -b {input.bsj} "
         "-o {output}"
@@ -264,7 +264,7 @@ rule circexplorer2_results:
         script = "src/utils/circM.py",
         sample_threshold = CF,
         merged_threshold = CM
-    priority: 4
+    priority: 88
     shell:
         "python2 {params.script} -f {input} -a {params.tool}\
                 -cf {params.sample_threshold} -cm {params.merged_threshold} > {output}"
@@ -286,7 +286,7 @@ rule select_coincidences:
         INPUTS  = 1) {input.ciri2} ;  2){input.circexplorer2} \
         OUTPUTS = 1) Venn Diagram: {output.venn} ; 2) Circular matrix: {output.txt} \
         SCRIPT  = {params.script}"
-    priority: 3
+    priority: 87
     conda: config["envs"]["R"]
     shell:
         "Rscript {params.script} \
@@ -306,7 +306,7 @@ rule overlap_results:
         script = "src/utils/circM.py",
         sample_threshold = CF,
         merged_threshold = CM
-    priority: 2
+    priority: 86
     shell:
         "python2 {params.script} -f {input} -a {params.tool}\
                 -cf {params.sample_threshold} -cm {params.merged_threshold} > {output}"
@@ -326,7 +326,7 @@ rule overlap_visualization:
         INPUTS  = 1) {input.ciri2} ;  2){input.circexplorer2}; 3) {input.overlap} \
         OUTPUTS = 1) Venn Diagram: {output.venn} \
         SCRIPT  = {params.script}"
-    priority: 1
+    priority: 85
     conda: config["envs"]["R"]
     shell:
         "Rscript {params.script} \

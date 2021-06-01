@@ -9,7 +9,7 @@ __state__  = "IN PROCESS"
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 03-05-2021
-# Last modification : 28-05-2021
+# Last modification : 01-06-2021
 ################################################################################
 
 # VARIABLES
@@ -40,7 +40,7 @@ rule prep_previous_files:
         metadata = METADATA_DE,
         separator= config["DE"]["metadata_sep"],
         script   = "src/utils/creating_sample_lst_opt.R"
-    priority: 10
+    priority: 77
     conda: config["envs"]["R"]
     message: "Preparation of "
     shell:
@@ -57,7 +57,7 @@ rule prep_CIRIquant:
         circ_info   = CIRC_INFO,
         circ_counts = CIRC_COUNTS,
         ratio       = f'{OUTDIR}/DE_analysis/junction_ratio.csv'
-    priority: 9
+    priority: 76
     conda: config["envs"]["ciriquant"]
     shell:
         "prep_CIRIquant -i {input.circular_file} \
@@ -73,7 +73,7 @@ rule StringTie:
     output:
         gene       = f'{OUTDIR}/DE_analysis/gene_count_matrix.csv',
         transcript = f'{OUTDIR}/DE_analysis/transcript_count_matrix.csv'
-    priority: 9
+    priority: 76
     conda: config["envs"]["ciriquant"]
     shell:
         "{input.script} -i {input.linear_file} -g {output.gene} -t {output.transcript}"
@@ -96,6 +96,7 @@ rule edgeR:
         outdir = f'{OUTDIR}/DE_analysis',
         script = "src/tools/circ_edge_DE.R",
     conda: config["envs"]["R"]
+    priority: 75
     shell:
         "Rscript {params.script} --design {params.design}\
                                 --metadata {input.lib_info}\

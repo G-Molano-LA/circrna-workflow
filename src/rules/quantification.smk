@@ -9,12 +9,11 @@ __state__ = "IN PROCESS"
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              :
-# Last modification : 28-05-2021
+# Last modification : 01-06-2021
 ################################################################################
 import subprocess
 import yaml
 
-EMPTY = f'None/SRR12794681None'
 # VARIABLES
 ## Generated
 FAI_INDEX     = f'{PATH_genome}/{GENOME}.fna.fai'
@@ -52,7 +51,7 @@ rule hisat2_index:
     params:
         prefix = GENOME,
         path   = PATH_genome
-    priority: 10
+    priority: 84
     shell:
       """
       genome={params.prefix}
@@ -95,7 +94,7 @@ rule fai_index:
         prefix = GENOME,
         path   = PATH_genome
     conda: config["envs"]["ciriquant"]
-    priority: 10
+    priority: 84
     shell:
         """
         genome={params.prefix}
@@ -134,7 +133,7 @@ rule ciriquant_config:
         ref           = True if REFERENCE_QUANT is not None else False,
         gtf           = True if ANNOTATION_QUANT is not None else False
     conda: config["envs"]["ciriquant"]
-    priority: 9
+    priority: 83
     shell:
         "python {params.script} {params.genome} {params.prefix_hisat2} {params.prefix_bwa} {input.ref} {input.gtf} {output}\
                 {params.hisat2} {params.bwa} {params.ref} {params.gtf}"
@@ -160,9 +159,9 @@ rule ciriquant:
     params:
         tool    = "CIRI2",
         library = config["quantification"]["library_type"],
-        outdir  = f'{OUTDIR}/quantification',
+        outdir  = f'{OUTDIR}/quantification'
     conda: config["envs"]["ciriquant"]
-    priority: 8
+    priority: 82
     shell:
         "CIRIquant -t {threads} -1 {input.read1} -2 {input.read2} \
                     --config {input.config}\
@@ -182,7 +181,7 @@ rule ciriquant_results:
         script = "src/utils/circM.py",
         sample_threshold = CF_QUANT,
         merged_threshold = CM_QUANT
-    priority: 7
+    priority: 81
     shell:
         "python2 {params.script} -f {input} -a {params.tool}\
                 -cf {params.sample_threshold} -cm {params.merged_threshold} > {output}"

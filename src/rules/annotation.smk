@@ -9,7 +9,7 @@ __state__ = "ALMOST FINISHED" # requires execution to finish it
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 27-05-2021
-# Last modification : 27-05-2021
+# Last modification : 01-06-2021
 ################################################################################
 
 # VARIABLES
@@ -28,7 +28,7 @@ rule circbase:
         f'{OUTDIR}/annotation/hsa_hg19_circRNA.txt'
     params:
         outdir = f'{OUTDIR}/data/trimmed'
-    priority: 8
+    priority: 80
     message: "Downloading circBase database: {output}"
     shell:
         "wget -c http://www.circbase.org/download/hsa_hg19_circRNA.txt -O {output}"
@@ -38,7 +38,7 @@ rule chain_file:
         f'{OUTDIR}/annotation/hg38ToHg19.over.chain'
     params:
         outdir = f'{OUTDIR}/annotation'
-    priority: 7
+    priority: 79
     message:
         "Downloading the chain file provided by UCSC for hg38 to hg19 transformation: {output}"
     shell:
@@ -57,7 +57,7 @@ rule annotation:
         fields = FIELDS if FIELDS is not None else 'None',
         script = "src/tools/annotation_db.R"
     conda: config["envs"]["R"]
-    priority: 6
+    priority: 78
     message: "Annotating circRNA ID from circBase database. INPUT: {input.list}; Extra fields selected: {params.fields}"
     shell:
         "Rscript {params.script} --list {input.list} --db {input.db} --chain {input.chain}\

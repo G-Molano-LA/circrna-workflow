@@ -6,7 +6,7 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 06-05-2021
-# Last modification : 11-05-2021
+# Last modification : 01-06-2021
 ################################################################################
 DATA_CO     = config["netminer"]["count_data"]
 METADATA_CO = config["netminer"]["metadata"]
@@ -31,6 +31,7 @@ rule normalization:
         outdir    = f'{OUTDIR}/data/normalized_counts/',
         script    = 'src/tools/normalization.R'
     conda: config["envs"]["R"]
+    priority: 73
     shell:
         "Rscript {params.script} --circ_counts {input.circ_counts}\
                 --metadata {input.metadata}\
@@ -52,6 +53,7 @@ rule netminer:
         script        = "src/tools/ensemble_method_for_construction_consensus_network.R"
     threads: config["netminer"]["threads"]
     conda: config["envs"]["R"]
+    priority: 72
     shell:
         "Rscript --vanilla {params.script}  \
         {params.filepath} {threads} {params.percThreshold} {params.S1N} {params.S2N}"

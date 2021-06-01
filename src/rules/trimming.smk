@@ -9,7 +9,7 @@ __state__ = "ALMOST FINISHED" # requires execution to finish it
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              :
-# Last modification : 26-05-2021
+# Last modification : 01-06-2021
 ################################################################################
 
 # VARIABLES
@@ -42,7 +42,7 @@ rule trimming:
         outdir = f'{OUTDIR}/trimming/'
     conda: config["envs"]["quality_control"]
     threads: config["trimming"]["threads"]
-    priority: 8
+    priority: 98
     shell:
         """
         # Install Trim Galore
@@ -59,7 +59,7 @@ rule mv_trimming_reports:
             outdir = OUTDIR, sample = SAMPLES, replicate = [1,2])
     output:
         directory(f'{OUTDIR}/trimming/reports/')
-    priority: 7
+    priority: 97
     shell:
         "mv {input} {output}"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FASTQC_POST-TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -79,7 +79,7 @@ rule fastqc2:
     #     "Starting quality analysis control with FASTQC programm on the "
     #     "following files {input.reads}. The number of threads used are {threads}."
     threads: config["quality_control"]["threads"]
-    priority: 7
+    priority:97
     shell:
         "fastqc -t {threads} {input.reads} --outdir={params.outdir}"
 
@@ -94,6 +94,6 @@ rule multiqc2:
         replace_old = "--force", # revisar que no remplaze al anterior
         outdir      = f'{OUTDIR}/quality_control/trimmed_data/summary/'
     conda: config["envs"]["quality_control"]
-    priority: 6
+    priority: 96
     shell:
         "multiqc --interactive {params.replace_old} {input} --outdir {params.outdir}"

@@ -6,7 +6,7 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 06-05-2021
-# Last modification : 26-05-2021
+# Last modification : 01-06-2021
 ################################################################################
 METADATA_VI = config["visualization"]["metadata"]
 DATA_VI     = config["visualization"]["count_data"]
@@ -41,6 +41,7 @@ rule plots:
         outdir    = f'{OUTDIR}/visualization',
         script    = "src/tools/visualization.R"
     conda: config["envs"]["R"]
+    priority: 74
     shell:
         "Rscript {params.script} --data {input.data} --norm {params.norm}\
         --metadata {params.metadata} --sep {params.separator}\

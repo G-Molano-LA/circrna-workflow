@@ -8,7 +8,7 @@ __state__ = "ALMOST FINISHED" # requires execution to finish it
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              :
-# Last modification : 26-05-2021
+# Last modification : 01-06-2021
 ################################################################################
 RAW_READS = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
     ext = [config["quality_control"]["suffix"][1],config["quality_control"]["suffix"][2]] )
@@ -35,7 +35,7 @@ rule fastqc1:
     # message:
     #     "Starting quality analysis control with FASTQC programm on the "
     #     "following files {input.reads}. Number of threads used are {threads}."
-    priority: 10
+    priority: 100
     shell:
         "fastqc -t {threads} {input} --outdir={params.outdir}"
 
@@ -50,6 +50,6 @@ rule multiqc1:
         replace_old = "--force", # revisar que no remplaze al anterior
         outdir      = f'{OUTDIR}/quality_control/raw_data/summary/'
     conda: config["envs"]["quality_control"]
-    priority: 9
+    priority: 99
     shell:
         "multiqc --interactive {params.replace_old} {input.zip} --outdir {params.outdir}"
