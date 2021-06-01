@@ -20,21 +20,21 @@ suppressPackageStartupMessages(library("dplyr"))
 check_metadata <- function(opt_metadata, sep){
   metadata    <- read.csv(opt_metadata, sep = sep)
   if('Sample' %in% colnames(metadata)){
-    metadata          <- metadata %>% rename(sample = Sample)
+    metadata          <- metadata %>% dplyr::rename(sample = Sample)
     rownames(metadata)<- metadata$sample
   }else{
     stop(print("ERROR: 'Sample' column must be provided in metadata."))
   }
   if('Group' %in% colnames(metadata) & 'Sex' %in% colnames(metadata) ){
-    metadata       <- metadata %>% rename(group = Group)
-    metadata       <- metadata %>% rename(sex = Sex)
+    metadata       <- metadata %>% dplyr::rename(group = Group)
+    metadata       <- metadata %>% dplyr::rename(sex = Sex)
 
     metadata$group <- as.factor(metadata$group)
     metadata$sex   <- as.factor(metadata$sex)
     return(metadata)
   }else if('Group' %in% colnames(metadata)){
-    metadata       <- metadata %>% rename(group = Group)
-    metadata       <- as.factor(metadata$group)
+    metadata       <- metadata %>% dplyr::rename(group = Group)
+    metadata$group <- as.factor(metadata$group)
     return(metadata)
   }else{
     stop(paste0("ERROR: 'Group' column must be supplied in metadata."))
@@ -42,21 +42,9 @@ check_metadata <- function(opt_metadata, sep){
 }
 
 
-check_norm <- function(norm, metadata, circ_info, design){
+check_norm <- function(norm, metadata, design){
   design <- as.formula(design)
-
-  if(norm == "False" & circ_info != 'None'){
-    circ_info             <- read.csv(opt$circ_info, row.names = 1)
-    circ_counts           <- as.matrix(read.csv(opt$data))
-    rownames(circ_counts) <- rownames(circ_info)
-    colnames(circ_counts) <- rownames(metadata)
-    DESeq_count_data      <- DESeqDataSetFromMatrix(countData = circ_counts,
-                                                    colData   = metadata,
-                                                    design    = design)
-    DESeq_count_data <- estimateSizeFactors(DESeq_count_data)
-    circ_counts      <- as.matrix(counts(DESeq_count_data, normalized = TRUE))
-    return(circ_counts)
-  }else if(norm == "False" & circ_info == 'None'){
+  if(norm == "False"){
     circ_counts      <- as.matrix(read.csv(opt$data, row.names = 1))
     DESeq_count_data <- DESeqDataSetFromMatrix(countData = circ_counts,
                                                 colData  = metadata,

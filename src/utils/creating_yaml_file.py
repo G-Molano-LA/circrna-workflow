@@ -1,3 +1,4 @@
+#!/bin/python2
 
 __author__ = "G. Molano, LA (gonmola@hotmail.es)"
 
@@ -6,16 +7,17 @@ import yaml
 import sys
 
 # Passing arguments
-HISAT2_INDEX= str(sys.argv[1])
-BWA_INDEX   = str(sys.argv[2])
-REFRENCE    = str(sys.argv[3])
-ANNOTATION  = str(sys.argv[4])
-OUTFILE     = str(sys.argv[5])
+GENOME       = str(sys.argv[1])
+HISAT2_INDEX = str(sys.argv[2])
+BWA_INDEX    = str(sys.argv[3])
+REFERENCE    = str(sys.argv[4])
+ANNOTATION   = str(sys.argv[5])
+OUTFILE      = str(sys.argv[6])
 
-HISAT2_BOL     = str(sys.argv[6])
-BWA_BOL        = str(sys.argv[7])
-REFERENCE_BOL  = str(sys.argv[8])
-ANNOTATION_BOL = str(sys.argv[9])
+HISAT2_BOL     = str(sys.argv[7])
+BWA_BOL        = str(sys.argv[8])
+REFERENCE_BOL  = str(sys.argv[9])
+ANNOTATION_BOL = str(sys.argv[10])
 
 # Capturing conda path
 conda_path = subprocess.check_output('which bwa', shell = True)
@@ -34,7 +36,7 @@ for boolean in files:
     if boolean is True:
         pass
     else:
-        paths[count] = '{}/{}'.format(dir_path, paths[counts])
+        paths[count] = '{}/{}'.format(dir_path, paths[count])
 # Creating dictionary for yaml file
 dic_yaml = {'name'      : GENOME,
             'tools'     :
@@ -46,7 +48,7 @@ dic_yaml = {'name'      : GENOME,
                 {'fasta'         : paths[0],
                  'gtf'           : paths[1],
                  'bwa_index'     : paths[2],
-                 'hisat_index'   : paths[3] 
+                 'hisat_index'   : paths[3]
                  }
             }
 

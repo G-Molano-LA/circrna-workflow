@@ -7,52 +7,50 @@
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Date              : 25-03-2021
-# Last modification : 11-05-2021
+# Last modification : 27-05-2021
 ################################################################################
 
 suppressPackageStartupMessages(library("edgeR"))
 suppressPackageStartupMessages(library("statmod"))
-suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("ggplot2"))
+suppressPackageStartupMessages(library("ggrepel"))
 suppressPackageStartupMessages(library("reshape2"))
 
 source("src/utils/utils.R")
 
+parser <- ArgumentParser(description = 'Differential Expression Analysis')
+parser$add_argument("--design", action = "store", type = "character", default = NULL,
+              help = "experimental design", metavar = "design")
+parser$add_argument("--metadata", type = "character", default = NULL,
+            help = "File containing library information about samples:sample names, total reads, mapped reads, circular reads, Group and Sex",
+            metavar = "FILE1")
+parser$add_argument("--sep", default = ",", action = 'store', help = "Separator")
+parser$add_argument("--circ_counts", default = NULL, help = "Numeric matrix of circular counts",
+            metavar="FILE2")
+parser$add_argument("--linear_counts", default = NULL, help = "Numeric matrix of linear counts",
+            metavar = "FILE3")
+parser$add_argument("--circ_info", default = NULL, help = "Circular information file, containning circRNA annotation information.",
+            metavar = "FILE5")
+parser$add_argument("--pval", default = 0.05,
+            help = "pvalue", metavar = "pval" )
+parser$add_argument("--fc", default = 1.5, help = "foldchange",
+            metavar = "FC" )
+parser$add_argument("--outdir", default = NULL, help = "output file")
 
-option_list <- list(
-  make_option(c("-d", "--design"), action = "store", type = "character", default = NULL,
-                help = "experimental design", metavar = "design"),
-  make_option(c("--lib"), type = "character", default = NULL,
-              help = "File containing library information about samples:
-              sample names, total reads, mapped reads, circular reads, Group and Sex", metavar = "FILE1"),
-  make_option(c("-c", "--circ_counts"), default = NULL, help = "Numeric matrix of circular counts",
-              metavar="FILE2" ),
-  make_option(c("-l", "--linear_counts"), default = NULL, help = "Numeric matrix of linear counts",
-              metavar = "FILE3" ),
-  #make_option(c("-g", "--gene"), default=NULL, help="gene information file", metavar="FILE4"),
-   # mirar si aquesta opció es possible incorporarla en funció de la info que hagi en gene_matrix_counts.csv
-  make_option(c("-C", "--circ_info"), default = NULL, help = "Circular information file,
-              containning circRNA annotation information.", metavar = "FILE5"),
-  make_option(c("-p", "--pvalue"), type = "numeric", default = 0.05,
-              help = "pvalue", metavar = "pval" ),
-  make_option(c("-f", "--foldchange"),type = "numeric", default = 1.5, help = "foldchange",
-              metavar = "FC" ),
-  make_option("--outdir"), default = NULL, help = "output file")
-  )
+opt    <- parser$parse_args()
 
-parser <- OptionParser(option_list=option_list)
-opt    <- parse_args(parser)
-
-if(is.null(opt$design)|| is.null(opt$lib) || is.null(opt$circ_counts) ||
+if(is.null(opt$design)|| is.null(opt$metadata) || is.null(opt$circ_counts) ||
   is.null(opt$linear_counts) || is.null(opt$circ_info)){
-  print_help(parser)
-  stop("Options --design/--lib/--circ_counts/--linear_counts/--circ_info
+  parser$print_help()
+  stop("Options --design/--metadata/--circ_counts/--linear_counts/--circ_info
    must be supplied\n", call.=FALSE)
 
 }else{
   cat("The supplied arguments are the followings:\n")
   cat(paste(" Experimental design      = ", opt$design, "\n",
-            "Library file              = ", opt$lib, "\n",
+            "Library file              = ", opt$metadata, "\n",
             "Circular count file       = ", opt$circ_counts, "\n",
             "Linear count file         = ", opt$linear_counts, "\n",
             #"Gene information file     = ", opt$gene, "\n",
@@ -63,13 +61,11 @@ if(is.null(opt$design)|| is.null(opt$lib) || is.null(opt$circ_counts) ||
 
 # 1. Load data
 print("Loading data...")
-
-lib_mtx        <- read.csv(opt$lib, row.names = 1)
-metadata       <- check_metadata(lib_mtx)
+sep            <- check_sep(opt$sep)
+metadata       <- check_metadata(opt$metadata, sep)
 circ_info      <- read.csv(opt$circ_info)
-circrna_counts <-as.matrix(read.csv(opt$circ_counts))
-linear_counts  <- as.matrix(read.csv(opt$linear_counts))
-linear_counts  <- linear_counts[ , rownames(lib_mtx)]
+circrna_counts <- as.matrix(read.csv(opt$circ_counts, row.names = 1))
+linear_counts  <- as.matrix(read.csv(opt$linear_counts, row.names = 1))
 #gene_info <- read.csv(opt$gene) # Annotation information for each gene. Segurament la obtindre de la matriu de linear counts
 print("Done.")
 
@@ -97,7 +93,7 @@ circrna_DGE <- DGEList(counts       = circrna_counts,
                        genes        = circ_info,
                        lib.size     = linear_DGE$samples[, "lib.size"],
                        norm.factors = linear_DGE$samples[, "norm.factors"])
-circ_counts <- circrna_DGE$counts
+
 print("Done.")
 print("Starting differential expression analysis of circular RNAs...")
 
@@ -116,14 +112,12 @@ circrna_df     <- circrna_df[pval_order, ]
 circrna_df$FDR <- p.adjust(circrna_df$PValue, method="fdr")
 
 circ_order     <- circrna_lrt$genes[pval_order, ]
-circrna_df     <- cbind(circ_order, circrna_df)
-
-
+DE_data        <- cbind(circ_order, circrna_df)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~VOLCANO PLOT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Data treatment: creating groups
-pval    <- -log2(opt$pvalue)
-FC      <- log2(opt$foldchange)
+pval    <- -log2(as.numeric(opt$pval))
+FC      <- log2(as.numeric(opt$fc))
 
 DE_data["minusLog2Pvalue"] <- -log2(DE_data$PValue)
 DE_data["group"] <- "Not_Significant"
@@ -132,14 +126,14 @@ DE_data[which(DE_data['minusLog2Pvalue'] > pval & DE_data["logFC"] < -FC ),"grou
 DE_data$group <- as.factor(DE_data$group)
 
 #Top20 circRNAs (by pvalue), which names will be ploted
-top20   <- DE_data$id[1:20]
-DE_data <- DE_data %>% mutate(plotname = ifelse(id %in% top20, name, "" ))
+top20   <- DE_data$circ_id[1:20]
+DE_data <- DE_data %>% dplyr::mutate(plotname = ifelse(circ_id %in% top20, gene_id, "" ))
 
 # Plot
 volcano_plot <-
  ggplot(DE_data, aes(x = logFC, y = minusLog2Pvalue, color = group)) +
     geom_point(size = 0.5)+
-    scale_colour_manual(values = c("red", "grey", "blue"))+
+    scale_colour_manual(values = c("red", "black", "blue"))+
     geom_text_repel(aes(label = plotname), size = 3)+
     geom_hline(yintercept = pval, linetype = "dashed", size = 0.5) +
     geom_vline(xintercept = c(FC, -FC), linetype = "dashed", size = 0.5 ) +
@@ -148,21 +142,20 @@ volcano_plot <-
 
 #~~~~~~~~~~~~~~~~~~~~~HEATMAP~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Data treatment: Plot top20 DE (by pvalue) circular RNAs
-circ_counts1 <- as.matrix(filter(circ_counts, rownames(circ_counts) %in% top20))
-
-# Plot
-heatmap <- heatmap(circ_counts1, scale = 'none')
+circrna_counts <- as.data.frame(circrna_counts)
+circ_counts1   <- as.matrix(filter(circrna_counts, rownames(circrna_counts) %in% top20))
 
 # Download data
 DE_matrix_path <- paste0(opt$outdir,"/circrna_DE.csv")
 volcano_path   <- paste0(opt$outdir,"/volcano_plot.svg")
 heatmap_path   <- paste0(opt$outdir,"/heatmap.svg")
 
-write.csv(circrna_df, file = DE_matrix_path, quote = FALSE)
+write.csv(DE_data, file = DE_matrix_path, quote = FALSE)
 
 ggsave(filename = volcano_path , plot = volcano_plot, device = "svg")
+
 svg(file = heatmap_path)
-heatmap
+heatmap(circ_counts1, scale = "none")
 dev.off()
 
 print(paste("Differential Expression analysis done. Output files:\n",

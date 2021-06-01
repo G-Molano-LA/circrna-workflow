@@ -13,27 +13,30 @@ __state__ = "ALMOST FINISHED" # Falta comprovar funcionamiento con GRCh37
 ################################################################################
 
 # VARIABLES
+## Generated
 REFERENCE    = f'{PATH_genome}/{GENOME}.fna'
 ANNOTATION   = f'{PATH_genome}/{GENOME}_ann.gtf'
 REFFLAT_ANN  = f'{PATH_genome}/{GENOME}.refFlat.txt'
 BWA_INDEX    = expand("{path}/bwa/{genome}.fna.{ext}", path = PATH_genome,
     genome = GENOME, ext=["amb", "ann", "bwt", "pac", "sa"])
-
+PREFIX_BWA   = f'{PATH_genome}/bwa/{GENOME}.fna'
+RES_ID       = lambda wildcards: f'{OUTDIR}/identification/overlap/{wildcards.sample}_common.txt'
+## Config file
 BWA_ALN     = config["aln_and_id"]["bwa_index"]
 REF_ALN     = config["aln_and_id"]["reference"]
 ANN_ALN     = config["aln_and_id"]["annotation"]
 REFFLAT_ALN = config["aln_and_id"]["refFlat"]
 CF          = config["aln_and_id"]["sample_threshold"]
-CS          = config["aln_and_id"]["merged_threshold"]
-ALN_READ1   = lambda wildcards: f'{config["aln_and_id"]["reads"]}/{wildcards.sample}{config["aln_and_id"]["suffix"][1]}'
-ALN_READ2   = lambda wildcards: f'{config["aln_and_id"]["reads"]}/{wildcards.sample}{config["aln_and_id"]["suffix"][2]}'
+CM          = config["aln_and_id"]["merged_threshold"]
+R1_ALN      = lambda wildcards: f'{config["aln_and_id"]["reads"]}/{wildcards.sample}{config["aln_and_id"]["suffix"][1]}'
+R2_ALN      = lambda wildcards: f'{config["aln_and_id"]["reads"]}/{wildcards.sample}{config["aln_and_id"]["suffix"][2]}'
+
 
 # TARGET RULE
 rule alignment_and_identification_results:
     input:
         bed  = f'{OUTDIR}/identification/overlap/summary_overlap.bed',
-        venn = f'{OUTDIR}/identification/overlap/summary_overlap.png',
-        ref  = REFERENCE
+        venn = f'{OUTDIR}/identification/overlap/summary_overlap.png'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION&REFERENCE-FILES~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule get_ref_genome:
@@ -88,7 +91,7 @@ rule refFlat:
         if GENOME == 'GRCh38':
             shell("wget -c https://hgdownload.cse.ucsc.edu/goldenpath/hg38/database/refFlat.txt.gz \
                             -O {params.path}/GRCh38_refFlat.txt.gz \
-                            && gunzip {params.path}/GRCh38_refFlat.txt",
+                            && gunzip {params.path}/GRCh38_refFlat.txt.gz",
                             shell = True, text = True)
         elif GENOME == 'GRCh37':
             shell("bash src/utils/gtf_to_refFlat.sh {params.path}",
@@ -133,14 +136,14 @@ rule bwa_index:
 
 rule bwa_mem:
     input:
-        read1 = ALN_READ1,
-        read2 = ALN_READ1,
-        index = dir(BWA_ALN) if BWA_INDEX is not None else BWA_INDEX
+        read1 = R1_ALN if R1_ALN is not None else R1_TRI,
+        read2 = R2_ALN if R2_ALN is not None else R2_TRI,
+        index = BWA_ALN if BWA_ALN is not None else BWA_INDEX
     output:
         sam    = temp(f'{OUTDIR}/data/mapped_data/{{sample}}.sam')
     params:
         score  = "19", # Do not output alignment with score lower than INT.
-        prefix = BWA_ALN if BWA_INDEX is not None else REFERENCE
+        prefix = BWA_ALN if BWA_INDEX is not None else PREFIX_BWA
     message:
         "BWA-MEM aligner: Starting the alignment of the reads from {input.read1} & {input.read2}\
          THREADS = {threads}\
@@ -181,7 +184,7 @@ rule ciri2:
     input:
         ciri = "src/tools/CIRI2.pl",
         sam  = f'{OUTDIR}/data/mapped_data/{{sample}}.sam',
-        ref  =  f'{PATH_genome}/{GENOME}.fna' # no acepta archivo comprimido
+        ref  =  REF_ALN if REF_ALN is not None else REFERENCE # no acepta archivo comprimido
     output:
         f'{OUTDIR}/identification/ciri2/{{sample}}_results.txt'
     threads: config["aln_and_id"]["threads"]["ciri2"]
@@ -205,12 +208,12 @@ rule ciri2_results:
         tool             = "ciri2",
         script           = "src/utils/circM.py",
         sample_threshold = CF,
-        merged_threshold = CS
+        merged_threshold = CM
     priority: 4
     conda: config["envs"]["R"]
     shell:
         "python2 {params.script} -f {input} -a {params.tool}\
-                -cf {params.sample_threshold} -cs {params.merged_threshold} > {output}"
+                -cf {params.sample_threshold} -cm {params.merged_threshold} > {output}"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CIRCEXPLORER2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule circexplorer2_id:
@@ -233,8 +236,8 @@ rule circexplorer2_id:
 rule circexplorer2_annotation:
     input:
         bsj     = f'{OUTDIR}/identification/circexplorer2/{{sample}}_back_spliced_junction.bed',
-        ref     = REFERENCE,
-        refFlat = REFFLAT_ANN
+        ref     = REF_ALN if REF_ALN is not None else REFERENCE,
+        refFlat = REFFLAT_ALN if REFFLAT_ALN is not None else REFFLAT_ANN
     output:
         f'{OUTDIR}/identification/circexplorer2/{{sample}}_circularRNA_known.txt'
     message:
@@ -258,12 +261,11 @@ rule circexplorer2_results:
         tool   = "circexplorer2",
         script = "src/utils/circM.py",
         sample_threshold = CF,
-        merged_threshold = CS
+        merged_threshold = CM
     priority: 4
-    conda: config["envs"]["R"]
     shell:
         "python2 {params.script} -f {input} -a {params.tool}\
-                -cf {params.sample_threshold} -cs {params.merged_threshold} > {output}"
+                -cf {params.sample_threshold} -cm {params.merged_threshold} > {output}"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~OVERLAP~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule select_coincidences:
@@ -301,12 +303,11 @@ rule overlap_results:
         tool   = "ciri2",
         script = "src/utils/circM.py",
         sample_threshold = CF,
-        merged_threshold = CS
+        merged_threshold = CM
     priority: 2
-    conda: config["envs"]["R"]
     shell:
         "python2 {params.script} -f {input} -a {params.tool}\
-                -cf {params.sample_threshold} -cs {params.merged_threshold} > {output}"
+                -cf {params.sample_threshold} -cm {params.merged_threshold} > {output}"
 
 rule overlap_visualization:
     input:

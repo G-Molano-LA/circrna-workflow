@@ -30,8 +30,6 @@ parser$add_argument("--design", default = "~group", help = "Experimental design"
 parser$add_argument("--metadata", default = NULL, help =
   "File containing library information about samples: sample names, total reads, mapped reads, circular reads, Group and Sex")
 parser$add_argument("--sep", default = ",", action = 'store', help = "Separator")
-parser$add_argument("--circ_info", default = NULL, help =
-  "Circular information file, containning circRNA annotation information.")
 parser$add_argument( "--output",type = "character", default = "svg")
 parser$add_argument( "--units",type = "character", default = "in")
 parser$add_argument( "--width",type = "character", default = "7")
@@ -44,7 +42,7 @@ opt <- parser$parse_args()
 sep         <- check_sep(opt$sep)
 metadata    <- check_metadata(opt$metadata, sep)
 
-circ_counts <- check_norm(opt$norm, metadata, opt$circ_info, opt$design)
+circ_counts <- check_norm(opt$norm, metadata, opt$design)
 
 ################################################################################
 # 2. Visualization
