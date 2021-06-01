@@ -10,22 +10,19 @@ __state__ = "ALMOST FINISHED" # requires execution to finish it
 # Date              :
 # Last modification : 26-05-2021
 ################################################################################
-RAW_READ1 = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
-    ext = config["quality_control"]["suffix"][1])
-RAW_READ2 = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
-    ext = config["quality_control"]["suffix"][2])
+RAW_READS = expand("{path}/{sample}{ext}", path = config["quality_control"]["reads"], sample = SAMPLES,
+    ext = [config["quality_control"]["suffix"][1],config["quality_control"]["suffix"][2]] )
 
 # TARGET RULE
 rule quality_control_results:
     input:
-        f'{OUTDIR}/quality_control/raw/multi_report.html'
+        html = f'{OUTDIR}/quality_control/raw_data/summary/multiqc_report.html'
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FASTQC~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule fastqc1:
     input:
-        read1 = RAW_READ1,
-        read2 = RAW_READ2
+        RAW_READS
     output:
         html = expand("{outdir}/quality_control/raw_data/{sample}_{replicate}_fastqc.html",
             outdir = OUTDIR, sample = SAMPLES, replicate = [1,2]),
@@ -40,7 +37,7 @@ rule fastqc1:
     #     "following files {input.reads}. Number of threads used are {threads}."
     priority: 10
     shell:
-        "fastqc -t {threads} {input.read1} {input.read2} --outdir={params.outdir}"
+        "fastqc -t {threads} {input} --outdir={params.outdir}"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MULTIQC~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule multiqc1:
@@ -48,13 +45,11 @@ rule multiqc1:
         zip  = expand("{outdir}/quality_control/raw_data/{sample}_{replicate}_fastqc.zip",
             outdir = OUTDIR, sample = SAMPLES, replicate = [1,2])
     output:
-        html = f'{OUTDIR}/quality_control/raw_data/summary/multi_report.html',
-        pdf  = f'{OUTDIR}/quality_control/raw_data/summary/multi_report.pdf'
+        html = f'{OUTDIR}/quality_control/raw_data/summary/multiqc_report.html',
     params:
-        pdf         = "--pdf",
         replace_old = "--force", # revisar que no remplaze al anterior
         outdir      = f'{OUTDIR}/quality_control/raw_data/summary/'
     conda: config["envs"]["quality_control"]
     priority: 9
     shell:
-        "multiqc {params.pdf} {params.replace_old} {input.zip} --outdir {params.outdir}"
+        "multiqc --interactive {params.replace_old} {input.zip} --outdir {params.outdir}"
