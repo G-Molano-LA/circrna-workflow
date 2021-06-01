@@ -14,6 +14,7 @@ __state__ = "IN PROCESS"
 import subprocess
 import yaml
 
+EMPTY = f'None/SRR12794681None'
 # VARIABLES
 ## Generated
 FAI_INDEX     = f'{PATH_genome}/{GENOME}.fna.fai'
@@ -22,6 +23,9 @@ HISAT2_INDEX  = expand("{path}/hisat2/{genome}.{ext}.ht2", path = PATH_genome,
 PREFIX_HISAT2 = f'{PATH_genome}/hisat2/{GENOME}'
 RES_QUANT     = f'{OUTDIR}/quantification/summary/summary.bed'
 ## Config file
+CHECK_QUANT        = config["quantification"]["reads"]
+CHECK_QUANT2       = config["quantification"]["circRNAs"]
+
 R1_QUANT           = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["read_suffix"][1]}'
 R2_QUANT           = lambda wildcards: f'{config["quantification"]["reads"]}/{wildcards.sample}{config["quantification"]["read_suffix"][2]}'
 CIRC_QUANT         = lambda wildcards: f'{config["quantification"]["circRNAs"]}/{wildcards.sample}{config["quantification"]["circ_suffix"]}'
@@ -119,7 +123,7 @@ rule ciriquant_config:
         ref    = REFERENCE_QUANT if REFERENCE_QUANT is not None else REFERENCE,
         gtf    = ANNOTATION_QUANT if ANNOTATION_QUANT is not None else ANNOTATION
     output:
-        config = f'{OUTDIR}/ciriquant/ciriquant_config.yaml'
+        config = f'{OUTDIR}/quantification/ciriquant_config.yaml'
     params:
         script        = "src/utils/creating_yaml_file.py",
         genome        = GENOME,
@@ -138,9 +142,9 @@ rule ciriquant_config:
 
 rule ciriquant:
     input:
-        read1  = R1_QUANT if R1_QUANT is not None else R1_TRI,
-        read2  = R2_QUANT if R2_QUANT is not None else R2_TRI,
-        ciri2  = CIRC_QUANT if CIRC_QUANT is not None else RES_ID,
+        read1  = R1_QUANT if CHECK_QUANT is not None else TRI_R1 ,
+        read2  = R2_QUANT if CHECK_QUANT is not None else TRI_R2,
+        ciri2  = CIRC_QUANT if CHECK_QUANT2 is not None else RES_ID,
         config = f'{OUTDIR}/quantification/ciriquant_config.yaml'
     output:
         # Linear transcripts alignment
@@ -156,7 +160,7 @@ rule ciriquant:
     params:
         tool    = "CIRI2",
         library = config["quantification"]["library_type"],
-        outdir  = f'{OUTDIR}/quantification,
+        outdir  = f'{OUTDIR}/quantification',
     conda: config["envs"]["ciriquant"]
     priority: 8
     shell:
