@@ -18,10 +18,13 @@ TRI_READ1 = expand("{path}/{sample}{ext}", path = config["trimming"]["reads"],
 TRI_READ2 = expand("{path}/{sample}{ext}", path = config["trimming"]["reads"],
     sample = SAMPLES, ext = config["trimming"]["suffix"][2])
 
+R1_TRI      = lambda wildcards: f'{config["trimming"]["reads"]}/{wildcards.sample}{config["trimming"]["suffix"][1]}'
+R2_TRI      = lambda wildcards: f'{config["trimming"]["reads"]}/{wildcards.sample}{config["trimming"]["suffix"][2]}'
+
 # TARGET RULE
 rule trimming_results:
     input:
-        f'{OUTDIR}/quality_control/trimmed/multi_report_trimmed.html'
+        f'{OUTDIR}/quality_control/trimmed_data/multi_report_trimmed.html'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TRIM_GALORE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -30,12 +33,12 @@ rule trimming:
         read1 = RAW_READ1 if QUALITY == 'yes' else TRI_READ1,
         read2 = RAW_READ2 if QUALITY == 'yes' else TRI_READ2
     output:
-        reads = expand("{outdir}/data/trimmed/{sample}_{replicate}.fq.gz",  outdir = OUTDIR,
+        reads = expand("{outdir}/trimming/{sample}_{replicate}.fq.gz",  outdir = OUTDIR,
             sample = SAMPLES, replicate = ["1_val_1", "2_val_2"]),
-        txt   = expand("{outdir}/data/trimmed/{sample}_{replicate}.fastq.gz_trimming_report.txt",
+        txt   = expand("{outdir}/trimming/eports/{sample}_{replicate}.fastq.gz_trimming_report.txt",
             outdir = OUTDIR, sample = SAMPLES, replicate = [1,2])
     params:
-        outdir = f'{OUTDIR}/data/trimmed'
+        outdir = f'{OUTDIR}/trimming/'
     priority: 8
     shell:
         """
@@ -50,15 +53,15 @@ rule trimming:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FASTQC_POST-TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule fastqc2:
     input:
-        reads = expand("{path}/data/trimmed/{sample}_{replicate}.fq.gz", path = OUTDIR,
+        reads = expand("{path}/trimming/{sample}_{replicate}.fq.gz", path = OUTDIR,
             sample = SAMPLES, replicate = ["1_val_1", "2_val_2"])
     output:
-        html = expand("{path}/quality_control/trimmed/{sample}_{replicate}_fastqc.html",
+        html = expand("{path}/quality_control/trimmed_data/{sample}_{replicate}_fastqc.html",
             path = OUTDIR, sample = SAMPLES, replicate = ["1_val_1", "2_val_2"]),
-        zip  = expand("{path}/quality_control/trimmed/{sample}_{replicate}_fastqc.zip",
+        zip  = expand("{path}/quality_control/trimmed_data/{sample}_{replicate}_fastqc.zip",
             path = OUTDIR, sample = SAMPLES, replicate = ["1_val_1", "2_val_2"])
     params:
-        outdir = f'{OUTDIR}/quality_control/trimmed/'
+        outdir = f'{OUTDIR}/quality_control/trimmed_data/'
     conda: config["envs"]["quality_control"]
     # message:
     #     "Starting quality analysis control with FASTQC programm on the "
@@ -71,15 +74,15 @@ rule fastqc2:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MULTIQC~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 rule multiqc2:
     input:
-        zip = expand("{path}/quality_control/trimmed/{sample}_{replicate}_fastqc.zip",
+        zip = expand("{path}/quality_control/trimmed_data/{sample}_{replicate}_fastqc.zip",
             path = OUTDIR, sample = SAMPLES, replicate = ["1_val_1", "2_val_2"])
     output:
-        html = f'{OUTDIR}/quality_control/trimmed/multi_report_trimmed.html',
-        pdf  = f'{OUTDIR}/quality_control/trimmed/multi_report_trimmed.pdf'
+        html = f'{OUTDIR}/quality_control/trimmed_data/summary/multi_report_trimmed.html',
+        pdf  = f'{OUTDIR}/quality_control/trimmed_data/summary/multi_report_trimmed.pdf'
     params:
         pdf         = "--pdf",
         replace_old = "--force", # revisar que no remplaze al anterior
-        outdir      = f'{OUTDIR}/quality_control/trimmed/'
+        outdir      = f'{OUTDIR}/quality_control/trimmed_data/summary/'
     conda: config["envs"]["quality_control"]
     priority: 6
     shell:
