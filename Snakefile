@@ -5,7 +5,7 @@ min_version("6.0")
 
 
 # CONFIG FILE
-configfile: "src/utils/config.yaml"
+configfile: "config.yaml"
 
 # VARIABLES
 SAMPLES      = config["samples"]
@@ -17,7 +17,7 @@ OUTDIR       = config["outdir"]
 QUALITY         = config['modules']['quality_control']
 TRIMMING        = config['modules']['trimming']
 ALN_and_ID      = config['modules']['alignment_and_identification']
-ANNOTATION      = config["modules"]['annotation']
+DB_ANNOTATION   = config["modules"]['DB_annotation']
 QUANTIFICATION  = config['modules']['quantification']
 DE_ANALYSIS     = config['modules']['DE_analysis']
 VISUALIZATION   = config['modules']['visualization']
@@ -46,7 +46,7 @@ rule all:
         *(rules.quantification_results.input if QUANTIFICATION else []),
 
         # Annotation
-        *(rules.annotation_results.input if ANNOTATION else []),
+        *(rules.annotation_results.input if DB_ANNOTATION else []),
 
         # Differential expression analysis,
         *(rules.DE_results.input if QUANTIFICATION and DE_ANALYSIS else []),

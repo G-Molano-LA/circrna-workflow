@@ -3,16 +3,25 @@
 
 ###############################################################################
 ## Obtainning filenames of data samples
-## Author: G. Molano, LA
-###############################################################################
-cd data/trimmed_data/ # data directory
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Author: G. Molano, LA (gonmola@hotmail.es)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Date              :
+# Last modification : 01-06-2021
+################################################################################
+# [USAGE]:
+# ./src/utils/filenames.sh <data_directory> <filenames_extension>
 
-# creating files var with all output of ls
-files=( $(ls * ))
-declare -a arr
 
 # passing command-line argument
-ext=$1
+dir=$1
+ext=$2
+
+pushd $dir
+
+# creating files var with all output of ls
+files=( $(ls ))
+declare -a arr
 
 # Checking if argument has been supplied
 if [ -z "$ext" ]; then
@@ -21,7 +30,7 @@ else
   # Deleting expression from filenames
   for name in "${files[@]}"
     do
-      arr+=(${name%%$ext})
+      arr+=("${name%%$ext}")
     done
   # Deleting duplicates generated from forward and reverse samples
   filenames=($(printf "%s\n" "${arr[@]}" | sort -u))
@@ -29,8 +38,7 @@ else
 
 fi
 
-cd .. # to data/ directory
-# Redirecting output + Deleting duplicates generated from forward and reverse samples
-printf "%s\n" "${filenames[@]}"> seqs.txt
+popd
 
-cd .. # to circrna_workflow/ directory
+# Redirecting output + Deleting duplicates generated from forward and reverse samples
+printf "%b\n- " "- ${filenames[@]}" > seqs.txt

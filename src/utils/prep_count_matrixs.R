@@ -5,7 +5,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Date              : 
+# Date              :
 # Last modification : 10-05-2021
 ################################################################################
 suppressPackageStartupMessages(library("statmod"))
@@ -17,8 +17,10 @@ setwd("~/circrna-workflow")
 metadata<-read.csv("~/circrna-workflow/docs/metadata_all.txt",
                    stringsAsFactors=TRUE) # Download from SRA repository
 metadata_filtered <- subset(metadata,  select=c(Run, disease_state, ms_type, sex))
-metadata_filtered <- metadata_filtered %>% rename(group = disease_state) # must be a colunm name group for edgeR analysis
-metadata_filtered <- metadata_filtered[order(metadata_filtered$Run),]
+metadata_filtered <- metadata_filtered %>% rename(Group = disease_state) # must be a colunm name group for edgeR analysis
+metadata_filtered <- metadata_filtered %>% rename(Sex = sex)
+metadata_filtered <- metadata_filtered %>% rename(Sample = Run)
+metadata_filtered <- metadata_filtered[order(metadata_filtered$Sample),]
 
 # 1.1. Adding patient id
 rrms <- character()
@@ -32,7 +34,7 @@ hc <- c(paste0("HC0", 1:9), paste0("HC", 10:20))
 
 
 patient_id <- c(rrms, spms, hc)
-metadata_filtered$patient <- patient_id
+metadata_filtered$Patient <- patient_id
 
 # 1.2. Chosing a subset of samples
 # set.seed(100)
