@@ -22,6 +22,8 @@ BWA_INDEX    = expand("{path}/bwa/{genome}.fna.{ext}", path = PATH_genome,
 PREFIX_BWA   = f'{PATH_genome}/bwa/{GENOME}.fna'
 RES_ID       = lambda wildcards: f'{OUTDIR}/identification/overlap/{wildcards.sample}_common.txt'
 ## Config file
+CHECK_ALN   = config["aln_and_id"]["reads"]
+
 BWA_ALN     = config["aln_and_id"]["bwa_index"]
 REF_ALN     = config["aln_and_id"]["reference"]
 ANN_ALN     = config["aln_and_id"]["annotation"]
@@ -136,8 +138,8 @@ rule bwa_index:
 
 rule bwa_mem:
     input:
-        read1 = R1_ALN if R1_ALN is not None else R1_TRI,
-        read2 = R2_ALN if R2_ALN is not None else R2_TRI,
+        read1 = R1_ALN if CHECK_ALN is not None else TRI_R1,
+        read2 = R2_ALN if CHECK_ALN is not None else TRI_R2,
         index = BWA_ALN if BWA_ALN is not None else BWA_INDEX
     output:
         sam    = temp(f'{OUTDIR}/data/mapped_data/{{sample}}.sam')
