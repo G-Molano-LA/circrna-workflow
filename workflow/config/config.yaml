@@ -72,12 +72,12 @@ genome: GRCh38
 
 # CONDA ENVS
 envs: # By default, snakemake searchs their envs files in the same dir that rules = The path to the environment definition is interpreted as relative to the Snakefile that contains the rule
-  quality_control: envs/quality_control.yaml  # adding '../' indicates that envs are one dir up, in the same that rules dir
-  bwa: envs/bwa.yaml
-  ciri2: envs/ciri2.yaml
-  circexplorer2: envs/circexplorer2.yaml
-  R: envs/R.yaml
-  ciriquant: envs/ciriquant.yaml
+  quality_control: ../envs/quality_control.yaml  # adding '../' indicates that envs are one dir up, in the same that rules dir
+  bwa: ../envs/bwa.yaml
+  ciri2: ../envs/ciri2.yaml
+  circexplorer2: ../envs/circexplorer2.yaml
+  R: ../envs/R.yaml
+  ciriquant: ../envs/ciriquant.yaml
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~QUALITY_CONTROL~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 quality_control:
