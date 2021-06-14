@@ -1,0 +1,315 @@
+The flag 'directory' used in rule trimming_results is only valid for outputs, not inputs.
+Building DAG of jobs...
+output_file	date	rule	version	log-file(s)	status	plan
+results/identification/overlap/summary_overlap.bed	-	overlap_results	-		missing	update pending
+results/identification/overlap/SRR12794681_common.txt	Sat Jun  5 08:09:35 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794681_common.png	Sat Jun  5 08:09:35 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794681_results.txt	Sat Jun  5 08:09:27 2021	ciri2	-		ok	no update
+src/tools/CIRI2.pl	Tue Jun  1 21:22:44 2021	dw_ciri2	-		ok	no update
+results/data/mapped_data/SRR12794681.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794681.log	missing	no update
+/media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/bwa/GRCh38.fna.amb	Wed May 26 14:31:56 2021	-	-	-	rule implementation changed	no update
+/media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/bwa/GRCh38.fna.ann	Wed May 26 14:31:56 2021	-	-	-	rule implementation changed	no update
+/media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/bwa/GRCh38.fna.bwt	Wed May 26 14:31:56 2021	-	-	-	rule implementation changed	no update
+/media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/bwa/GRCh38.fna.pac	Wed May 26 14:31:56 2021	-	-	-	rule implementation changed	no update
+/media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/bwa/GRCh38.fna.sa	Wed May 26 14:31:56 2021	-	-	-	rule implementation changed	no update
+/media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/GRCh38.fna	Wed May 26 14:06:58 2021	-	-	-	rule implementation changed	no update
+results/identification/circexplorer2/SRR12794681_circularRNA_known.txt	Sat Jun  5 07:54:21 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794681_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+/media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/GRCh38_refFlat.txt	Tue Aug 18 03:56:54 2020	-	-	-	rule implementation changed	no update
+results/identification/overlap/SRR12794682_common.txt	Sat Jun  5 02:37:56 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794682_common.png	Sat Jun  5 02:37:56 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794682_results.txt	Sat Jun  5 02:37:47 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794682.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794682.log	missing	no update
+results/identification/circexplorer2/SRR12794682_circularRNA_known.txt	Sat Jun  5 02:22:09 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794682_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794683_common.txt	Wed Jun  2 04:56:42 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794683_common.png	Wed Jun  2 04:56:42 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794683_results.txt	Wed Jun  2 04:56:33 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794683.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794683.log	missing	no update
+results/identification/circexplorer2/SRR12794683_circularRNA_known.txt	Wed Jun  2 04:35:15 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794683_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794684_common.txt	Thu Jun  3 12:15:47 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794684_common.png	Thu Jun  3 12:15:47 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794684_results.txt	Thu Jun  3 12:15:39 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794684.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794684.log	missing	no update
+results/identification/circexplorer2/SRR12794684_circularRNA_known.txt	Thu Jun  3 11:59:17 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794684_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794685_common.txt	Thu Jun  3 21:29:40 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794685_common.png	Thu Jun  3 21:29:40 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794685_results.txt	Thu Jun  3 21:29:30 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794685.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794685.log	missing	no update
+results/identification/circexplorer2/SRR12794685_circularRNA_known.txt	Thu Jun  3 21:13:08 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794685_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794686_common.txt	Wed Jun  2 08:03:14 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794686_common.png	Wed Jun  2 08:03:14 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794686_results.txt	Wed Jun  2 08:03:03 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794686.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794686.log	missing	no update
+results/identification/circexplorer2/SRR12794686_circularRNA_known.txt	Wed Jun  2 08:00:04 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794686_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794687_common.txt	Fri Jun  4 12:53:17 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794687_common.png	Fri Jun  4 12:53:17 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794687_results.txt	Fri Jun  4 12:53:09 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794687.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794687.log	missing	no update
+results/identification/circexplorer2/SRR12794687_circularRNA_known.txt	Fri Jun  4 12:38:48 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794687_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794688_common.txt	Thu Jun  3 17:26:52 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794688_common.png	Thu Jun  3 17:26:52 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794688_results.txt	Thu Jun  3 17:26:44 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794688.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794688.log	missing	no update
+results/identification/circexplorer2/SRR12794688_circularRNA_known.txt	Thu Jun  3 17:10:28 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794688_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794689_common.txt	Fri Jun  4 07:13:30 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794689_common.png	Fri Jun  4 07:13:30 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794689_results.txt	Fri Jun  4 07:13:23 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794689.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794689.log	missing	no update
+results/identification/circexplorer2/SRR12794689_circularRNA_known.txt	Fri Jun  4 06:58:57 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794689_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794690_common.txt	Fri Jun  4 20:40:57 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794690_common.png	Fri Jun  4 20:40:57 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794690_results.txt	Fri Jun  4 20:40:47 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794690.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794690.log	missing	no update
+results/identification/circexplorer2/SRR12794690_circularRNA_known.txt	Fri Jun  4 20:24:51 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794690_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794691_common.txt	Sat Jun  5 12:03:53 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794691_common.png	Sat Jun  5 12:03:53 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794691_results.txt	Sat Jun  5 12:03:44 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794691.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794691.log	missing	no update
+results/identification/circexplorer2/SRR12794691_circularRNA_known.txt	Sat Jun  5 11:48:46 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794691_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794692_common.txt	Fri Jun  4 03:20:03 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794692_common.png	Fri Jun  4 03:20:03 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794692_results.txt	Fri Jun  4 03:19:53 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794692.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794692.log	missing	no update
+results/identification/circexplorer2/SRR12794692_circularRNA_known.txt	Fri Jun  4 03:04:44 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794692_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794693_common.txt	Fri Jun  4 22:50:58 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794693_common.png	Fri Jun  4 22:50:58 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794693_results.txt	Fri Jun  4 22:50:48 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794693.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794693.log	missing	no update
+results/identification/circexplorer2/SRR12794693_circularRNA_known.txt	Fri Jun  4 22:33:22 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794693_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794694_common.txt	Wed Jun  2 01:27:27 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794694_common.png	Wed Jun  2 01:27:27 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794694_results.txt	Wed Jun  2 01:20:48 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794694.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794694.log	missing	no update
+results/identification/circexplorer2/SRR12794694_circularRNA_known.txt	Wed Jun  2 01:27:18 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794694_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794695_common.txt	Wed Jun  2 17:00:13 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794695_common.png	Wed Jun  2 17:00:13 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794695_results.txt	Wed Jun  2 11:28:49 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794695.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794695.log	missing	no update
+results/identification/circexplorer2/SRR12794695_circularRNA_known.txt	Wed Jun  2 11:11:04 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794695_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794696_common.txt	Wed May 26 10:53:44 2021	-	-	-	rule implementation changed	update pending
+results/identification/overlap/SRR12794696_common.png	Wed May 26 10:53:44 2021	-	-	-	rule implementation changed	update pending
+results/identification/ciri2/SRR12794696_results.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/data/mapped_data/SRR12794696.sam	-	-	-	-	missing	update pending
+results/identification/circexplorer2/SRR12794696_circularRNA_known.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/identification/circexplorer2/SRR12794696_back_spliced_junction.bed	-	-	-	-	missing	update pending
+results/identification/overlap/SRR12794697_common.txt	Thu Jun  3 06:32:21 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794697_common.png	Thu Jun  3 06:32:21 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794697_results.txt	Thu Jun  3 06:32:09 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794697.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794697.log	missing	no update
+results/identification/circexplorer2/SRR12794697_circularRNA_known.txt	Thu Jun  3 06:16:34 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794697_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794698_common.txt	Wed Jun  2 08:21:58 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794698_common.png	Wed Jun  2 08:21:58 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794698_results.txt	Wed Jun  2 08:21:46 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794698.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794698.log	missing	no update
+results/identification/circexplorer2/SRR12794698_circularRNA_known.txt	Wed Jun  2 07:59:20 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794698_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794699_common.txt	Sat Jun  5 00:39:46 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794699_common.png	Sat Jun  5 00:39:46 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794699_results.txt	Sat Jun  5 00:39:38 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794699.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794699.log	missing	no update
+results/identification/circexplorer2/SRR12794699_circularRNA_known.txt	Sat Jun  5 00:24:59 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794699_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794700_common.txt	Thu Jun  3 23:23:24 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794700_common.png	Thu Jun  3 23:23:24 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794700_results.txt	Thu Jun  3 23:23:17 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794700.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794700.log	missing	no update
+results/identification/circexplorer2/SRR12794700_circularRNA_known.txt	Thu Jun  3 23:09:07 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794700_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794701_common.txt	Thu Jun  3 15:26:01 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794701_common.png	Thu Jun  3 15:26:01 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794701_results.txt	Thu Jun  3 15:25:52 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794701.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794701.log	missing	no update
+results/identification/circexplorer2/SRR12794701_circularRNA_known.txt	Thu Jun  3 15:09:35 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794701_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794702_common.txt	Fri Jun  4 14:43:00 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794702_common.png	Fri Jun  4 14:43:00 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794702_results.txt	Fri Jun  4 14:42:51 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794702.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794702.log	missing	no update
+results/identification/circexplorer2/SRR12794702_circularRNA_known.txt	Fri Jun  4 14:28:29 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794702_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794703_common.txt	Wed May 26 10:54:46 2021	-	-	-	rule implementation changed	update pending
+results/identification/overlap/SRR12794703_common.png	Wed May 26 10:54:46 2021	-	-	-	rule implementation changed	update pending
+results/identification/ciri2/SRR12794703_results.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/data/mapped_data/SRR12794703.sam	-	-	-	-	missing	update pending
+results/identification/circexplorer2/SRR12794703_circularRNA_known.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/identification/circexplorer2/SRR12794703_back_spliced_junction.bed	-	-	-	-	missing	update pending
+results/identification/overlap/SRR12794704_common.txt	Wed Jun  2 01:44:58 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794704_common.png	Wed Jun  2 01:44:58 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794704_results.txt	Wed Jun  2 01:44:36 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794704.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794704.log	missing	no update
+results/identification/circexplorer2/SRR12794704_circularRNA_known.txt	Wed Jun  2 01:27:23 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794704_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794705_common.txt	Thu Jun  3 19:17:42 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794705_common.png	Thu Jun  3 19:17:42 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794705_results.txt	Thu Jun  3 19:17:32 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794705.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794705.log	missing	no update
+results/identification/circexplorer2/SRR12794705_circularRNA_known.txt	Thu Jun  3 19:03:01 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794705_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794706_common.txt	Wed Jun  2 04:37:38 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794706_common.png	Wed Jun  2 04:37:38 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794706_results.txt	Wed Jun  2 04:37:29 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794706.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794706.log	missing	no update
+results/identification/circexplorer2/SRR12794706_circularRNA_known.txt	Wed Jun  2 04:36:46 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794706_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794707_common.txt	Sat Jun  5 10:05:25 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794707_common.png	Sat Jun  5 10:05:25 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794707_results.txt	Sat Jun  5 10:05:11 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794707.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794707.log	missing	no update
+results/identification/circexplorer2/SRR12794707_circularRNA_known.txt	Sat Jun  5 09:49:26 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794707_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794708_common.txt	Fri Jun  4 16:31:55 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794708_common.png	Fri Jun  4 16:31:55 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794708_results.txt	Fri Jun  4 16:31:47 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794708.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794708.log	missing	no update
+results/identification/circexplorer2/SRR12794708_circularRNA_known.txt	Fri Jun  4 16:17:25 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794708_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794709_common.txt	Sat Jun  5 14:22:49 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794709_common.png	Sat Jun  5 14:22:49 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794709_results.txt	Sat Jun  5 14:22:39 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794709.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794709.log	missing	no update
+results/identification/circexplorer2/SRR12794709_circularRNA_known.txt	Sat Jun  5 14:04:52 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794709_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794710_common.txt	Wed May 26 10:55:10 2021	-	-	-	rule implementation changed	update pending
+results/identification/overlap/SRR12794710_common.png	Wed May 26 10:55:10 2021	-	-	-	rule implementation changed	update pending
+results/identification/ciri2/SRR12794710_results.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/data/mapped_data/SRR12794710.sam	-	-	-	-	missing	update pending
+results/identification/circexplorer2/SRR12794710_circularRNA_known.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/identification/circexplorer2/SRR12794710_back_spliced_junction.bed	-	-	-	-	missing	update pending
+results/identification/overlap/SRR12794711_common.txt	Fri Jun  4 11:02:10 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794711_common.png	Fri Jun  4 11:02:10 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794711_results.txt	Fri Jun  4 11:02:03 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794711.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794711.log	missing	no update
+results/identification/circexplorer2/SRR12794711_circularRNA_known.txt	Fri Jun  4 10:49:28 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794711_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794712_common.txt	Fri Jun  4 18:42:10 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794712_common.png	Fri Jun  4 18:42:10 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794712_results.txt	Fri Jun  4 18:42:02 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794712.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794712.log	missing	no update
+results/identification/circexplorer2/SRR12794712_circularRNA_known.txt	Fri Jun  4 18:25:57 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794712_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794713_common.txt	Wed May 26 10:55:28 2021	-	-	-	rule implementation changed	update pending
+results/identification/overlap/SRR12794713_common.png	Wed May 26 10:55:29 2021	-	-	-	rule implementation changed	update pending
+results/identification/ciri2/SRR12794713_results.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/data/mapped_data/SRR12794713.sam	-	-	-	-	missing	update pending
+results/identification/circexplorer2/SRR12794713_circularRNA_known.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/identification/circexplorer2/SRR12794713_back_spliced_junction.bed	-	-	-	-	missing	update pending
+results/identification/overlap/SRR12794714_common.txt	Wed Jun  2 19:37:39 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794714_common.png	Wed Jun  2 19:37:39 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794714_results.txt	Wed Jun  2 19:37:28 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794714.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794714.log	missing	no update
+results/identification/circexplorer2/SRR12794714_circularRNA_known.txt	Wed Jun  2 19:26:13 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794714_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794715_common.txt	Sat Jun  5 04:23:13 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794715_common.png	Sat Jun  5 04:23:13 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794715_results.txt	Sat Jun  5 04:23:06 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794715.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794715.log	missing	no update
+results/identification/circexplorer2/SRR12794715_circularRNA_known.txt	Sat Jun  5 04:09:54 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794715_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794716_common.txt	Wed May 26 10:55:52 2021	-	-	-	rule implementation changed	update pending
+results/identification/overlap/SRR12794716_common.png	Wed May 26 10:55:53 2021	-	-	-	rule implementation changed	update pending
+results/identification/ciri2/SRR12794716_results.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/data/mapped_data/SRR12794716.sam	-	-	-	-	missing	update pending
+results/identification/circexplorer2/SRR12794716_circularRNA_known.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/identification/circexplorer2/SRR12794716_back_spliced_junction.bed	-	-	-	-	missing	update pending
+results/identification/overlap/SRR12794717_common.txt	Thu Jun  3 01:50:19 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794717_common.png	Thu Jun  3 01:50:19 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794717_results.txt	Thu Jun  3 01:50:09 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794717.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794717.log	missing	no update
+results/identification/circexplorer2/SRR12794717_circularRNA_known.txt	Thu Jun  3 01:33:54 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794717_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794718_common.txt	Fri Jun  4 01:23:24 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794718_common.png	Fri Jun  4 01:23:24 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794718_results.txt	Fri Jun  4 01:23:18 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794718.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794718.log	missing	no update
+results/identification/circexplorer2/SRR12794718_circularRNA_known.txt	Fri Jun  4 01:09:20 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794718_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794719_common.txt	Thu Jun  3 10:04:44 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794719_common.png	Thu Jun  3 10:04:44 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794719_results.txt	Thu Jun  3 10:04:36 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794719.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794719.log	missing	no update
+results/identification/circexplorer2/SRR12794719_circularRNA_known.txt	Thu Jun  3 09:49:47 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794719_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794720_common.txt	Wed Jun  2 23:48:21 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794720_common.png	Wed Jun  2 23:48:21 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794720_results.txt	Wed Jun  2 23:48:12 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794720.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794720.log	missing	no update
+results/identification/circexplorer2/SRR12794720_circularRNA_known.txt	Wed Jun  2 23:32:31 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794720_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794721_common.txt	Fri Jun  4 05:24:54 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794721_common.png	Fri Jun  4 05:24:54 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794721_results.txt	Fri Jun  4 05:24:42 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794721.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794721.log	missing	no update
+results/identification/circexplorer2/SRR12794721_circularRNA_known.txt	Fri Jun  4 05:08:49 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794721_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794722_common.txt	Wed Jun  2 17:25:25 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794722_common.png	Wed Jun  2 17:25:25 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794722_results.txt	Wed Jun  2 17:25:10 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794722.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794722.log	missing	no update
+results/identification/circexplorer2/SRR12794722_circularRNA_known.txt	Wed Jun  2 11:11:02 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794722_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794723_common.txt	Wed May 26 10:56:21 2021	-	-	-	rule implementation changed	update pending
+results/identification/overlap/SRR12794723_common.png	Wed May 26 10:56:22 2021	-	-	-	rule implementation changed	update pending
+results/identification/ciri2/SRR12794723_results.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/data/mapped_data/SRR12794723.sam	-	-	-	-	missing	update pending
+results/identification/circexplorer2/SRR12794723_circularRNA_known.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/identification/circexplorer2/SRR12794723_back_spliced_junction.bed	-	-	-	-	missing	update pending
+results/identification/overlap/SRR12794724_common.txt	Thu Jun  3 04:34:23 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794724_common.png	Thu Jun  3 04:34:23 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794724_results.txt	Thu Jun  3 04:34:10 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794724.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794724.log	missing	no update
+results/identification/circexplorer2/SRR12794724_circularRNA_known.txt	Thu Jun  3 04:14:02 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794724_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794725_common.txt	Fri Jun  4 09:22:47 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794725_common.png	Fri Jun  4 09:22:47 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794725_results.txt	Fri Jun  4 09:22:37 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794725.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794725.log	missing	no update
+results/identification/circexplorer2/SRR12794725_circularRNA_known.txt	Fri Jun  4 09:05:36 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794725_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794726_common.txt	Wed May 26 10:56:41 2021	-	-	-	rule implementation changed	update pending
+results/identification/overlap/SRR12794726_common.png	Wed May 26 10:56:41 2021	-	-	-	rule implementation changed	update pending
+results/identification/ciri2/SRR12794726_results.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/data/mapped_data/SRR12794726.sam	-	-	-	-	missing	update pending
+results/identification/circexplorer2/SRR12794726_circularRNA_known.txt	Wed May 26 08:41:51 2021	-	-	-	updated input files	update pending
+results/identification/circexplorer2/SRR12794726_back_spliced_junction.bed	-	-	-	-	missing	update pending
+results/identification/overlap/SRR12794727_common.txt	Sat Jun  5 06:07:06 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794727_common.png	Sat Jun  5 06:07:06 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794727_results.txt	Sat Jun  5 06:07:00 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794727.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794727.log	missing	no update
+results/identification/circexplorer2/SRR12794727_circularRNA_known.txt	Sat Jun  5 05:53:41 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794727_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794728_common.txt	Sat Jun  5 16:27:10 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794728_common.png	Sat Jun  5 16:27:10 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794728_results.txt	Sat Jun  5 16:27:03 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794728.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794728.log	missing	no update
+results/identification/circexplorer2/SRR12794728_circularRNA_known.txt	Sat Jun  5 16:12:00 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794728_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794729_common.txt	Wed Jun  2 21:47:59 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794729_common.png	Wed Jun  2 21:47:59 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794729_results.txt	Wed Jun  2 21:47:49 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794729.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794729.log	missing	no update
+results/identification/circexplorer2/SRR12794729_circularRNA_known.txt	Wed Jun  2 21:33:52 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794729_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/SRR12794730_common.txt	Thu Jun  3 08:15:34 2021	select_coincidences	-		ok	no update
+results/identification/overlap/SRR12794730_common.png	Thu Jun  3 08:15:34 2021	select_coincidences	-		ok	no update
+results/identification/ciri2/SRR12794730_results.txt	Thu Jun  3 08:15:26 2021	ciri2	-		ok	no update
+results/data/mapped_data/SRR12794730.sam	-	bwa_mem	-	results/logs/mapped_data/SRR12794730.log	missing	no update
+results/identification/circexplorer2/SRR12794730_circularRNA_known.txt	Thu Jun  3 08:02:08 2021	circexplorer2_annotation	-		ok	no update
+results/identification/circexplorer2/SRR12794730_back_spliced_junction.bed	-	circexplorer2_id	-		missing	no update
+results/identification/overlap/summary_overlap.png	-	-	-	-	missing	update pending
+results/identification/ciri2/ciri2_results.bed	-	ciri2_results	-		missing	update pending
+results/identification/circexplorer2/circexplorer2_results.bed	-	circexplorer2_results	-		missing	update pending
