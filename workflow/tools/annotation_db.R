@@ -12,6 +12,8 @@ source = "https://bioconductor.org/packages/release/workflows/vignettes/liftOver
 
 suppressPackageStartupMessages(library("rtracklayer"))
 suppressPackageStartupMessages(library("argparse"))
+suppressPackageStartupMessages(library("tibble"))
+suppressPackageStartupMessages(library("dplyr"))
 
 ################################################################################
 # 1. Input
@@ -55,15 +57,19 @@ genome(list19)             <- "hg19"
 # Convert GRanges list into dataframe
 list19            <- as.data.frame(list19)
 list19            <- subset(list19, select = - circRNA_ID)
+list19            <- add_column(list19, "circRNA_ID" = NA, .before = "seqnames")
 list19$circRNA_ID <- paste0(list19$seqnames, ":", list19$start, "-", list19$end)
 
 # Find circBase ID
 circbase$circRNA_ID <- paste0(circbase$X..chrom, ":", circbase$start,
   "-", circbase$end)
 
-list19$circBase_ID   <- NA
+list19 <- add_column(list19, "circBase_ID" = NA, .after = "score")
 if(fields != "None"){
-  list19[fields]     <- NA
+  list19[fields]     <- NA # creating new columns depending on selected fields
+
+  names <- colnames(list19)[1:9]
+  list19 <- list19 %>% select(all_of(names), all_of(fields), everything()) # rearrenging columns
 }
 
 

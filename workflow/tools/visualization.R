@@ -42,7 +42,7 @@ opt <- parser$parse_args()
 sep         <- check_sep(opt$sep)
 metadata    <- check_metadata(opt$metadata, sep)
 
-circ_counts <- check_norm(opt$norm, metadata, opt$design)
+circ_counts <- check_norm(opt$data, opt$norm, metadata, opt$design)
 
 ################################################################################
 # 2. Visualization
