@@ -42,10 +42,10 @@ check_metadata <- function(opt_metadata, sep){
 }
 
 
-check_norm <- function(norm, metadata, design){
+check_norm <- function(data, norm, metadata, design){
   design <- as.formula(design)
   if(norm == "False"){
-    circ_counts      <- as.matrix(read.csv(opt$data, row.names = 1))
+    circ_counts      <- as.matrix(read.csv(data, row.names = 1))
     DESeq_count_data <- DESeqDataSetFromMatrix(countData = circ_counts,
                                                 colData  = metadata,
                                                 design   = design)

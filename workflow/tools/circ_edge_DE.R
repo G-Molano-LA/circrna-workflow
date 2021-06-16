@@ -17,6 +17,7 @@ suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("ggrepel"))
 suppressPackageStartupMessages(library("reshape2"))
+suppressPackageStartupMessages(library("tibble"))
 
 source("utils/utils.R")
 
@@ -33,10 +34,8 @@ parser$add_argument("--linear_counts", default = NULL, help = "Numeric matrix of
             metavar = "FILE3")
 parser$add_argument("--circ_info", default = NULL, help = "Circular information file, containning circRNA annotation information.",
             metavar = "FILE5")
-parser$add_argument("--pval", default = 0.05,
-            help = "pvalue", metavar = "pval" )
-parser$add_argument("--fc", default = 1.5, help = "foldchange",
-            metavar = "FC" )
+parser$add_argument("--pval", default = 0.05, help = "pvalue", metavar = "pval" )
+parser$add_argument("--fc", default = 1.5, help = "foldchange", metavar = "FC" )
 parser$add_argument("--outdir", default = NULL, help = "output file")
 
 opt    <- parser$parse_args()
@@ -46,7 +45,6 @@ if(is.null(opt$design)|| is.null(opt$metadata) || is.null(opt$circ_counts) ||
   parser$print_help()
   stop("Options --design/--metadata/--circ_counts/--linear_counts/--circ_info
    must be supplied\n", call.=FALSE)
-
 }else{
   cat("The supplied arguments are the followings:\n")
   cat(paste(" Experimental design      = ", opt$design, "\n",
@@ -64,9 +62,13 @@ print("Loading data...")
 sep            <- check_sep(opt$sep)
 metadata       <- check_metadata(opt$metadata, sep)
 circ_info      <- read.csv(opt$circ_info)
-circrna_counts <- as.matrix(read.csv(opt$circ_counts, row.names = 1))
+
+circ_counts    <- read.csv(opt$circ_counts)
+circ_counts    <- circ_counts[!duplicated(circ_counts), ]
+circ_counts    <- circ_counts %>% remove_rownames %>% column_to_rownames(var = "circRNA_ID")
+circrna_counts <- as.matrix(circ_counts)
+
 linear_counts  <- as.matrix(read.csv(opt$linear_counts, row.names = 1))
-#gene_info <- read.csv(opt$gene) # Annotation information for each gene. Segurament la obtindre de la matriu de linear counts
 print("Done.")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~DIFFERENTIAL EXPRESSION ANALYSIS~~~~~~~~~~~~~~~~~~~~~~
