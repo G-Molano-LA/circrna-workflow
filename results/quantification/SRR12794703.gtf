@@ -1,0 +1,51 @@
+##Sample: SRR12794703
+##Total_Reads: 86819044
+##Mapped_Reads: 83383554
+##Circular_Reads: 118
+##version: 1.1.2
+chr1	CIRIquant	circRNA	66958059	66959743	0.0240	+	.	circ_id "chr1:66958059|66959743"; circ_type "exon"; bsj 1.000; fsj 182.000; junc_ratio 0.011; gene_id "MIER1"; gene_type "protein_coding";
+chr1	CIRIquant	circRNA	117402186	117405645	0.0959	+	.	circ_id "chr1:117402186|117405645"; circ_type "exon"; bsj 4.000; fsj 312.000; junc_ratio 0.025; gene_id "MAN1A2"; gene_type "protein_coding";
+chr2	CIRIquant	circRNA	40428473	40430304	0.0480	-	.	circ_id "chr2:40428473|40430304"; circ_type "exon"; bsj 2.000; fsj 4.000; junc_ratio 0.500; gene_id "SLC8A1"; gene_type "protein_coding";
+chr2	CIRIquant	circRNA	63856306	63862928	0.0240	+	.	circ_id "chr2:63856306|63862928"; circ_type "exon"; bsj 1.000; fsj 7.000; junc_ratio 0.222; gene_id "UGP2"; gene_type "protein_coding";
+chr2	CIRIquant	circRNA	71396141	71418639	0.0240	+	.	circ_id "chr2:71396141|71418639"; circ_type "exon"; bsj 1.000; fsj 140.000; junc_ratio 0.014; gene_id "ZNF638"; gene_type "protein_coding";
+chr2	CIRIquant	circRNA	84870225	84870785	0.0240	-	.	circ_id "chr2:84870225|84870785"; circ_type "exon"; bsj 1.000; fsj 68.000; junc_ratio 0.029; gene_id "TRABD2A"; gene_type "protein_coding";
+chr2	CIRIquant	circRNA	108771701	108773046	0.0240	+	.	circ_id "chr2:108771701|108773046"; circ_type "exon"; bsj 1.000; fsj 178.000; junc_ratio 0.011; gene_id "RANBP2"; gene_type "protein_coding";
+chr2	CIRIquant	circRNA	151416561	151428922	0.0240	+	.	circ_id "chr2:151416561|151428922"; circ_type "exon"; bsj 1.000; fsj 109.000; junc_ratio 0.018; gene_id "RIF1"; gene_type "protein_coding";
+chr2	CIRIquant	circRNA	227491547	227524915	0.0240	+	.	circ_id "chr2:227491547|227524915"; circ_type "exon"; bsj 1.000; fsj 222.000; junc_ratio 0.009; gene_id "AGFG1"; gene_type "protein_coding";
+chr3	CIRIquant	circRNA	47097955	47106120	0.0240	-	.	circ_id "chr3:47097955|47106120"; circ_type "exon"; bsj 1.000; fsj 55.000; junc_ratio 0.035; gene_id "SETD2"; gene_type "protein_coding";
+chr3	CIRIquant	circRNA	56566594	56567053	0.0480	+	.	circ_id "chr3:56566594|56567053"; circ_type "exon"; bsj 2.000; fsj 37.000; junc_ratio 0.098; gene_id "CCDC66"; gene_type "protein_coding";
+chr3	CIRIquant	circRNA	56627037	56628614	0.0240	-	.	circ_id "chr3:56627037|56628614"; circ_type "exon"; bsj 1.000; fsj 132.000; junc_ratio 0.015; gene_id "TASOR"; gene_type "protein_coding";
+chr3	CIRIquant	circRNA	63898399	63913225	0.0240	+	.	circ_id "chr3:63898399|63913225"; circ_type "exon"; bsj 1.000; fsj 146.000; junc_ratio 0.014; gene_id "ATXN7"; gene_type "protein_coding";
+chr4	CIRIquant	circRNA	15625252	15640883	0.0240	-	.	circ_id "chr4:15625252|15640883"; circ_type "exon"; bsj 1.000; fsj 1406.000; junc_ratio 0.001; gene_id "FBXL5"; gene_type "protein_coding";
+chr4	CIRIquant	circRNA	39737420	39755739	0.0240	+	.	circ_id "chr4:39737420|39755739"; circ_type "exon"; bsj 1.000; fsj 63.000; junc_ratio 0.031; gene_id "UBE2K"; gene_type "protein_coding";
+chr5	CIRIquant	circRNA	50402286	50411383	0.0240	-	.	circ_id "chr5:50402286|50411383"; circ_type "exon"; bsj 1.000; fsj 533.000; junc_ratio 0.004; gene_id "EMB"; gene_type "protein_coding";
+chr5	CIRIquant	circRNA	80177315	80178064	0.0240	-	.	circ_id "chr5:80177315|80178064"; circ_type "exon"; bsj 1.000; fsj 117.000; junc_ratio 0.017; gene_id "SERINC5"; gene_type "protein_coding";
+chr5	CIRIquant	circRNA	109713520	109729513	0.0240	+	.	circ_id "chr5:109713520|109729513"; circ_type "exon"; bsj 1.000; fsj 178.000; junc_ratio 0.011; gene_id "MAN2A1"; gene_type "protein_coding";
+chr5	CIRIquant	circRNA	137985257	137988315	0.0240	-	.	circ_id "chr5:137985257|137988315"; circ_type "exon"; bsj 1.000; fsj 109.000; junc_ratio 0.018; gene_id "FAM13B"; gene_type "protein_coding";
+chr7	CIRIquant	circRNA	24623666	24650712	0.0240	+	.	circ_id "chr7:24623666|24650712"; circ_type "exon"; bsj 1.000; fsj 29.000; junc_ratio 0.065; gene_id "MPP6"; gene_type "protein_coding";
+chr7	CIRIquant	circRNA	93252653	93259632	0.0240	+	.	circ_id "chr7:93252653|93259632"; circ_type "exon"; bsj 1.000; fsj 22.000; junc_ratio 0.083; gene_id "VPS50"; gene_type "protein_coding";
+chr8	CIRIquant	circRNA	17265907	17286427	0.0240	+	.	circ_id "chr8:17265907|17286427"; circ_type "exon"; bsj 1.000; fsj 18.000; junc_ratio 0.100; gene_id "VPS37A"; gene_type "protein_coding";
+chr8	CIRIquant	circRNA	51860845	51861246	0.0240	-	.	circ_id "chr8:51860845|51861246"; circ_type "exon"; bsj 1.000; fsj 152.000; junc_ratio 0.013; gene_id "PCMTD1"; gene_type "protein_coding";
+chr9	CIRIquant	circRNA	37126312	37126942	0.0240	+	.	circ_id "chr9:37126312|37126942"; circ_type "exon"; bsj 1.000; fsj 158.000; junc_ratio 0.013; gene_id "ZCCHC7"; gene_type "protein_coding";
+chr9	CIRIquant	circRNA	83975735	83976994	0.0240	+	.	circ_id "chr9:83975735|83976994"; circ_type "antisense"; bsj 1.000; fsj 70.000; junc_ratio 0.028; gene_id "HNRNPK"; gene_type "protein_coding";
+chr10	CIRIquant	circRNA	5773842	5786050	0.0240	-	.	circ_id "chr10:5773842|5786050"; circ_type "exon"; bsj 1.000; fsj 480.000; junc_ratio 0.004; gene_id "GDI2"; gene_type "protein_coding";
+chr10	CIRIquant	circRNA	15833630	15847943	0.0240	-	.	circ_id "chr10:15833630|15847943"; circ_type "exon"; bsj 1.000; fsj 95.000; junc_ratio 0.021; gene_id "MINDY3"; gene_type "protein_coding";
+chr10	CIRIquant	circRNA	26500819	26513660	0.0240	+	.	circ_id "chr10:26500819|26513660"; circ_type "exon"; bsj 1.000; fsj 230.000; junc_ratio 0.009; gene_id "RNA5SP307,APBB1IP"; gene_type "pseudogene,protein_coding";
+chr10	CIRIquant	circRNA	43154897	43158931	0.0240	+	.	circ_id "chr10:43154897|43158931"; circ_type "exon"; bsj 1.000; fsj 97.000; junc_ratio 0.020; gene_id "CSGALNACT2"; gene_type "protein_coding";
+chr11	CIRIquant	circRNA	107390074	107392895	0.0240	-	.	circ_id "chr11:107390074|107392895"; circ_type "exon"; bsj 1.000; fsj 103.000; junc_ratio 0.019; gene_id "CWF19L2"; gene_type "protein_coding";
+chr12	CIRIquant	circRNA	32708153	32718763	0.0240	+	.	circ_id "chr12:32708153|32718763"; circ_type "exon"; bsj 1.000; fsj 80.000; junc_ratio 0.024; gene_id "DNM1L"; gene_type "protein_coding";
+chr12	CIRIquant	circRNA	45926142	45928859	0.0240	-	.	circ_id "chr12:45926142|45928859"; circ_type "exon"; bsj 1.000; fsj 288.000; junc_ratio 0.007; gene_id "SCAF11"; gene_type "protein_coding";
+chr12	CIRIquant	circRNA	46239679	46243314	0.0240	-	.	circ_id "chr12:46239679|46243314"; circ_type "exon"; bsj 1.000; fsj 171.000; junc_ratio 0.012; gene_id "SLC38A1"; gene_type "protein_coding";
+chr12	CIRIquant	circRNA	56666204	56670364	0.0240	-	.	circ_id "chr12:56666204|56670364"; circ_type "exon"; bsj 1.000; fsj 191.000; junc_ratio 0.010; gene_id "PTGES3"; gene_type "protein_coding";
+chr12	CIRIquant	circRNA	57498157	57498623	0.0480	+	.	circ_id "chr12:57498157|57498623"; circ_type "exon"; bsj 2.000; fsj 185.000; junc_ratio 0.021; gene_id "MARS"; gene_type "protein_coding";
+chr12	CIRIquant	circRNA	92798892	92799086	0.0240	-	.	circ_id "chr12:92798892|92799086"; circ_type "exon"; bsj 1.000; fsj 41.000; junc_ratio 0.047; gene_id "EEA1"; gene_type "protein_coding";
+chr13	CIRIquant	circRNA	21167988	21168399	0.0240	-	.	circ_id "chr13:21167988|21168399"; circ_type "exon"; bsj 1.000; fsj 29.000; junc_ratio 0.065; gene_id "SKA3"; gene_type "protein_coding";
+chr13	CIRIquant	circRNA	26400453	26401624	0.0720	+	.	circ_id "chr13:26400453|26401624"; circ_type "exon"; bsj 3.000; fsj 35.000; junc_ratio 0.146; gene_id "CDK8"; gene_type "protein_coding";
+chr15	CIRIquant	circRNA	58912563	58916999	0.0480	-	.	circ_id "chr15:58912563|58916999"; circ_type "exon"; bsj 2.000; fsj 218.000; junc_ratio 0.018; gene_id "SLTM"; gene_type "protein_coding";
+chr16	CIRIquant	circRNA	68121987	68126610	0.0240	+	.	circ_id "chr16:68121987|68126610"; circ_type "exon"; bsj 1.000; fsj 154.000; junc_ratio 0.013; gene_id "NFATC3"; gene_type "protein_coding";
+chr17	CIRIquant	circRNA	4282798	4296814	0.0240	-	.	circ_id "chr17:4282798|4296814"; circ_type "exon"; bsj 1.000; fsj 0.000; junc_ratio 1.000; gene_id "UBE2G1"; gene_type "protein_coding";
+chr17	CIRIquant	circRNA	32171043	32176213	0.0240	+	.	circ_id "chr17:32171043|32176213"; circ_type "exon"; bsj 1.000; fsj 161.000; junc_ratio 0.012; gene_id "RHOT1"; gene_type "protein_coding";
+chr17	CIRIquant	circRNA	64348260	64352463	0.0240	-	.	circ_id "chr17:64348260|64352463"; circ_type "exon"; bsj 1.000; fsj 1133.000; junc_ratio 0.002; gene_id "PECAM1"; gene_type "protein_coding";
+chr18	CIRIquant	circRNA	9522160	9522509	0.0240	+	.	circ_id "chr18:9522160|9522509"; circ_type "exon"; bsj 1.000; fsj 517.000; junc_ratio 0.004; gene_id "RALBP1"; gene_type "protein_coding";
+chr18	CIRIquant	circRNA	9524594	9525851	0.0959	+	.	circ_id "chr18:9524594|9525851"; circ_type "exon"; bsj 4.000; fsj 324.000; junc_ratio 0.024; gene_id "RALBP1"; gene_type "protein_coding";
+chr20	CIRIquant	circRNA	58438945	58441083	0.0480	+	.	circ_id "chr20:58438945|58441083"; circ_type "exon"; bsj 2.000; fsj 57.000; junc_ratio 0.066; gene_id "VAPB"; gene_type "protein_coding";
