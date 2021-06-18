@@ -1,0 +1,11 @@
+name: GRCh38
+reference:
+  bwa_index: /media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/bwa/GRCh38.fna
+  fasta: /media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/GRCh38.fna
+  gtf: /media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/GRCh38_ann.gtf
+  hisat_index: /media/alejandra/Elements/TFG/circrna-workflow/data/raw_data/hisat2/GRCh38
+tools:
+  bwa: /home/alejandra/circrna-workflow/workflow/.snakemake/conda/4317e4d44d6394d2de29536a84e81507/bin/bwa
+  hisat2: /home/alejandra/circrna-workflow/workflow/.snakemake/conda/4317e4d44d6394d2de29536a84e81507/bin/hisat2
+  samtools: /home/alejandra/circrna-workflow/workflow/.snakemake/conda/4317e4d44d6394d2de29536a84e81507/bin/samtools
+  stringtie: /home/alejandra/circrna-workflow/workflow/.snakemake/conda/4317e4d44d6394d2de29536a84e81507/bin/stringtie
