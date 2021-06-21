@@ -127,16 +127,11 @@ rule ciriquant_config:
         script        = "utils/creating_yaml_file.py",
         genome        = GENOME,
         prefix_bwa    = BWA_INDEX_QUANT if BWA_INDEX_QUANT is not None else PREFIX_BWA,
-        prefix_hisat2 = HISAT2_INDEX_QUANT if HISAT2_INDEX_QUANT is not None else PREFIX_HISAT2,
-        hisat2        = True if HISAT2_INDEX_QUANT is not None else False,
-        bwa           = True if BWA_INDEX_QUANT is not None else False,
-        ref           = True if REFERENCE_QUANT is not None else False,
-        gtf           = True if ANNOTATION_QUANT is not None else False
+        prefix_hisat2 = HISAT2_INDEX_QUANT if HISAT2_INDEX_QUANT is not None else PREFIX_HISAT2
     conda: config["envs"]["ciriquant"]
     priority: 20
     shell:
-        "python {params.script} {params.genome} {params.prefix_hisat2} {params.prefix_bwa} {input.ref} {input.gtf} {output}\
-                {params.hisat2} {params.bwa} {params.ref} {params.gtf}"
+        "python {params.script} {params.genome} {params.prefix_hisat2} {params.prefix_bwa} {input.ref} {input.gtf} {output}"
 
 
 rule ciriquant:
