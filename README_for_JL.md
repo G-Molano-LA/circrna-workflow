@@ -1,7 +1,4 @@
 
-title: Manual user
-author: G. Molano, LA.
-
 
 ### Table of Contents
 * [Installation](#installation)
@@ -20,12 +17,6 @@ This is the recommended way to install the required dependencies for a proper pe
 ## Setting your working directory
 First of all, download and unzip the `circrna_workflow` folder from [OneDrive](https://idibell-my.sharepoint.com/:f:/g/personal/lgonzalezm_idibell_cat/EpOC5lhue0hImsDyT5SxBegBLxDD2Hi-kdpc2pM75YogVg?e=Ny79Vn).
 
-For the correct performance of the script, we have to generate a text file containing the filenames of our samples. To facilitate the process, we are going to run a bash script, indicating the termination of our samples.
-```{bash}
-cd path/to/circrna_workflow/
-chmod +x src/filenames.sh
-./src/utils/filenames.sh _sub_[1,2]_val_[1,2].fq.gz
-```
 
 ## Dependencies
 ### Python3
@@ -96,12 +87,26 @@ conda install mamba
 mamba install -c conda-forge -c bioconda snakemake
 ```
 
-# Workflow
-## Alignment and Identification
-![image](docs/images/dag_aln.svg)
+# Execution
+1. Modification of the config file locatede at '~/circrna-workflow/workflow/config/config.yaml'. You only have to  modify the following lines:
+  - line 66. specify the output dir.
+  - line 69, 128 and 133. Specify the path to the hard_drive. In my case was '/media/alejandra/'. Do not delete the part following '/Elements/TFG...'.
+  - line 148. Specify the number of threads.
+
+2. Aftwerwards, go to circrna-workflow dir
 ```{bash}
-cd /path/to/circrna_workflow
-snakemake --cores all \
-          --use-conda \
-          --snakefile src/alignment_and_identification.Snakefile
+cd /path/to/circrna-workflow-dir
+ ```
+3. Perform a dry run
+```
+snakemake -n
+```
+The main result would have to show 3 main processes and the number of times the process have to be repeated:
+- ciriquant_config (1 time)
+- ciriquant (50 times)
+- ciriquant_results (1 time)
+
+4. After ensuring this, you can now execute the process:
+```
+snakemake --cores NUMBER --use-conda --report
 ```
