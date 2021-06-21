@@ -4,11 +4,11 @@ modules:
   quality_control: False
   trimming: False
   alignment_and_identification: False
-  quantification: False
+  quantification: True
   DB_annotation: False
   DE_analysis: False
   coexpression: False
-  visualization: True
+  visualization: False
 
 # Filenames
 samples:
@@ -63,10 +63,10 @@ samples:
 - SRR12794729
 - SRR12794730
 
-# Output directory
-outdir: /home/alejandra/circrna-workflow/results
+# Output directory (absolute paths)
+outdir:
 # Path of reference genome files
-genome_files: /media/alejandra/Elements/TFG/circrna-workflow/data/raw_data
+genome_files: /path/to/hard_drive/Elements/TFG/circrna-workflow/data/raw_data
 # Genome reference GRCh37 or GRCh38 !!!
 genome: GRCh38
 
@@ -125,12 +125,12 @@ aln_and_id:
 quantification:
   # Input data
   # Change only if trimming == "no"
-  reads: /media/alejandra/Elements/TFG/circrna-workflow/results/trimming
+  reads: /path/to/hard_drive/Elements/TFG/circrna-workflow/results/trimming
   # Change only if trimming == "no"
   read_suffix:
     1: _1_val_1.fq.gz
     2: _2_val_2.fq.gz
-  circRNAs:
+  circRNAs: /path/to/hard_drive/Elements/TFG/circrna_workflow/results/identification/overlap
   circ_suffix: _common.txt
 
   reference:
@@ -143,9 +143,9 @@ quantification:
   sample_threshold: 2 # Minimum number of circRNA reads in one sample to be included.
   merged_threshold: 2 # Minimum number of circRNA reads in total to be included.
   # 0: unstranded, 1: read1 match the sense strand, 2: read1 match the antisense strand
-  library_type: 1
+  library_type: 2
   threads:
-    ciriquant: 6
+    ciriquant: NUMBER
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 annotation:
   # Input data
@@ -186,7 +186,7 @@ netminer:
 visualization:
   # Input data
   # 1st column = rownames. 1st row = colnames
-  count_data: ../results/circ_counts.txt 
+  count_data: ../results/circ_counts.txt
   metadata: ~/circrna-workflow/libs/DE_analysis/metadata.csv
 
   # Parameters
