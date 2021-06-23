@@ -52,27 +52,31 @@ colnames(circ_counts2) <- c("Circular_RNAs", "Samples", "value")
 #~~~~~~~~~~~~~~~~~~~~~BOXPLOT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Plot
 boxplot <-
-ggplot(circ_counts2, aes(x = factor(Samples), y = value, fill = factor(Samples))) +
+  ggplot(circ_counts2, aes(x = factor(Samples), y = value+0.1, fill = factor(Samples))) +
   geom_boxplot() +
-  geom_jitter(color="grey", size=0.4, alpha=0.9) +
+  scale_y_continuous(trans='log10') +
   labs(fill = "Samples") +
   xlab("Samples") +
   ylab("Normalized counts")
 
 #~~~~~~~~~~~~~~~~~~~~~VIOLINPLOT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 violinplot <-
-ggplot(circ_counts2, aes(x=factor(Samples), y = value, fill = factor(Samples))) +
+  ggplot(circ_counts2, aes(x=factor(Samples), y = value+0.1, fill = factor(Samples))) +
   geom_violin() +
+  scale_y_continuous(trans='log10', breaks = c(0.1,1.1,10.1,100.1), labels = c(0,1,10,100)) +
   labs(fill = "Samples") +
   xlab("Samples") +
   ylab("Normalized counts")
 
 #~~~~~~~~~~~~~~~~~~~~~HISTOGRAM~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 histogram <-
-ggplot(circ_counts2, aes(x=value)) +
-  geom_histogram() +
-  ylab("Frequency counts")
-  xlab("Number of reads")
+  ggplot(circ_counts2, aes(x = value)) +
+  geom_histogram(aes(y = stat(count) / sum(count)), breaks = seq(0,10,0.5), fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+  scale_y_continuous(trans = "identity", breaks = seq(0,1,0.1)) +
+  xlim(NA, 10) +
+  ylab("Relative frequency of circRNAs") +
+  xlab("Number of reads") + 
+  ggtitle("Circular Counts")
 
 #~~~~~~~~~~~~~~~~~~~~~DENDROGRAM~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Data treatment
