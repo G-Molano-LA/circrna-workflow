@@ -54,7 +54,7 @@ colnames(circ_counts2) <- c("Circular_RNAs", "Samples", "value")
 boxplot <-
   ggplot(circ_counts2, aes(x = factor(Samples), y = value+0.1, fill = factor(Samples))) +
   geom_boxplot() +
-  scale_y_continuous(trans='log10') +
+  scale_y_continuous(trans='log10', breaks = c(0.1,1.1,10.1,100.1), labels = c(0,1,10,100)) +
   labs(fill = "Samples") +
   xlab("Samples") +
   ylab("Normalized counts")
