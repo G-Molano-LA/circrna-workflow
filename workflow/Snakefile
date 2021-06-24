@@ -49,7 +49,7 @@ rule all:
         *(rules.annotation_results.input if DB_ANNOTATION else []),
 
         # Differential expression analysis,
-        *(rules.DE_results.input if QUANTIFICATION and DE_ANALYSIS else []),
+        *(rules.DE_results.input if DE_ANALYSIS else []),
 
         # Visualization
         *(rules.visualization_results.input if VISUALIZATION else [])
