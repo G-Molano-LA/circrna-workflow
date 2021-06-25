@@ -4,9 +4,9 @@ modules:
   quality_control: False
   trimming: False
   alignment_and_identification: False
-  quantification: True
+  quantification: False
   DB_annotation: False
-  DE_analysis: False
+  DE_analysis: True
   coexpression: False
   visualization: False
 
@@ -64,7 +64,7 @@ samples:
 - SRR12794730
 
 # Output directory (absolute paths)
-outdir:
+outdir: /home/alejandra/circrna-workflow/results
 # Path of reference genome files
 genome_files: /path/to/hard_drive/Elements/TFG/circrna-workflow/data/raw_data
 # Genome reference GRCh37 or GRCh38 !!!
@@ -89,7 +89,7 @@ quality_control:
     2:
 
   # Parameters
-  threads: 6
+  threads:
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TRIMMING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 trimming:
@@ -99,7 +99,7 @@ trimming:
     2:
 
   # Parameters
-  threads: 6
+  threads:
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT_AND_IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~
 aln_and_id:
@@ -119,8 +119,8 @@ aln_and_id:
   sample_threshold: 2 # Minimum number of circRNA reads in one sample to be included.
   merged_threshold: 2 # Minimum number of circRNA reads in total to be included.
   threads:
-    bwa: 5    # Alignment tool
-    ciri2: 3  # Identification tool
+    bwa:   # Alignment tool
+    ciri2:  # Identification tool
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUANTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 quantification:
   # Input data
@@ -145,7 +145,7 @@ quantification:
   # 0: unstranded, 1: read1 match the sense strand, 2: read1 match the antisense strand
   library_type: 2
   threads:
-    ciriquant: NUMBER
+    ciriquant:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 annotation:
   # Input data
@@ -158,7 +158,7 @@ annotation:
 # Complete only if quantification == 'yes'
 DE:
   # Input data
-  metadata: /media/alejandra/Elements/TFG/circrna-workflow/data/metadata/metadata.csv # Sample, Group, (Sex) variable columns
+  metadata: /home/alejandra/circrna-workflow/libs/DE_analysis/metadata.csv # Sample, Group, (Sex) variable columns
 
   # Parameters
   # comma, semicolon, tab, whitespace
@@ -186,8 +186,8 @@ netminer:
 visualization:
   # Input data
   # 1st column = rownames. 1st row = colnames
-  count_data: ../results/circ_counts.txt
-  metadata: ~/circrna-workflow/libs/DE_analysis/metadata.csv
+  count_data: /home/alejandra/circrna-workflow/results/DE_analysis/circular_count_matrix.csv
+  metadata: /home/alejandra/circrna-workflow/libs/DE_analysis/metadata.csv
 
   # Parameters
   normalized: False
