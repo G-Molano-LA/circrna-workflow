@@ -17,7 +17,6 @@ suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("ggrepel"))
 suppressPackageStartupMessages(library("reshape2"))
-suppressPackageStartupMessages(library("tibble"))
 
 source("utils/utils.R")
 
@@ -62,12 +61,7 @@ print("Loading data...")
 sep            <- check_sep(opt$sep)
 metadata       <- check_metadata(opt$metadata, sep)
 circ_info      <- read.csv(opt$circ_info)
-
-circ_counts    <- read.csv(opt$circ_counts)
-circ_counts    <- circ_counts[!duplicated(circ_counts), ]
-circ_counts    <- circ_counts %>% remove_rownames %>% column_to_rownames(var = "circRNA_ID")
-circrna_counts <- as.matrix(circ_counts)
-
+circrna_counts <- as.matrix(read.csv(opt$circ_counts, row.names = 1))
 linear_counts  <- as.matrix(read.csv(opt$linear_counts, row.names = 1))
 print("Done.")
 

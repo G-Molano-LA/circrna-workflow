@@ -10,8 +10,6 @@
 
 suppressPackageStartupMessages(library("DESeq2"))
 suppressPackageStartupMessages(library("argparse"))
-suppressPackageStartupMessages(library("tibble"))
-suppressPackageStartupMessages(library("apeglm"))
 
 source("utils/utils.R")
 
@@ -32,12 +30,12 @@ opt    <- parser$parse_args()
 
 if(is.null(opt$design)|| is.null(opt$metadata) || is.null(opt$counts)){
   parser$print_help()
-  stop("Options --design/--metadata/--counts must be supplied\n", call.=FALSE)
+  stop("Options --design/--metadata/--circ_counts must be supplied\n", call.=FALSE)
 }else{
   cat("The supplied arguments are the followings:\n")
   cat(paste(" Experimental design      = ", opt$design, "\n",
             "Library file              = ", opt$metadata, "\n",
-            "Count matrix              = ", opt$counts, "\n",
+            "Count matrix       = ", opt$counts, "\n",
           )
         )
 }
@@ -47,7 +45,7 @@ print("Loading data...")
 sep            <- check_sep(opt$sep)
 metadata       <- check_metadata(opt$metadata, sep)
 counts         <- as.matrix(read.csv(opt$counts, row.names = 1))
-design         <- as.formula(opt$design)
+design     <- as.formula(opt$design)
 print("Done.")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~DIFFERENTIAL EXPRESSION ANALYSIS~~~~~~~~~~~~~~~~~~~~~~
@@ -60,39 +58,40 @@ dds <- DESeq(dds)
 resultsNames(dds)
 
 ## Results
-res1 <- results(dds, alpha = 0.05, name = "group_Multiple.sclerosis_vs_Healthy.controls")
-res2 <- results(dds, alpha = 0.05, name = "sex_male_vs_female")
-summary(res1)
-summary(res2)
-
-res1_ordered <- res1[order(res1$padj), ]
-res2_ordered <- res2[order(res2$padj), ]
+# res1 <- results(dds, alpha = 0.05, name = "group_Multiple.sclerosis_vs_Healthy.controls")
+# res2 <- results(dds, alpha = 0.05, name = "sex_male_vs_female")
+# summary(res1)
+# summary(res2)
 #
-## Log FC shrinkage for visualization and ranking
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# The shrunken log fold changes are useful for ranking and visualization,
-# without the need for arbitrary filters on low count genes
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-res1LFC <- lfcShrink(dds, coef = "group_Multiple.sclerosis_vs_Healthy.controls", type="apeglm")
-res1LFC <- res1LFC[order(res1LFC$padj),]
-res2LFC <- lfcShrink(dds, coef = "sex_male_vs_female", type="apeglm")
-res2LFC <- res2LFC[order(res2LFC$padj),]
-
-
-# 2. Exploring and exporting results
-## MA-plot
-ylim = c(-3 , 3) ; xlim = c (1, 1e5)
-plotMA(res1, xlim= xlim, ylim = ylim, main= "normal")
-plotMA(res1LFC, xlim= xlim, ylim = ylim, main= "apeglm")
-plotMA(res2, xlim= xlim, ylim = ylim, main= "normal")
-plotMA(res2LFC, xlim= xlim, ylim = ylim, main= "apeglm")
-
-## Plot counts
-plotCounts(dds, gene=which.max(res1$padj), intgroup="group")
-plotCounts(dds, gene=which.max(res2$padj), intgroup="sex")
-
-# Reproducibility
-Sys.time() # date generated
-proc.time() # time spent making
-options(with = 120); sessioninfo::session_info() # R and packages info
+# res1_ordered <- res1[order(res1$padj), ]
+# res2_ordered <- res2[order(res2$padj), ]
+#
+# ## Log FC shrinkage for visualization and ranking
+# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# # The shrunken log fold changes are useful for ranking and visualization,
+# # without the need for arbitrary filters on low count genes
+# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# BiocManager::install("apeglm")
+# suppressPackageStartupMessages("apeglm")
+# res1LFC <- lfcShrink(dds, coef = "group_Multiple.sclerosis_vs_Healthy.controls", type="apeglm")
+# res1LFC <- res1LFC[order(res1LFC$padj,)]
+# res2LFC <- lfcShrink(dds, coef = "sex_male_vs_female", type="apeglm")
+# res2LFC <- res2LFC[order(res2LFC$padj,)]
+#
+#
+# # 2. Exploring and exporting results
+# ## MA-plot
+# ylim = c(-3 , 3) ; xlim = c (1, 1e5)
+# plotMA(res1, xlim= xlim, ylim = ylim, main= "normal")
+# plotMA(res1LFC, xlim= xlim, ylim = ylim, main= "apeglm")
+# plotMA(res2, xlim= xlim, ylim = ylim, main= "normal")
+# plotMA(res2LFC, xlim= xlim, ylim = ylim, main= "apeglm")
+#
+# ## Plot counts
+# plotCounts(dds, gene=which.max(res1$padj), intgroup="group")
+# plotCounts(dds, gene=which.max(res2$padj), intgroup="sex")
+#
+# # Reproducibility
+# Sys.time() # date generated
+# proc.time() # time spent making
+# options(with = 120); sessioninfo::session_info() # R and packages info
