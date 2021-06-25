@@ -1,0 +1,146 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~PREPROCESSING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# RAW
+m <- read.csv("general_stats.csv")
+colnames(m)
+colnames(m) <- c("sample_name", "dups", "GC", "length", "failed", "m_seqs")
+mean(m$dups)    # 47.319 +/- 
+mean(m$GC)      # 47.04 +/-
+mean(m$failed)  # 31 +/-
+mean(m$m_seqs)  # Total sequences (millions) = 49.05 +/- 4.5
+
+
+# TRIMMED
+m <- read.csv("general_stats_trimmed.csv")
+colnames(m) <- c("sample_name", "bp_trimmed","dups", "GC", "length_bp", "failed", "m_seqs")
+
+trim <- subset(m, is.na(bp_trimmed))
+raw <- subset(m, !is.na(bp_trimmed))
+
+mean(raw$bp_trimmed) # 4.5 +/- 0.33
+mean(trim$dups)      # 47.265
+mean(trim$GC)        # 46.87
+mean(trim$failed)    # 21
+mean(trim$m_seqs)    # 49 +/- 4.5
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT&IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~
+library(ggplot2)
+
+all <- read.csv("summary_overlap_modif.bed", sep = "\t" )
+ciri2 <- read.csv("ciri2_results.bed", sep = "\t" )
+exp2 <- read.csv("circexplorer2_results.bed", sep = "\t")
+
+all$id <- paste0(all$X.chrom, ":", all$start, "-", all$end)
+ciri2$id <- paste0(ciri2$X.chrom, ":", ciri2$start, "-", ciri2$end)
+exp2$id <- paste0(exp2$X.chrom, ":", exp2$start, "-", exp2$end) # start coordinate is already 0-based
+
+colnames(exp2) <- colnames(all)
+colnames(ciri2)<- colnames(all)
+
+# finding the common circRNAs in circexplorer2 results
+new_exp <- data.frame()
+for (id in ciri2$id) {
+  if(id %in% exp2$id) {
+    index1 <- which(exp2$id == id)
+    new_exp <- rbind(new_exp, exp2[index1, ])
+  }
+}
+new_exp <- new_exp[!duplicated(new_exp$id), ]
+
+new_ciri <- data.frame()
+for (id in new_exp$id) {
+  if(id %in% ciri2$id) {
+    index1 <- which(ciri2$id == id)
+    new_ciri <- rbind(new_ciri, ciri2[index1, ])
+  }
+}
+new_ciri <- new_ciri[!duplicated(new_ciri$id), ]
+
+# summarizing counts
+
+new_exp$sum <- NA
+for (i in 1:nrow(new_exp)) {
+    new_exp$sum[i] <- sum(new_exp[i, 7:55])
+}
+
+new_ciri$sum <- NA
+for (i in 1:nrow(new_ciri)) {
+    new_ciri$sum[i] <- sum(new_ciri[i, 7:55])
+}
+
+cor(new_exp$sum, new_ciri$sum) # 0.9780604
+plot(new_ciri$sum, new_exp$sum, ylab="Reads by CIRI2", xlab="Reads by CircExplorer2" ) #scatterplot
+t.test(new_exp$sum, new_ciri$sum)
+# Welch Two Sample t-test 
+
+# data:  new_exp$sum and new_ciri$sum
+# t = 6.1878, df = 50859, p-value = 6.146e-10
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+# 16.23427 31.28657
+# sample estimates:
+# mean of x mean of y 
+# 106.24784  82.48742 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUANTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+counts <- read.csv("circular_count_matrix.csv")
+info <- read.csv("circular_info.csv")
+ratio <- read.csv("junction_ratio.csv")
+library <- read.csv("library_info.csv")
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+m <- read.csv("annotated_circRNA.txt", sep = "\t")
+sum(!is.na(m$circBase_ID) # 11848
+
+
+
+#~NORMALIZED_COUNTS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1) FPKM
+The following function returns fragment counts normalized per kilobase of
+feature length per million mapped fragments (by default using a robust estimate
+of the library size, as inestimateSizeFactors).
+
+2) Median Normalization
+This function estimates the size factors using the "median ratio method"
+described by Equation 5 inAnders and Huber (2010).
+
+3) VST Normalization (Variance Stabilized Data)
+blind=TRUE should  be  used  for  comparing  samples  in  a  manner  unbiased
+ by  prior  infor-mation  on  samples,  for  example  to  perform  sample  QA
+ (quality  assurance).blind=FALSE should be used for transforming data for
+ downstream analysis,where the full use of the design information should be
+ mad
+
+4) Trimmed Mean Normalization (TMM)
+The TMM method implements the trimmed mean of M-values method proposed by
+Robinson andOshlack (2010). By default, the M-values are weighted according to
+inverse variances, as computed by the delta method for logarithms of binomial
+random variables. IfrefColumn is unspecified, then the column whose count-per-million upper quartile is closest to the mean upper quartile is set as thereference library.
+The TMMwsp method stands for "TMM with singleton pairing".  This is a variant of TMM
+that is intended to perform better for data with a high proportion of zeros.
+In the TMM method, genes that have zero count in either library are ignored when
+comparing pairs of libraries.  In the TMMwsp method, the positive counts from such
+genes are reused to increase the number of features by which the libraries are compared.
+The singleton positive counts are paired up between the libraries in decreasing order of size and then a slightly modified TMM method is applied to the re-ordered libraries. If refColumnis unspecified, then the column with largest sum of square-root counts is used as the reference library.
+
+5) Upper Quartile Normalization (UQ)
+(The upperquartile method is the upper-quartile normalization method of Bullard et al (2010), inwhich the scale factors are calculated from the 75% quantile of the counts for each library, afterremoving genes that are zero in all libraries. The idea is generalized here to allow normalization byany quantile of the count distributions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
