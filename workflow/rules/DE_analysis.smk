@@ -31,11 +31,14 @@ rule DE_results:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~PREPARATION_FILES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Preparation of prep_CIRIquant output files & StringTie output files
 rule prep_previous_files:
+    input:
+        expand("{outdir}/quantification/{sample}.gtf", outdir = OUTDIR, sample = SAMPLES),
+        expand("{outdir}/quantification/gene/{sample}_out.gtf", outdir = OUTDIR, sample = SAMPLES)
     output:
         circular_file = f'{OUTDIR}/DE_analysis/prep_DE/sample_circ.lst',
         linear_file   = f'{OUTDIR}/DE_analysis/prep_DE/sample_gene.lst'
     params:
-        dir      = f'{OUTDIR}/ciriquant', # directory of ciriquant results
+        dir      = f'{OUTDIR}/quantification', # directory of ciriquant results
         outdir   = f'{OUTDIR}/DE_analysis/prep_DE',
         metadata = METADATA_DE,
         separator= config["DE"]["metadata_sep"],
