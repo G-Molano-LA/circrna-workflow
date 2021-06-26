@@ -49,8 +49,9 @@ check_norm <- function(data, norm, metadata, design){
     DESeq_count_data <- DESeqDataSetFromMatrix(countData = circ_counts,
                                                 colData  = metadata,
                                                 design   = design)
-    DESeq_count_data <- estimateSizeFactors(DESeq_count_data)
-    circ_counts      <- as.matrix(counts(DESeq_count_data, normalized = TRUE))
+    vsd         <- vst(DESeq_count_data, blind = FALSE) 
+    vst_counts  <- assay(vsd)
+    circ_counts <- as.matrix(vst_counts)
     return(circ_counts)
   }else if(norm == "True"){
     return(circ_counts)
