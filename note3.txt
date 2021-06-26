@@ -1,0 +1,331 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~PREPROCESSING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# RAW
+library(ggplot2)
+
+m <- read.csv("general_stats.csv")
+colnames(m)
+colnames(m) <- c("sample_name", "dups", "GC", "length", "failed", "m_seqs")
+mean(m$dups)    # 47.319 +/- 
+mean(m$GC)      # 47.04 +/-
+mean(m$failed)  # 31 +/-
+mean(m$m_seqs)  # Total sequences (millions) = 49.05 +/- 4.5
+
+
+
+# TRIMMED
+m <- read.csv("general_stats_trimmed.csv")
+colnames(m) <- c("sample_name", "bp_trimmed","dups", "GC", "length_bp", "failed", "m_seqs")
+
+trim <- subset(m, is.na(bp_trimmed))
+raw <- subset(m, !is.na(bp_trimmed))
+
+mean(raw$bp_trimmed) # 4.5 +/- 0.33
+mean(trim$dups)      # 47.265
+mean(trim$GC)        # 46.87
+mean(trim$failed)    # 21
+mean(trim$m_seqs)    # 49 +/- 4.5
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALIGNMENT&IDENTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~
+library(ggplot2)
+
+all <- read.csv("summary_overlap_modif.bed", sep = "\t" )
+ciri2 <- read.csv("ciri2_results.bed", sep = "\t" )
+exp2 <- read.csv("circexplorer2_results.bed", sep = "\t")
+
+all$id <- paste0(all$X.chrom, ":", all$start, "-", all$end)
+ciri2$id <- paste0(ciri2$X.chrom, ":", ciri2$start, "-", ciri2$end)
+exp2$id <- paste0(exp2$X.chrom, ":", exp2$start, "-", exp2$end) # start coordinate is already 0-based
+
+colnames(exp2) <- colnames(all)
+colnames(ciri2)<- colnames(all)
+
+# finding the common circRNAs in circexplorer2 results
+new_exp <- data.frame()
+for (id in ciri2$id) {
+  if(id %in% exp2$id) {
+    index1 <- which(exp2$id == id)
+    new_exp <- rbind(new_exp, exp2[index1, ])
+  }
+}
+new_exp <- new_exp[!duplicated(new_exp$id), ]
+
+new_ciri <- data.frame()
+for (id in new_exp$id) {
+  if(id %in% ciri2$id) {
+    index1 <- which(ciri2$id == id)
+    new_ciri <- rbind(new_ciri, ciri2[index1, ])
+  }
+}
+new_ciri <- new_ciri[!duplicated(new_ciri$id), ]
+
+# summarizing counts
+
+new_exp$sum <- NA
+for (i in 1:nrow(new_exp)) {
+    new_exp$sum[i] <- sum(new_exp[i, 7:55])
+}
+
+new_ciri$sum <- NA
+for (i in 1:nrow(new_ciri)) {
+    new_ciri$sum[i] <- sum(new_ciri[i, 7:55])
+}
+
+cor(new_exp$sum, new_ciri$sum) # 0.9780604
+plot(new_ciri$sum, new_exp$sum, ylab="Reads by CIRI2", xlab="Reads by CircExplorer2" ) #scatterplot
+t.test(new_exp$sum, new_ciri$sum)
+# Welch Two Sample t-test 
+
+# data:  new_exp$sum and new_ciri$sum
+# t = 6.1878, df = 50859, p-value = 6.146e-10
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+# 16.23427 31.28657
+# sample estimates:
+# mean of x mean of y 
+# 106.24784  82.48742 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUANTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+
+counts <- read.csv("circular_count_matrix.csv")
+all <- read.csv("/home/alejandra/circrna-workflow/results/identification/summary_overlap_modif.bed", sep = "\t)
+all$id <- paste0(all$X.chrom, ":", all$start+1, "|", all$end)
+
+info <- read.csv("circular_info.csv")
+ratio <- read.csv("junction_ratio.csv")
+library <- read.csv("library_info.csv")
+
+# Total amount of circRNAS
+nrow(counts) # 26124
+
+# Comparative of the counts
+counts$sum <- NA
+for (i in 1:nrow(counts)) {
+    counts$sum[i] <- sum(counts[i, 2:51])
+}
+
+all$sum <- NA
+for (i in 1:nrow(all)) {
+    all$sum[i] <- sum(all[i, 7:55])
+}
+
+new_all <- data.frame()
+for (id in counts$circ_id) {
+  if(id %in% all$id) {
+    index1 <- which(all$id == id)
+    new_all <- rbind(new_all, all[index1, ])
+  }
+}
+new_all <- new_all[!duplicated(new_all$id), ]
+
+# Normalitat de les dades
+shapiro.test(counts$sum)# Error in shapiro.test(counts$sum) : sample size must be between 3 and 5000
+
+qqplot(counts$sum); qqline(counts$sum) # saved images
+qqplot(new_all$sum); qqline(new_all$sum) # saved images
+
+# Homogeneitat de variàncies
+var.test(counts$sum, new_all$sum)
+
+	F test to compare two variances
+
+data:  counts$sum and new_all$sum
+F = 0.77462, num df = 26123, denom df = 26123, p-value < 2.2e-16
+alternative hypothesis: true ratio of variances is not equal to 1
+95 percent confidence interval:
+ 0.7560555 0.7936337
+sample estimates:
+ratio of variances 
+         0.7746168
+
+t.test(new_all$sum, counts$sum, var.equal = FALSE)
+
+	Welch Two Sample t-test
+
+data:  new_all$sum and counts$sum
+t = 3.1289, df = 51417, p-value = 0.001756
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  3.859656 16.803948
+sample estimates:
+mean of x mean of y 
+ 82.55765  72.22585
+
+plot(new_all$sum, counts$sum, ylab="Reads by CIRIquant", xlab="Reads by CIRI2") #scatterplot
+
+# Distribution
+rownames(counts) <- counts$circ_id
+counts <- select(counts, -circ_id)
+
+counts_mod <- select(counts, -sum)
+counts2 <- melt(as.matrix(counts_mod))
+colnames(circ_counts2) <- c("Circular_RNAs", "Samples", "value")
+
+tab       <- prop.table(table(counts2$value))
+maxval    <- round(max(tab), digits = 2) # 81% tiene 0 counts
+maxval_2  <- round(max(tab[tab != max(tab)]), digits = 2) # 5% tiene 2 counts
+
+
+
+# Libary information
+mean(library$Total) # 98001728 = 98 million reads
+sd(library$Total)   # 9083076 = 9.01 million
+
+ggplot(library, aes(x = Sample, y = Total/1000000)) +
+    geom_point() + 
+    geom_segment(aes(x = Sample, xend = Sample, y = 0, yend = Total/1000000)) +
+    ylab("Total Reads (millions)") +
+    coord_flip()
+
+mean(library$Mapped)/1e+6 # 94.087
+sd(library$Mapped)/1e+6   # 8.72
+
+ggplot(library, aes(x = Sample, y = Mapped/1000000)) +
+    geom_point() + 
+    geom_segment(aes(x = Sample, xend = Sample, y = 0, yend = Mapped/1000000)) +
+    ylab("Mapped Reads (millions)") +
+    coord_flip()
+
+mean(library$Circular)/1e+3 # 75.47
+sd(library$Circular)/1e+3   # 16.98
+
+ggplot(library, aes(x = Sample, y = Circular/1e+3)) +
+    geom_point() + 
+    geom_segment(aes(x = Sample, xend = Sample, y = 0, yend = Circular/1e+3)) +
+    ylab("Circular Reads (thousands)") +
+    coord_flip()
+
+mean(library$Circular)/mean(library$Mapped)*100 # 0.08% del total de reads mapeados
+
+
+# Circular RNA info
+info$gene_id <- as.factor(info$gene_id)
+levels(info$gene_id)                    # 6438
+
+info$circ_type <- as.factor(info$circ_type)
+sum(info$circ_type == "intron")             # 68
+sum(info$circ_type == "exon")               # 26056
+
+circ_type <- scan("circ_type.csv", character(), sep = ",")
+circ_type <- as.factor(circ_type)
+levels(circ_type) # 
+ [1] ""                       "antisense_RNA"          "C_region"              
+ [4] "gene_type"              "guide_RNA"              "lncRNA"                
+ [7] "miRNA"                  "other"                  "protein_coding"        
+[10] "pseudogene"             "snoRNA"                 "transcribed_pseudogene"
+[13] "tRNA
+
+table(circ_type)
+                                antisense_RNA               C_region 
+                     1                      1                      2 
+             gene_type              guide_RNA                 lncRNA 
+                     1                     21                    356 
+                 miRNA                  other         protein_coding 
+                   202                      2                  26050 
+            pseudogene                 snoRNA transcribed_pseudogene 
+                   755                    140                    180 
+                  tRNA 
+                     3 
+
+prop.table(table(circ_type))*100
+circ_type
+                                antisense_RNA               C_region 
+           0.003608285            0.003608285            0.007216569 
+             gene_type              guide_RNA                 lncRNA 
+           0.003608285            0.075773977            1.284549325 
+                 miRNA                  other         protein_coding 
+           0.728873494            0.007216569           93.995814390 
+            pseudogene                 snoRNA transcribed_pseudogene 
+           2.724254889            0.505159847            0.649491232 
+                  tRNA 
+           0.010824854 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+source("/home/alejandra/circrna-workflow/workflow/utils/utils.R")
+counts <- as.matrix(read.csv("circular_count_matrix.csv", row.names = 1))
+metadata <- read.csv("library_info.csv")
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData   = metadata,
+                              design    = ~Group+Sex)
+resultsNames(dds)
+
+res1 <- results(dds, name = "Group_multiple_sclerosis_vs_healthy_controls")
+res2 <- results(dds, name = "Sex_male_vs_female")
+
+res1_ordered <- res1[order(res1$padj), ]
+res2_ordered <- res2[order(res2$padj), ]
+
+sum(res1$pvalue < 0.05, na.rm=TRUE) # 363
+sum(res1$padj < 0.05, na.rm=TRUE)   # 325966
+sum(res1$log2FoldChange < abs(1.5), na.rm=TRUE) # 158
+sum(res1$pvalue < 0.05 & res1$log2FoldChange >  abs(1.5), na.rm=TRUE) # 38
+
+
+
+ylim = c(-3 , 3) ; xlim = c (1, 1e5)
+resApeT<- lfcShrink(dds, coef=2, type="normal", lfcThreshold=1)
+plotMA(res1, xlim= xlim, ylim = ylim, main= "normal")
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+m <- read.csv("annotated_circRNA.txt", sep = "\t")
+sum(!is.na(m$circBase_ID) # 11848
+
+
+
+#~NORMALIZED_COUNTS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1) FPKM
+The following function returns fragment counts normalized per kilobase of
+feature length per million mapped fragments (by default using a robust estimate
+of the library size, as inestimateSizeFactors).
+
+2) Median Normalization
+This function estimates the size factors using the "median ratio method"
+described by Equation 5 inAnders and Huber (2010).
+
+3) VST Normalization (Variance Stabilized Data)
+blind=TRUE should  be  used  for  comparing  samples  in  a  manner  unbiased
+ by  prior  infor-mation  on  samples,  for  example  to  perform  sample  QA
+ (quality  assurance).blind=FALSE should be used for transforming data for
+ downstream analysis,where the full use of the design information should be
+ mad
+
+4) Trimmed Mean Normalization (TMM)
+The TMM method implements the trimmed mean of M-values method proposed by
+Robinson andOshlack (2010). By default, the M-values are weighted according to
+inverse variances, as computed by the delta method for logarithms of binomial
+random variables. IfrefColumn is unspecified, then the column whose count-per-million upper quartile is closest to the mean upper quartile is set as thereference library.
+The TMMwsp method stands for "TMM with singleton pairing".  This is a variant of TMM
+that is intended to perform better for data with a high proportion of zeros.
+In the TMM method, genes that have zero count in either library are ignored when
+comparing pairs of libraries.  In the TMMwsp method, the positive counts from such
+genes are reused to increase the number of features by which the libraries are compared.
+The singleton positive counts are paired up between the libraries in decreasing order of size and then a slightly modified TMM method is applied to the re-ordered libraries. If refColumnis unspecified, then the column with largest sum of square-root counts is used as the reference library.
+
+5) Upper Quartile Normalization (UQ)
+(The upperquartile method is the upper-quartile normalization method of Bullard et al (2010), inwhich the scale factors are calculated from the 75% quantile of the counts for each library, afterremoving genes that are zero in all libraries. The idea is generalized here to allow normalization byany quantile of the count distributions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
