@@ -5,7 +5,7 @@ library(ggplot2)
 m <- read.csv("general_stats.csv")
 colnames(m)
 colnames(m) <- c("sample_name", "dups", "GC", "length", "failed", "m_seqs")
-mean(m$dups)    # 47.319 +/- 
+mean(m$dups)    # 47.319 +/-
 mean(m$GC)      # 47.04 +/-
 mean(m$failed)  # 31 +/-
 mean(m$m_seqs)  # Total sequences (millions) = 49.05 +/- 4.5
@@ -74,7 +74,7 @@ for (i in 1:nrow(new_ciri)) {
 cor(new_exp$sum, new_ciri$sum) # 0.9780604
 plot(new_ciri$sum, new_exp$sum, ylab="Reads by CIRI2", xlab="Reads by CircExplorer2" ) #scatterplot
 t.test(new_exp$sum, new_ciri$sum)
-# Welch Two Sample t-test 
+# Welch Two Sample t-test
 
 # data:  new_exp$sum and new_ciri$sum
 # t = 6.1878, df = 50859, p-value = 6.146e-10
@@ -82,83 +82,193 @@ t.test(new_exp$sum, new_ciri$sum)
 # 95 percent confidence interval:
 # 16.23427 31.28657
 # sample estimates:
-# mean of x mean of y 
-# 106.24784  82.48742 
+# mean of x mean of y
+# 106.24784  82.48742
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~QUANTIFICATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 library(dplyr)
 library(reshape2)
 library(ggplot2)
+suppressPackageStartupMessages(library("DESeq2"))
 
-counts <- read.csv("circular_count_matrix.csv")
-all <- read.csv("/home/alejandra/circrna-workflow/results/identification/summary_overlap_modif.bed", sep = "\t)
-all$id <- paste0(all$X.chrom, ":", all$start+1, "|", all$end)
+# Data
+counts <- read.csv("/home/alejandra/circrna-workflow/results/DE_analysis/circular_count_matrix.csv")
+ciri2 <- read.csv("/home/alejandra/circrna-workflow/results/identification/summary_overlap_modif.bed", sep = "\t")
+metadata <- read.csv("results/DE_analysis/library_info.csv")
+info <- read.csv("results/DE_analysis/circular_info.csv")
+ratio <- read.csv("results/DE_analysis/junction_ratio.csv")
+library <- read.csv("results/DE_analysis/library_info.csv")
 
-info <- read.csv("circular_info.csv")
-ratio <- read.csv("junction_ratio.csv")
-library <- read.csv("library_info.csv")
-
-# Total amount of circRNAS
+# Counts
 nrow(counts) # 26124
-
-# Comparative of the counts
-counts$sum <- NA
-for (i in 1:nrow(counts)) {
-    counts$sum[i] <- sum(counts[i, 2:51])
-}
-
-all$sum <- NA
-for (i in 1:nrow(all)) {
-    all$sum[i] <- sum(all[i, 7:55])
-}
-
-new_all <- data.frame()
-for (id in counts$circ_id) {
-  if(id %in% all$id) {
-    index1 <- which(all$id == id)
-    new_all <- rbind(new_all, all[index1, ])
-  }
-}
-new_all <- new_all[!duplicated(new_all$id), ]
-
-# Normalitat de les dades
-shapiro.test(counts$sum)# Error in shapiro.test(counts$sum) : sample size must be between 3 and 5000
-
-qqplot(counts$sum); qqline(counts$sum) # saved images
-qqplot(new_all$sum); qqline(new_all$sum) # saved images
-
-# Homogeneitat de variàncies
-var.test(counts$sum, new_all$sum)
-
-	F test to compare two variances
-
-data:  counts$sum and new_all$sum
-F = 0.77462, num df = 26123, denom df = 26123, p-value < 2.2e-16
-alternative hypothesis: true ratio of variances is not equal to 1
-95 percent confidence interval:
- 0.7560555 0.7936337
-sample estimates:
-ratio of variances 
-         0.7746168
-
-t.test(new_all$sum, counts$sum, var.equal = FALSE)
-
-	Welch Two Sample t-test
-
-data:  new_all$sum and counts$sum
-t = 3.1289, df = 51417, p-value = 0.001756
-alternative hypothesis: true difference in means is not equal to 0
-95 percent confidence interval:
-  3.859656 16.803948
-sample estimates:
-mean of x mean of y 
- 82.55765  72.22585
-
-plot(new_all$sum, counts$sum, ylab="Reads by CIRIquant", xlab="Reads by CIRI2") #scatterplot
-
-# Distribution
 rownames(counts) <- counts$circ_id
 counts <- select(counts, -circ_id)
+
+# Min 2 reads per sample
+for(row in 1:nrow(counts)){
+  for(col in 1:ncol(counts)){
+    if(counts[row,col] == 1){
+      counts[row,col] <- 0
+    }
+  }
+}
+
+keep <- rowSums(counts) >= 2
+counts <- counts[keep, ] # 24898 circRNA identified with at least 2 counts per sample
+
+# CircRNA identified in each group
+counts_MS <- counts[, 1:30]
+counts_HC <- counts[, 31:50]
+
+counts_MS <- counts_MS[rowSums(counts_MS) != 0, ]
+counts_HC <- counts_HC[rowSums(counts_HC) != 0, ]
+
+nrow(counts_MS) # 20832
+nrow(counts_HC) # 17556
+
+
+
+
+# counts
+## CIRI2 counts
+ciri2$id <- paste0(ciri2$X.chrom, ":", ciri2$start+1, "|", ciri2$end)
+rownames(ciri2) <- ciri2$id
+ciri2 <- ciri2[rownames(counts), ]
+
+ciri_sum <- colSums(ciri2[7:56]) # CIRI2 counts by sample
+ciri_sum <- as.data.frame(ciri_sum)
+## CIRIquant
+nrow(counts) # 24898
+
+# Comparing the number of counts by each circRNA: CIRI2 vs CIRIquant
+ciri2_rsum <-rowSums(ciri2[7:56], )
+ciriquant_rsum <- rowSums(counts)
+
+csum <- melt(ciri2_rsum)
+rsums <- melt(ciriquant_rsum)
+rsums$circ_id <- rownames(rsums)
+rsums$ciri2 <- csum$value
+colnames(rsums) <- c("CIRIquant", "circRNA", "CIRI2" )
+rsums2 <- melt(rsums)
+colnames(rsums2) <- c("circRNA", "tool", "counts" )
+
+by(rsums2$counts, rsums2$tool, summary)
+# rsums2$tool: CIRIquant
+#     Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
+#     2.00     3.00     7.00    75.11    32.00 17156.00
+# ------------------------------------------------------------
+# rsums2$tool: CIRI2
+#     Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
+#     2.00     3.00     9.00    88.06    38.00 18401.00
+
+by(rsums2$counts, rsums2$tool, sd)
+# rsums2$tool: CIRIquant
+# [1] 360.8267
+# ------------------------------------------------------------
+# rsums2$tool: CIRI2
+# [1] 417.4329
+
+ggplot(rsums2, aes(x = tool, y = counts, color = tool)) +
+    geom_boxplot() +
+    stat_summary(fun= mean, geom="point", shape = 20, size = 5, color = "red", fill = "red")+
+    ylab("Total circular counts") +
+    scale_y_continuous(trans='log10') +
+    theme(legend.position = "none")
+
+t.test(rsums$CIRIquant, rsums$CIRI2)
+
+    # 	Welch Two Sample t-test
+    #
+    # data:  rsums$CIRIquant and rsums$CIRI2
+    # t = -3.705, df = 48773, p-value = 0.0002116
+    # alternative hypothesis: true difference in means is not equal to 0
+    # 95 percent confidence interval:
+    #  -19.809506  -6.101893
+    # sample estimates:
+    # mean of x mean of y
+    #  75.10547  88.06117
+wilcox.test(rsums$CIRIquant, rsums$CIRI2)
+  #   Wilcoxon rank sum test with continuity correction
+  #
+  # data:  rsums$CIRIquant and rsums$CIRI2
+  # W = 293722605, p-value < 2.2e-16
+  # alternative hypothesis: true location shift is not equal to 0
+
+
+## Counts by sample and tool, with metadata information
+counts_sum <- colSums(counts)
+counts_sum <- as.data.frame(counts_sum)
+counts_sum$sample <- rownames(counts_sum)
+counts_sum$CIRI2 <- ciri_sum$ciri_sum # add ciri2 counts
+colnames(counts_sum) <- c("CIRIquant", "sample", "CIRI2")
+counts_sum$group <- metadata$Group # add metadata information
+# transforming data
+counts_sum2 <- melt(counts_sum)
+colnames(counts_sum2) <- c("sample", "group","tool", "counts")
+
+
+summary(counts_sum$CIRIquant/1e+3)
+ #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+ # 20.91   32.42   36.21   37.40   41.30   66.75
+
+ggplot(counts_sum, aes(y = CIRIquant/1e+3)) +
+  geom_boxplot() +
+  xlab("")+
+  ylab("")
+
+ggplot(counts_sum, aes(x = CIRIquant/1e+3)) +
+  geom_histogram(binwidth=6, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+  ylab("Frequency")+
+  xlab("Number of counts (thousands) per sample")
+
+ggplot(counts_sum, aes(x = sample, y = CIRIquant/1e+3, color = group)) +
+    geom_point() +
+    geom_segment(aes(x = sample, xend = sample, y = 0, yend = CIRIquant/1e+3)) +
+    ylab("Total circular counts (thousands)") +
+    coord_flip()
+
+
+by(counts_sum$CIRIquant, counts_sum$group, summary)
+# counts_sum$group: healthy_controls
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#   20911   29614   34896   35449   41575   50871
+# ------------------------------------------------------------
+# counts_sum$group: multiple_sclerosis
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#   25295   33484   37101   38700   40876   66752
+ggplot(counts_sum, aes(x = group, y = CIRIquant, color = group)) +
+    geom_boxplot() +
+    ylab("Total circular counts")
+
+# Normalitat de les dades
+shapiro.test(counts_sum$CIRIquant)
+#           Shapiro-Wilk normality test
+#
+# data:  counts_sum$CIRIquant
+# W = 0.94222, p-value = 0.01651
+
+shapiro.test(counts_sum$CIRI2)
+#           Shapiro-Wilk normality test
+#
+# data:  counts_sum$CIRI2
+# W = 0.94023, p-value = 0.01509
+qqnorm(counts_sum$counts_sum); qqline(counts_sum$counts_sum)
+qqnorm(new_sum$new_sum); qqline(new_sum$new_sum)
+
+# Comparació de medianes
+wilcox.test(counts_sum$counts_sum, new_sum$new_sum)
+#
+# 	Wilcoxon rank sum test with continuity correction
+#
+# data:  counts_sum$counts_sum and new_sum$new_sum
+# W = 746, p-value = 0.0008116
+# alternative hypothesis: true location shift is not equal to 0
+
+
+plot(counts_sum$counts_sum, new_sum$new_sum, ylab="Reads by CIRIquant", xlab="Reads by CIRI2") #scatterplot
+
+# Distribution
+
 
 counts_mod <- select(counts, -sum)
 counts2 <- melt(as.matrix(counts_mod))
@@ -171,86 +281,104 @@ maxval_2  <- round(max(tab[tab != max(tab)]), digits = 2) # 5% tiene 2 counts
 
 
 # Libary information
+## Total reads
 mean(library$Total) # 98001728 = 98 million reads
 sd(library$Total)   # 9083076 = 9.01 million
-
-ggplot(library, aes(x = Sample, y = Total/1000000)) +
-    geom_point() + 
+ggplot(library, aes(x = Sample, y = Total/1e+6, color = Group)) +
+    geom_point() +
     geom_segment(aes(x = Sample, xend = Sample, y = 0, yend = Total/1000000)) +
     ylab("Total Reads (millions)") +
     coord_flip()
-
+## Mapped reads
 mean(library$Mapped)/1e+6 # 94.087
 sd(library$Mapped)/1e+6   # 8.72
-
-ggplot(library, aes(x = Sample, y = Mapped/1000000)) +
-    geom_point() + 
+ggplot(library, aes(x = Sample, y = Mapped/1e+6, color = Group)) +
+    geom_point() +
     geom_segment(aes(x = Sample, xend = Sample, y = 0, yend = Mapped/1000000)) +
     ylab("Mapped Reads (millions)") +
     coord_flip()
-
+## Circular reads
 mean(library$Circular)/1e+3 # 75.47
 sd(library$Circular)/1e+3   # 16.98
 
-ggplot(library, aes(x = Sample, y = Circular/1e+3)) +
-    geom_point() + 
+ggplot(library, aes(x = Sample, y = Circular/1e+3, color = Group)) +
+    geom_point() +
     geom_segment(aes(x = Sample, xend = Sample, y = 0, yend = Circular/1e+3)) +
     ylab("Circular Reads (thousands)") +
     coord_flip()
+## Total reads vs circular
+cor(library$Total, library$Circular) # 0.3777081
+ggplot(library, aes(x = Total/1e+6, y = Circular/1e+6)) +
+    geom_point()+
+    xlab("Total Reads") +
+    ylab("Circular Reads")
+
+## Mapped reads vs circulars
+cor(library$Mapped, library$Circular) # 0.3785094
+ggplot(library, aes(x = Mapped/1e+6, y = Circular/1e+6)) +
+    geom_point()+
+    xlab("Mapped Reads") +
+    ylab("Circular Reads")
 
 mean(library$Circular)/mean(library$Mapped)*100 # 0.08% del total de reads mapeados
+## Total reads vs mapped
+cor(library$Total, library$Mapped) # 0.9998267
+ggplot(library, aes(x = Total/1e+6, y = Mapped/1e+6)) +
+    geom_point()+
+    xlab("Total Reads") +
+    ylab("Mapped Reads")
 
+## Circular reads vs Circular counts
+library$circ_counts <- counts_sum$CIRIquant
+cor(library$Circular, counts_sum$CIRIquant)
+#[1] 0.9999969
+
+ggplot(library, aes(x = Circular, y = circ_counts)) +
+    geom_point()+
+    xlab("Circular Reads") +
+    ylab("Circular normalized counts")
 
 # Circular RNA info
+rownames(info) <- info$circ_id
+info <- info[rownames(counts), ]
+
 info$gene_id <- as.factor(info$gene_id)
-levels(info$gene_id)                    # 6438
+levels(info$gene_id)                    # 6349
 
 info$circ_type <- as.factor(info$circ_type)
-sum(info$circ_type == "intron")             # 68
-sum(info$circ_type == "exon")               # 26056
+sum(info$circ_type == "intron")             # 63
+sum(info$circ_type == "exon")               # 24835
 
-circ_type <- scan("circ_type.csv", character(), sep = ",")
-circ_type <- as.factor(circ_type)
-levels(circ_type) # 
- [1] ""                       "antisense_RNA"          "C_region"              
- [4] "gene_type"              "guide_RNA"              "lncRNA"                
- [7] "miRNA"                  "other"                  "protein_coding"        
-[10] "pseudogene"             "snoRNA"                 "transcribed_pseudogene"
-[13] "tRNA
+gene_type <- scan("/home/alejandra/gene_type.csv", character(), sep = ",")
+gene_type <- as.factor(gene_type)
 
-table(circ_type)
-                                antisense_RNA               C_region 
-                     1                      1                      2 
-             gene_type              guide_RNA                 lncRNA 
-                     1                     21                    356 
-                 miRNA                  other         protein_coding 
-                   202                      2                  26050 
-            pseudogene                 snoRNA transcribed_pseudogene 
-                   755                    140                    180 
-                  tRNA 
-                     3 
-
-prop.table(table(circ_type))*100
-circ_type
-                                antisense_RNA               C_region 
-           0.003608285            0.003608285            0.007216569 
-             gene_type              guide_RNA                 lncRNA 
-           0.003608285            0.075773977            1.284549325 
-                 miRNA                  other         protein_coding 
-           0.728873494            0.007216569           93.995814390 
-            pseudogene                 snoRNA transcribed_pseudogene 
-           2.724254889            0.505159847            0.649491232 
-                  tRNA 
-           0.010824854 
+levels(gene_type)
+#  [1] ""                       "antisense_RNA"          "C_region"
+#  [4] "guide_RNA"              "lncRNA"                 "miRNA"
+#  [7] "other"                  "protein_coding"         "pseudogene"
+# [10] "snoRNA"                 "transcribed_pseudogene" "tRNA"
+prop.table(table(gene_type))*100
+# gene_type
+#                                 antisense_RNA               C_region
+#            0.003608415            0.003608415            0.007216830
+#              guide_RNA                 lncRNA                  miRNA
+#            0.075776711            1.284595677            0.728899794
+#                  other         protein_coding             pseudogene
+#            0.007216830           93.999206149            2.724353192
+#                 snoRNA transcribed_pseudogene                   tRNA
+#            0.505178075            0.649514668            0.010825244
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 source("/home/alejandra/circrna-workflow/workflow/utils/utils.R")
 counts <- as.matrix(read.csv("circular_count_matrix.csv", row.names = 1))
 metadata <- read.csv("library_info.csv")
 
+# Normalizing counts with mean DESeq2 normalization
 dds <- DESeqDataSetFromMatrix(countData = counts,
-                              colData   = metadata,
-                              design    = ~Group+Sex)
+                                            colData  = metadata,
+                                            design = ~Group+Subject)
+dds <- DESeq(dds)
+
 resultsNames(dds)
 
 res1 <- results(dds, name = "Group_multiple_sclerosis_vs_healthy_controls")
@@ -271,6 +399,16 @@ resApeT<- lfcShrink(dds, coef=2, type="normal", lfcThreshold=1)
 plotMA(res1, xlim= xlim, ylim = ylim, main= "normal")
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 
+# High-confidence DE circRNAs
+counts_norm <- counts(dds, normalized = TRUE) # normalized counts
+
+# mean of normalized counts for all samples > 10
+keep <- rowMeans(counts_norm) > 10
+counts_norm <- counts_norm[keep, ]
+nrow(counts_norm) # 696
+
+# circRNAS detected in at least the 50% of the samples in each group
+filtered.counts_norm <- counts_norm[rowSums(counts[, 1:30]==0)<16, ] # by MS group
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ANNOTATION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 m <- read.csv("annotated_circRNA.txt", sep = "\t")
@@ -310,22 +448,3 @@ The singleton positive counts are paired up between the libraries in decreasing 
 
 5) Upper Quartile Normalization (UQ)
 (The upperquartile method is the upper-quartile normalization method of Bullard et al (2010), inwhich the scale factors are calculated from the 75% quantile of the counts for each library, afterremoving genes that are zero in all libraries. The idea is generalized here to allow normalization byany quantile of the count distributions
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
