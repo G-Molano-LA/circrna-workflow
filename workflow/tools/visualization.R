@@ -56,7 +56,7 @@ colnames(group) <- metadata$group
 group <- melt(group)
 group <- group$Var2
 circ_counts2$group <- group
- 
+
 # Total counts per sample
 counts_sum <- colSums(circ_counts)
 counts_sum <- as.data.frame(counts_sum)
@@ -73,7 +73,7 @@ boxplot_sample <-
   geom_boxplot() +
   scale_y_continuous(trans='identity') +
   xlab("Samples") +
-  ylab("Normalized counts")+ 
+  ylab("Normalized counts")+
   coord_flip()
 
 #sense els 0s
@@ -82,28 +82,28 @@ ggplot(d, aes(x = factor(Samples), y = value, color = group)) +
   geom_boxplot() +
   scale_y_continuous(trans='identity') +
   xlab("Samples") +
-  ylab("Normalized counts")+ 
+  ylab("Normalized counts")+
   coord_flip()
 
-boxplot_group <- 
+boxplot_group <-
     ggplot(counts_sum, aes(x = group, y = counts, color = group)) +
     geom_boxplot() +
     ylab("Total circular counts")
-	
+
 #~~~~~~~~~~~~~~~~~~~~~VIOLINPLOT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 violinplot <-
   ggplot(circ_counts2, aes(x=factor(Samples), y = value, color = group)) +
   geom_violin() +
   scale_y_continuous(trans='identity') +
   xlab("Samples") +
-  ylab("Normalized counts")+ 
+  ylab("Normalized counts")+
   coord_flip()
-#sense els 0s  
+#sense els 0s
     ggplot(d, aes(x=factor(Samples), y = value, color = group)) +
   geom_violin() +
   scale_y_continuous(trans='identity') +
   xlab("Samples") +
-  ylab("Normalized counts")+ 
+  ylab("Normalized counts")+
   coord_flip()
 
 violinplot_group <-
@@ -115,19 +115,18 @@ violinplot_group <-
 #~~~~~~~~~~~~~~~~~~~~~HISTOGRAM~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 histogram <-
   ggplot(circ_counts2, aes(x = value)) +
-  geom_histogram(aes(y = stat(count) / sum(count)), breaks = seq(0,10,0.5), fill="#69b3a2", color="#e9ecef", alpha=0.9) +
-  scale_y_continuous(trans = "identity", breaks = seq(0,1,0.1)) +
+  geom_histogram(aes(y = stat(count) / sum(count)), breaks = seq(0,10,1), fill="#69b3a2", color="#e9ecef", alpha=0.9) +
   xlim(NA, 10) +
   ylab("Relative frequency of circRNAs") +
-  xlab("Number of reads") + 
+  xlab("Number of counts") +
   ggtitle("Circular Counts")
-#sense els 0s  
+#sense els 0s
   ggplot(d, aes(x = value)) +
   geom_histogram(aes(y = stat(count) / sum(count)), breaks = seq(0,10,0.5), fill="#69b3a2", color="#e9ecef", alpha=0.9) +
   scale_y_continuous(trans = "identity", breaks = seq(0,1,0.1)) +
   xlim(NA, 10) +
   ylab("Relative frequency of circRNAs") +
-  xlab("Number of normalized counts") + 
+  xlab("Number of normalized counts") +
   ggtitle("Circular Counts")
 
 #~~~~~~~~~~~~~~~~~~~~~DENDROGRAM~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -163,10 +162,10 @@ scree_plot         <- fviz_screeplot(pca, ncp = 10)
 graph_of_variables <- fviz_pca_var(pca, col.var = "contrib") +
   theme_minimal()
 # Individual plots
-dim1_dim2 <- fviz_pca_ind(pca, habillage = metadata$group, addEllipses=TRUE) 
+dim1_dim2 <- fviz_pca_ind(pca, habillage = metadata$group, addEllipses=TRUE)
 
-dim1_dim3 <- fviz_pca_ind(pca, axes = c(1,3),habillage = metadata$group, addEllipses=TRUE) 
-dim2_dim3 <- fviz_pca_ind(pca, axes = c(2,3), habillage = metadata$group, addEllipses=TRUE) 
+dim1_dim3 <- fviz_pca_ind(pca, axes = c(1,3),habillage = metadata$group, addEllipses=TRUE)
+dim2_dim3 <- fviz_pca_ind(pca, axes = c(2,3), habillage = metadata$group, addEllipses=TRUE)
 
 ################################################################################
 # 3. Save ggplots
