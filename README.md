@@ -2,7 +2,7 @@
 
 ### Table of Contents
 * [Requirements](#requirements)
-  1. [Snakemake: workflow system manager](#snakemake:-workflow-system-manager)
+  1. [Snakemake: workflow system manager](#snakemake-workflow-system-manager)
   2. [Setting your working directory](#setting-your-working-directory)
 
 ***
