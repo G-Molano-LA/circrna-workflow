@@ -1,3 +1,7 @@
+###############################################################################
+## Script to convert a annotation genome file in GTF format to refFlat format
+## Author: G. Molano, LA
+###############################################################################
 
 # http://genomewiki.ucsc.edu/index.php/Genes_in_gtf_or_gff_format#The_opposite_direction.2C_GTF_to_GenePred
 #

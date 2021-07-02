@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ###############################################################################
-## Down-sampling trimmed data
-## Author: G. Molano, LA
+## Script to down-sampling trimmed data
+## Author: G. Molano, LA (gonmola@hotmail.es)
 ###############################################################################
 
 # 1. Installation of down-sampling tool for processing sequences in FASTQ formats

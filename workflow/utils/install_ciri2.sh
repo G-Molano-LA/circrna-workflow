@@ -1,7 +1,9 @@
 #!/bin/bash
 
 ################################################################################
-## Dependencies Installation on Linux machines
+## Script to manage CIRI2 dependencies
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Author: G.Molano, LA (gonmola@hotmail.es)
 ################################################################################
 
 # 2. Installing CIRI2

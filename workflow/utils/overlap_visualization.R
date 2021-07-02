@@ -1,14 +1,14 @@
 #!/bin/R
 
 ###############################################################################
-## R script for visualizing results from CIRI2 & CircExplorer2, and common iden-
-## tified circRNAs by overlap function.
+## R script for visualizing results from CIRI2 & CircExplorer2, as well as,
+## common identified circRNAs by overlap function.
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Date              : 26-05-2021
-# Last modification : 26-05-2021
+# Date : 30-06-2021
 ################################################################################
+
 suppressPackageStartupMessages(library("VennDiagram"))
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("stringr"))

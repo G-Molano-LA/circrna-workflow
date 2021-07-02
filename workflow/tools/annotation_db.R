@@ -5,9 +5,9 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Date              : 27-04-2021
-# Last modification : 27-05-2021
+# Last modification : 30-06-2021
 ###############################################################################
+
 source = "https://bioconductor.org/packages/release/workflows/vignettes/liftOver/inst/doc/liftov.html#resource-the-chain-file-for-hg38-to-hg19-transformation"
 
 suppressPackageStartupMessages(library("rtracklayer"))

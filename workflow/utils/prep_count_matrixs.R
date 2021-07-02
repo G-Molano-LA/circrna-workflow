@@ -1,13 +1,13 @@
 #!bin/R
 
 ###############################################################################
-# R script for preparing inputs for DE analysis. Initial data from ncbi repository
+# R script to prepare inputs for DE analysis module. Initial data from ncbi repository
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Date              :
-# Last modification : 10-05-2021
+# Last modification : 30-06-2021
 ################################################################################
+
 suppressPackageStartupMessages(library("statmod"))
 suppressPackageStartupMessages(library("dplyr"))
 

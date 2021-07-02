@@ -1,11 +1,10 @@
 #!/bin/R
 ################################################################################
-# Differential expression analysis.
+# Differential expression analysis with DESeq2 package
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Author: G. Molano, LA (gonmola@hotmail.es)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Date              : 25-03-2021
-# Last modification : 15-06-2021
+# Last modification : 30-06-2021
 ################################################################################
 
 suppressPackageStartupMessages(library("DESeq2"))
